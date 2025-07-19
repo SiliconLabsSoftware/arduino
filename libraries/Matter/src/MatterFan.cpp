@@ -42,6 +42,8 @@ DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::PercentCurrent::Id, INT8U, 1, 
 DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::SpeedMax::Id, INT8U, 1, 0),                                 /* SpeedMax */
 DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::SpeedSetting::Id, INT8U, 1, ATTRIBUTE_MASK_WRITABLE),       /* SpeedSetting */
 DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::SpeedCurrent::Id, INT8U, 1, 0),                             /* SpeedCurrent */
+DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::RockSupport::Id, BITMAP32, 4, 0),                           /* RockSupport */
+DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::RockSetting::Id, BITMAP32, 4, ATTRIBUTE_MASK_WRITABLE),     /* RockSetting */
 DECLARE_DYNAMIC_ATTRIBUTE(FanControl::Attributes::FeatureMap::Id, BITMAP32, 4, 0),                            /* FeatureMap */
 DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();                                                                         /* ClusterRevision auto added by LIST_END */
 
