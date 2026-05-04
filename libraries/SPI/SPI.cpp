@@ -62,6 +62,7 @@ void SilabsSPI::beginTransaction(SPISettings settings)
       && this->settings.getDataMode() == settings.getDataMode()) {
     return;
   }
+  this->settings = settings;
   // Deinit the peripheral
   SPIDRV_DeInit(this->sl_spidrv_handle);
   // Apply the new settings
