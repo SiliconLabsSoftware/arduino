@@ -57,9 +57,7 @@ void SilabsSPI::beginTransaction(SPISettings settings)
 {
   xSemaphoreTake(this->spi_busy_mutex, portMAX_DELAY);
   // Don't do anything if the settings don't change
-  if (this->settings.getClockFreq() == settings.getClockFreq()
-      && this->settings.getBitOrder() == settings.getBitOrder()
-      && this->settings.getDataMode() == settings.getDataMode()) {
+  if (this->settings == settings) {
     return;
   }
   this->settings = settings;
