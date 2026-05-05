@@ -21,6 +21,7 @@ const uint8_t button_pin = BTN_BUILTIN;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Zigbee humidity sensor");
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
@@ -37,33 +38,26 @@ void setup()
   }
 
   Zigbee.setVendorName("Arduino");
-  Zigbee.setProductName("Nano Zigbee");
+  Zigbee.setProductName("Zigbee Humidity Sensor");
   Zigbee.begin();
   zigbee_humidity_sensor.begin();
 
-  Serial.println("Zigbee humidity sensor");
   Serial.println("Waiting for Zigbee network...");
+  while (!Zigbee.isJoinedToNetwork()) {
+    delay(200);
+  }
+  Serial.println("Joined Zigbee network!");
+  Serial.print("Channel: ");
+  Serial.println(Zigbee.getChannel());
+  Serial.print("PAN ID: 0x");
+  Serial.println(Zigbee.getPanId(), HEX);
 }
 
 void loop()
 {
-  static bool joined = false;
-
-  if (!joined && Zigbee.isJoinedToNetwork()) {
-    joined = true;
-    Serial.println("Joined Zigbee network!");
-    Serial.print("Channel: ");
-    Serial.println(Zigbee.getChannel());
-    Serial.print("PAN ID: 0x");
-    Serial.println(Zigbee.getPanId(), HEX);
-  }
-
-  if (joined) {
-    // Simulate a humidity value (50% +/- 10% based on millis)
-    float humidity = 50.0f + 10.0f * sin((float)millis() / 30000.0f);
-    zigbee_humidity_sensor.set_measured_value_percent(humidity);
-    Serial.printf("Current humidity: %.02f %%\n", humidity);
-  }
-
+  // Simulate a humidity value (50% +/- 10% based on millis)
+  float humidity = 50.0f + 10.0f * sin((float)millis() / 30000.0f);
+  zigbee_humidity_sensor.set_measured_value_percent(humidity);
+  Serial.printf("Current humidity: %.02f %%\n", humidity);
   delay(2000);
 }

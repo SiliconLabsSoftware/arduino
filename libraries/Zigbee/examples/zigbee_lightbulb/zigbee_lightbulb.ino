@@ -21,6 +21,7 @@ const uint8_t button_pin = BTN_BUILTIN;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Zigbee lightbulb");
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
@@ -37,20 +38,17 @@ void setup()
   }
 
   Zigbee.setVendorName("Arduino");
-  Zigbee.setProductName("Nano Zigbee");
+  Zigbee.setProductName("Zigbee Lightbulb");
   Zigbee.begin();
   zigbee_bulb.begin();
 
-  Serial.println("Zigbee lightbulb");
   Serial.println("Waiting for Zigbee network...");
 }
 
 void loop()
 {
-  static bool last_state = false;
-  static bool btn_last = true;
+  // Check if we joined to the network and print network information
   static bool joined = false;
-
   if (!joined && Zigbee.isJoinedToNetwork()) {
     joined = true;
     Serial.println("Joined Zigbee network!");
@@ -61,6 +59,7 @@ void loop()
   }
 
   // Handle on/off state changes from the network
+  static bool last_state = false;
   bool current_state = zigbee_bulb.get_onoff();
   if (current_state != last_state) {
     last_state = current_state;
@@ -69,7 +68,8 @@ void loop()
     Serial.println(current_state ? "ON" : "OFF");
   }
 
-  // Toggle the bulb with the button
+  // Toggle the bulb with the button - this even works when Zigbee is not connected
+  static bool btn_last = true;
   bool btn_state = digitalRead(button_pin);
   if (!btn_state && btn_last) {
     zigbee_bulb.toggle();
