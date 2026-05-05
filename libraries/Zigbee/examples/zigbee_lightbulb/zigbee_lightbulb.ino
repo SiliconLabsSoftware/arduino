@@ -59,13 +59,19 @@ void loop()
   }
 
   // Handle on/off state changes from the network
-  static bool last_state = false;
-  bool current_state = zigbee_bulb.get_onoff();
-  if (current_state != last_state) {
-    last_state = current_state;
-    digitalWrite(LED_BUILTIN, current_state ? LED_BUILTIN_ACTIVE : LED_BUILTIN_INACTIVE);
-    Serial.print("Bulb ");
-    Serial.println(current_state ? "ON" : "OFF");
+  static bool bulb_prev_state = false;
+  bool bulb_current_state = zigbee_bulb.get_onoff();
+  // If the current state is ON and the previous was OFF - turn on the LED
+  if (bulb_current_state && !bulb_prev_state) {
+    bulb_prev_state = bulb_current_state;
+    digitalWrite(LED_BUILTIN, LED_BUILTIN_ACTIVE);
+    Serial.println("Bulb ON");
+  }
+  // If the current state is OFF and the previous was ON - turn off the LED
+  if (!bulb_current_state && bulb_prev_state) {
+    bulb_prev_state = bulb_current_state;
+    digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
+    Serial.println("Bulb OFF");
   }
 
   // Toggle the bulb with the button - this even works when Zigbee is not connected
