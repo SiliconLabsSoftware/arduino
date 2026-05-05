@@ -26,6 +26,18 @@ void setup()
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
   pinMode(button_pin, INPUT_PULLUP);
 
+  // Hold the button during boot to factory reset (clear stored network credentials)
+  if (digitalRead(button_pin) == LOW) {
+    Serial.println("Factory resetting...");
+    Serial.println("Release the button to reboot");
+    while (digitalRead(button_pin) == LOW) {
+      delay(100);
+    }
+    Zigbee.factoryReset();
+  }
+
+  Zigbee.setVendorName("Arduino");
+  Zigbee.setProductName("Nano Zigbee");
   Zigbee.begin();
   zigbee_bulb.begin();
 
@@ -53,7 +65,7 @@ void loop()
   if (current_state != last_state) {
     last_state = current_state;
     digitalWrite(LED_BUILTIN, current_state ? LED_BUILTIN_ACTIVE : LED_BUILTIN_INACTIVE);
-    Serial.print("Bulb state: ");
+    Serial.print("Bulb ");
     Serial.println(current_state ? "ON" : "OFF");
   }
 

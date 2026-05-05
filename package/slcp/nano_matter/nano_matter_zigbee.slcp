@@ -19,7 +19,6 @@ component:
   - id: zigbee_pro_stack
   - id: zigbee_source_route
   - id: zigbee_gp
-  - id: zigbee_zll
   - id: zigbee_zcl_framework_core
 
   # ZCL clusters
@@ -31,17 +30,9 @@ component:
   - id: zigbee_scenes
   - id: zigbee_reporting
   - id: zigbee_counters
-  - id: zigbee_color_control_server
-
-  # Zigbee 3.0 networking
-  - id: zigbee_network_creator
-  - id: zigbee_network_creator_security
-  - id: zigbee_network_steering
-  - id: zigbee_find_and_bind_target
-  - id: zigbee_scan_dispatch
-  - id: zigbee_update_tc_link_key
 
   # ZLL
+  - id: zigbee_zll
   - id: zigbee_zll_commissioning_common
   - id: zigbee_zll_commissioning_server
   - id: zigbee_zll_on_off_server
@@ -50,6 +41,14 @@ component:
   - id: zigbee_zll_scenes_server
   - id: zigbee_zll_utility_server
   - id: zigbee_interpan
+
+  # Zigbee 3.0 networking
+  - id: zigbee_network_creator
+  - id: zigbee_network_creator_security
+  - id: zigbee_network_steering
+  - id: zigbee_find_and_bind_target
+  - id: zigbee_scan_dispatch
+  - id: zigbee_update_tc_link_key
 
   # Green Power
   - id: zigbee_green_power_common

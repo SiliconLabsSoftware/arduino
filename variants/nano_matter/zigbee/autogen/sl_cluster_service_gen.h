@@ -25,6 +25,6 @@
 extern sl_service_function_entry_t sli_cluster_service_entries[];
 
 // Number of items in the cluster service entries block
-#define SL_CLUSTER_SERVICE_ENTRY_COUNT (12)
+#define SL_CLUSTER_SERVICE_ENTRY_COUNT (11)
 
 #endif // __SL_CLUSTER_SERVICE_GEN__
