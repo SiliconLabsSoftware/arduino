@@ -1,0 +1,150 @@
+/*
+ * This file is part of the Silicon Labs Arduino Core
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright 2025 Silicon Laboratories Inc. www.silabs.com
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+#include "Zigbee.h"
+
+extern "C" {
+#include "af.h"
+#include "sl_zigbee_system_common.h"
+#include "network-steering.h"
+#include "network-formation.h"
+#include "stack-info.h"
+}
+
+ZigbeeClass Zigbee;
+
+// Callback from EmberZNet when an attribute changes due to a remote ZCL command
+extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
+                                                      sl_zigbee_af_cluster_id_t cluster_id,
+                                                      sl_zigbee_af_attribute_id_t attribute_id,
+                                                      uint8_t mask,
+                                                      uint16_t manufacturer_code,
+                                                      uint8_t type,
+                                                      uint8_t size,
+                                                      uint8_t* value)
+{
+  (void)mask;
+  (void)manufacturer_code;
+  (void)type;
+
+  ZigbeeDevice* dev = zigbee_endpoint_get_device(endpoint);
+  if (dev) {
+    dev->HandleAttributeChange(cluster_id, attribute_id, size, value);
+  }
+}
+
+// Callback from the network steering plugin when steering completes
+extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
+                                                          uint8_t total_beacons,
+                                                          uint8_t join_attempts,
+                                                          uint8_t final_state)
+{
+  (void)total_beacons;
+  (void)join_attempts;
+  (void)final_state;
+
+  if (status != SL_STATUS_OK) {
+    // Retry network steering if it failed
+    sl_zigbee_af_network_steering_start();
+  }
+}
+
+// ArduinoZigbeeAppliance base class implementation
+
+ArduinoZigbeeAppliance::ArduinoZigbeeAppliance() :
+  base_zigbee_device(nullptr)
+{
+}
+
+ArduinoZigbeeAppliance::~ArduinoZigbeeAppliance()
+{
+}
+
+bool ArduinoZigbeeAppliance::is_online()
+{
+  if (!this->base_zigbee_device) {
+    return false;
+  }
+  return this->base_zigbee_device->IsOnline();
+}
+
+void ArduinoZigbeeAppliance::set_device_name(const char* device_name)
+{
+  (void)device_name;
+}
+
+void ArduinoZigbeeAppliance::set_device_change_callback(void (*cb)(void))
+{
+  if (this->base_zigbee_device) {
+    this->base_zigbee_device->SetDeviceChangeCallback(cb);
+  }
+}
+
+// ZigbeeClass implementation
+
+void ZigbeeClass::begin()
+{
+  if (this->started) {
+    return;
+  }
+  this->started = true;
+  sl_zigbee_af_network_steering_start();
+}
+
+bool ZigbeeClass::isJoinedToNetwork()
+{
+  return (sl_zigbee_af_network_state() == SL_ZIGBEE_JOINED_NETWORK);
+}
+
+uint8_t ZigbeeClass::getChannel()
+{
+  return sl_zigbee_af_get_radio_channel();
+}
+
+uint16_t ZigbeeClass::getPanId()
+{
+  return sl_zigbee_af_get_pan_id();
+}
+
+uint16_t ZigbeeClass::getNodeId()
+{
+  return sl_zigbee_af_get_node_id();
+}
+
+void ZigbeeClass::leaveNetwork()
+{
+  sl_zigbee_network_status_t state = sl_zigbee_af_network_state();
+  if (state == SL_ZIGBEE_JOINED_NETWORK) {
+    sl_zigbee_leave_network(SL_ZIGBEE_LEAVE_NWK_WITH_NO_OPTION);
+  }
+}
+
+void ZigbeeClass::factoryReset()
+{
+  leaveNetwork();
+  sl_zigbee_token_factory_reset(false, false);
+  NVIC_SystemReset();
+}

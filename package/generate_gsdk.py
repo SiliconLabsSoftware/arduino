@@ -17,6 +17,7 @@ aiml_extension_version = None
 
 gsdk_cpp_empty_folder = "app/common/example/empty/"
 gsdk_bt_soc_empty_folder = "app/bluetooth/example/bt_soc_empty/"
+gsdk_zigbee_z3_light_folder = "protocol/zigbee/app/projects/z3/zigbee_z3_light/"
 matter_lighting_app_folder = "extension/matter_extension/slc/sample-app/lighting-app/efr32/"
 matter_zap_folder = "extension/matter_extension/third_party/matter_sdk/examples/lighting-app/silabs/data_model/"
 gsdk_license_file = "gsdk_license"
@@ -33,32 +34,38 @@ def main():
     current_platform_config = get_platform_config_from_arguments()
     if current_platform_config["name"] == "all":
         # Get all the platform configurations and remove the first three (which are the "all" configs)
-        all_platform_configs = platform_configurations[5:]
+        all_platform_configs = platform_configurations[6:]
         for config in all_platform_configs:
             generate_gsdk(config)
     elif current_platform_config["name"] == "noradio_precomp_all":
         # Generate all the noradio platform configurations
-        noradio_all_platform_configs = platform_configurations[5:]
+        noradio_all_platform_configs = platform_configurations[6:]
         for config in noradio_all_platform_configs:
             if config["protocol_stack"] == 'noradio' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "ble_arduino_precomp_all":
         # Generate all the ble (controller) platform configurations
-        ble_all_platform_configs = platform_configurations[5:]
+        ble_all_platform_configs = platform_configurations[6:]
         for config in ble_all_platform_configs:
             if config["protocol_stack"] == 'ble_arduino' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "ble_silabs_precomp_all":
         # Generate all the ble (silabs host) platform configurations
-        ble_silabs_all_platform_configs = platform_configurations[5:]
+        ble_silabs_all_platform_configs = platform_configurations[6:]
         for config in ble_silabs_all_platform_configs:
             if config["protocol_stack"] == 'ble_silabs' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "matter_precomp_all":
         # Generate all the matter platform configurations
-        matter_all_platform_configs = platform_configurations[5:]
+        matter_all_platform_configs = platform_configurations[6:]
         for config in matter_all_platform_configs:
             if config["protocol_stack"] == 'matter' and config["prebuild"]:
+                generate_gsdk(config)
+    elif current_platform_config["name"] == "zigbee_precomp_all":
+        # Generate all the zigbee platform configurations
+        zigbee_all_platform_configs = platform_configurations[6:]
+        for config in zigbee_all_platform_configs:
+            if config["protocol_stack"] == 'zigbee' and config["prebuild"]:
                 generate_gsdk(config)
     else:
         generate_gsdk(current_platform_config)
@@ -79,6 +86,8 @@ def generate_gsdk(current_platform_config):
     ai_capable = current_platform_config["ai_capable"]
     if protocol_stack == 'matter':
         matter_project_zap_file = current_platform_config["matter_zap_file"]
+    if protocol_stack == 'zigbee':
+        zigbee_project_zap_file = current_platform_config["zigbee_zap_file"]
 
     output_dir = "gen_gsdk_" + config_name + "/"
     slcp_file_name = os.path.basename(project_slcp_file)
@@ -97,6 +106,8 @@ def generate_gsdk(current_platform_config):
     print(f"Protocol stack: {protocol_stack}")
     if protocol_stack == 'matter':
         print(f"Matter ZAP file: {matter_project_zap_file}")
+    if protocol_stack == 'zigbee':
+        print(f"Zigbee ZAP file: {zigbee_project_zap_file}")
     print(f"GSDK dir: {gsdk_dir}")
     print(f"GSDK version: {gsdk_version}")
     if protocol_stack == 'matter':
@@ -110,12 +121,18 @@ def generate_gsdk(current_platform_config):
     is_ble_arduino = (protocol_stack == 'ble_arduino')
     is_ble_silabs = (protocol_stack == 'ble_silabs')
     is_matter = (protocol_stack == 'matter')
+    is_zigbee = (protocol_stack == 'zigbee')
 
     # If we're generating a GSDK with Matter then the example is at a different path
     if is_matter:
         slcp_folder = matter_lighting_app_folder
         print("Copying ZAP file...")
         shutil.copy(matter_project_zap_file, gsdk_dir + matter_zap_folder + "lighting-app.zap")
+    elif is_zigbee:
+        slcp_folder = gsdk_zigbee_z3_light_folder
+        print("Copying Zigbee ZAP file...")
+        os.makedirs(gsdk_dir + gsdk_zigbee_z3_light_folder + "config/zcl/", exist_ok=True)
+        shutil.copy(zigbee_project_zap_file, gsdk_dir + gsdk_zigbee_z3_light_folder + "config/zcl/zcl_config.zap")
     elif is_ble_arduino:
         slcp_folder = gsdk_cpp_empty_folder
     elif is_ble_silabs:
@@ -136,7 +153,7 @@ def generate_gsdk(current_platform_config):
     apply_license_to_unlicensed_files(slc_output_dir + "autogen")
     apply_license_to_unlicensed_files(slc_output_dir + "config")
     if prebuild:
-        copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio, ai_capable)
+        copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio, ai_capable, is_zigbee)
         copy_generated_sdk_to_variants(output_dir, variant_target_folder)
     else:
         copy_output_files(output_dir, is_matter)
@@ -487,7 +504,7 @@ def copy_output_files(output_dir, is_matter):
     shutil.copy(gsdk_license_file, output_dir + "simplicity_sdk_" + gsdk_version + "/LICENSE")
 
 
-def copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio, ai_capable):
+def copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio, ai_capable, is_zigbee=False):
     """
     Get the built stuff in one place
     """
@@ -513,7 +530,7 @@ def copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio
                 print(f"Copying '{f}'")
 
     # Get all the header files from the project
-    if not is_matter:
+    if not is_matter and not is_zigbee:
         header_output_dir = output_dir + "include/"
         os.mkdir(header_output_dir)
         os.mkdir(header_output_dir + "psa")
@@ -558,6 +575,50 @@ def copy_output_files_prebuild(output_dir, is_matter, is_ble_arduino, is_noradio
                     os.remove(filepath)
 
         print(f"Copied {count} header files")
+
+    # Copy the headers from a generated Zigbee variant while preserving the directory structure
+    if is_zigbee:
+        shutil.copytree(slc_output_dir + "autogen", output_dir + "autogen")
+        shutil.copytree(slc_output_dir + "config", output_dir + "config")
+        # Copy headers from the Simplicity SDK folder preserving directory structure
+        sisdk_folder_path = slc_output_dir + "simplicity_sdk_" + gsdk_version
+        sisdk_output_path = output_dir + "simplicity_sdk/"
+        for (root, dirs, file) in os.walk(sisdk_folder_path):
+            for f in file:
+                filepath = os.path.join(root, f)
+                if f.endswith('.h'):
+                    rel_path = os.path.relpath(filepath, sisdk_folder_path)
+                    dest_path = os.path.join(sisdk_output_path, rel_path)
+                    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                    shutil.copyfile(filepath, dest_path)
+                    print(f"Copying '{rel_path}'")
+
+        if ai_capable:
+            # Copy AI/ML headers preserving structure
+            aimlsdk_folder_path = slc_output_dir + "aiml_" + aiml_extension_version
+            aiml_output_path = output_dir + "aiml/"
+            for (root, dirs, file) in os.walk(aimlsdk_folder_path):
+                for f in file:
+                    filepath = os.path.join(root, f)
+                    if f.endswith('.h'):
+                        if "tflite-micro/tensorflow" in filepath:
+                            continue
+                        rel_path = os.path.relpath(filepath, aimlsdk_folder_path)
+                        dest_path = os.path.join(aiml_output_path, rel_path)
+                        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                        shutil.copyfile(filepath, dest_path)
+                        print(f"Copying AI/ML '{rel_path}'")
+            # Copy tflite-micro headers with structure
+            tflm_src = os.path.join(aimlsdk_folder_path, "third_party/tflite-micro/tensorflow")
+            if os.path.exists(tflm_src):
+                shutil.copytree(tflm_src, aiml_output_path + "third_party/tflite-micro/tensorflow")
+
+        # Remove source files from the copied directories
+        for (root, dirs, file) in os.walk(output_dir):
+            for f in file:
+                filepath = os.path.join(root, f)
+                if f.endswith('.c') or f.endswith('.cpp') or f.endswith('.cc') or f.endswith('.S'):
+                    os.remove(filepath)
 
     # Copy the headers from a generated Matter variant while preserving the structure of the Matter SDK
     if is_matter:
@@ -778,6 +839,10 @@ ble_silabs_precomp_all_platform_config = {
 
 matter_precomp_all_platform_config = {
     "name": "matter_precomp_all",
+}
+
+zigbee_precomp_all_platform_config = {
+    "name": "zigbee_precomp_all",
 }
 
 thingplusmatter_noradio_platform_config = {
@@ -1460,6 +1525,44 @@ nanomatter_matter_prebuilt_platform_config = {
     "matter_vendor_id": "0x1515"
 }
 
+nanomatter_zigbee_platform_config = {
+    "name": "nano_matter_zigbee",
+    "arduino_variant_name": "nano_matter",
+    "board_opn": "brd2707a",
+    "ai_capable": True,
+    "prebuild": False,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/nano_matter/nano_matter_zigbee.slcp",
+    "additional_files": ["slcp/nano_matter/sl_spidrv_eusart_nanomatter_config.h",
+                         "slcp/nano_matter/sl_spidrv_eusart_nanomatter1_config.h",
+                         "slcp/nano_matter/sl_iostream_usart_nanomatter_config.h",
+                         "slcp/nano_matter/sl_iostream_eusart_nanomatter1_config.h",
+                         "slcp/nano_matter/sl_i2cspm_nanomatter_config.h",
+                         "slcp/nano_matter/sl_i2cspm_nanomatter1_config.h",
+                         ["slcp/nano_matter/brd2707a.slcc", "hardware/board/component/"],
+                         ["slcp/nano_matter/brd2707a_config.slcc", "hardware/board/config/component/"]],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
+nanomatter_zigbee_prebuilt_platform_config = {
+    "name": "nano_matter_zigbee_precomp",
+    "arduino_variant_name": "nano_matter",
+    "board_opn": "brd2707a",
+    "ai_capable": True,
+    "prebuild": True,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/nano_matter/nano_matter_zigbee.slcp",
+    "additional_files": ["slcp/nano_matter/sl_spidrv_eusart_nanomatter_config.h",
+                         "slcp/nano_matter/sl_spidrv_eusart_nanomatter1_config.h",
+                         "slcp/nano_matter/sl_iostream_usart_nanomatter_config.h",
+                         "slcp/nano_matter/sl_iostream_eusart_nanomatter1_config.h",
+                         "slcp/nano_matter/sl_i2cspm_nanomatter_config.h",
+                         "slcp/nano_matter/sl_i2cspm_nanomatter1_config.h",
+                         ["slcp/nano_matter/brd2707a.slcc", "hardware/board/component/"],
+                         ["slcp/nano_matter/brd2707a_config.slcc", "hardware/board/config/component/"]],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
 lyra24p20_noradio_platform_config = {
     "name": "lyra24p20_noradio",
     "arduino_variant_name": "lyra24p20",
@@ -1677,6 +1780,7 @@ platform_configurations = [all_platform_config,
                            ble_arduino_precomp_all_platform_config,
                            ble_silabs_precomp_all_platform_config,
                            matter_precomp_all_platform_config,
+                           zigbee_precomp_all_platform_config,
                            thingplusmatter_noradio_platform_config,
                            thingplusmatter_noradio_prebuilt_platform_config,
                            thingplusmatter_ble_arduino_platform_config,
@@ -1725,6 +1829,8 @@ platform_configurations = [all_platform_config,
                            nanomatter_ble_silabs_prebuilt_platform_config,
                            nanomatter_matter_platform_config,
                            nanomatter_matter_prebuilt_platform_config,
+                           nanomatter_zigbee_platform_config,
+                           nanomatter_zigbee_prebuilt_platform_config,
                            lyra24p20_noradio_platform_config,
                            lyra24p20_noradio_prebuilt_platform_config,
                            lyra24p20_ble_arduino_platform_config,
