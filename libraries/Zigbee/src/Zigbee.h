@@ -49,10 +49,16 @@ protected:
   ZigbeeDevice* base_zigbee_device;
 };
 
+enum ZigbeeEndpointType {
+  ZIGBEE_ON_OFF_LIGHT = 0,
+  ZIGBEE_TEMPERATURE_SENSOR = 1,
+  ZIGBEE_ENDPOINT_TYPE_COUNT = 2
+};
+
 class ZigbeeClass {
 public:
-  static const uint8_t kMaxDynamicEndpoints = 3;
-  static const uint8_t kFirstEndpointId = 1;
+  static const uint8_t kEndpointsPerType = 3;
+  static const uint8_t kTotalDynamicEndpoints = 6;
 
   void begin();
 
@@ -67,12 +73,12 @@ public:
   void leaveNetwork();
   void factoryReset();
 
-  uint8_t allocateEndpoint();
+  uint8_t allocateEndpoint(ZigbeeEndpointType type);
   void freeEndpoint(uint8_t endpoint_id);
 
 private:
   bool started;
-  bool endpoint_allocated[kMaxDynamicEndpoints];
+  bool endpoint_allocated[kTotalDynamicEndpoints];
 };
 
 extern ZigbeeClass Zigbee;
