@@ -10,7 +10,7 @@
    Compatible boards:
    - Arduino Nano Matter (with Zigbee protocol stack selected)
 
-   Author: Silicon Labs
+   Author: Tamas Jozsi (Silicon Labs)
  */
 #include <Zigbee.h>
 #include <ZigbeeTemperatureSensor.h>
