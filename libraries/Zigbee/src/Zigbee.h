@@ -51,6 +51,9 @@ protected:
 
 class ZigbeeClass {
 public:
+  static const uint8_t kMaxDynamicEndpoints = 3;
+  static const uint8_t kFirstEndpointId = 1;
+
   void begin();
 
   void setVendorName(const char* name);
@@ -64,8 +67,12 @@ public:
   void leaveNetwork();
   void factoryReset();
 
+  uint8_t allocateEndpoint();
+  void freeEndpoint(uint8_t endpoint_id);
+
 private:
   bool started;
+  bool endpoint_allocated[kMaxDynamicEndpoints];
 };
 
 extern ZigbeeClass Zigbee;

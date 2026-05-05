@@ -39,7 +39,11 @@ ZigbeeLightbulb::~ZigbeeLightbulb()
 
 bool ZigbeeLightbulb::begin()
 {
-  return begin(kDefaultEndpoint);
+  uint8_t ep = Zigbee.allocateEndpoint();
+  if (ep == 0) {
+    return false;
+  }
+  return begin(ep);
 }
 
 bool ZigbeeLightbulb::begin(uint8_t endpoint_id)
@@ -72,6 +76,7 @@ void ZigbeeLightbulb::end()
   if (!this->initialized) {
     return;
   }
+  Zigbee.freeEndpoint(this->light_device->GetEndpointId());
   zigbee_endpoint_unregister(this->light_device);
   delete this->light_device;
   this->light_device = nullptr;

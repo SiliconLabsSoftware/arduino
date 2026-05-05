@@ -1644,6 +1644,20 @@
       "networkId": 0
     },
     {
+      "endpointTypeName": "Centralized",
+      "endpointTypeIndex": 0,
+      "profileId": 260,
+      "endpointId": 2,
+      "networkId": 0
+    },
+    {
+      "endpointTypeName": "Centralized",
+      "endpointTypeIndex": 0,
+      "profileId": 260,
+      "endpointId": 3,
+      "networkId": 0
+    },
+    {
       "endpointTypeName": "GreenPower",
       "endpointTypeIndex": 1,
       "profileId": 41440,
