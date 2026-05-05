@@ -158,6 +158,8 @@ configuration:
     value: SLI_ZIGBEE_NETWORK_DEVICE_TYPE_ROUTER
   - name: SLI_ZIGBEE_PRIMARY_NETWORK_SECURITY_TYPE
     value: SLI_ZIGBEE_NETWORK_SECURITY_TYPE_3_0
+  - name: SL_ZIGBEE_BINDING_TABLE_SIZE
+    value: 10
   - name: SL_PSA_KEY_USER_SLOT_COUNT
     value: "0"
     condition:
