@@ -140,9 +140,8 @@ void ZigbeeClass::begin()
   }
   this->started = true;
 
-  // Disable all dynamic endpoints - they'll be enabled individually when devices call begin()
-  for (uint8_t i = 0; i < kMaxDynamicEndpoints; i++) {
-    sl_zigbee_af_endpoint_enable_disable(kFirstEndpointId + i, false);
+  for (uint8_t i = 0; i < kTotalDynamicEndpoints; i++) {
+    sl_zigbee_af_endpoint_enable_disable(i + 1, false);
   }
 
   if (!this->isJoinedToNetwork()) {
@@ -184,12 +183,13 @@ void ZigbeeClass::factoryReset()
   NVIC_SystemReset();
 }
 
-uint8_t ZigbeeClass::allocateEndpoint()
+uint8_t ZigbeeClass::allocateEndpoint(ZigbeeEndpointType type)
 {
-  for (uint8_t i = 0; i < kMaxDynamicEndpoints; i++) {
+  uint8_t start = type * kEndpointsPerType;
+  for (uint8_t i = start; i < start + kEndpointsPerType; i++) {
     if (!this->endpoint_allocated[i]) {
       this->endpoint_allocated[i] = true;
-      uint8_t ep_id = kFirstEndpointId + i;
+      uint8_t ep_id = i + 1;
       sl_zigbee_af_endpoint_enable_disable(ep_id, true);
       return ep_id;
     }
@@ -199,8 +199,8 @@ uint8_t ZigbeeClass::allocateEndpoint()
 
 void ZigbeeClass::freeEndpoint(uint8_t endpoint_id)
 {
-  uint8_t index = endpoint_id - kFirstEndpointId;
-  if (index < kMaxDynamicEndpoints && this->endpoint_allocated[index]) {
+  uint8_t index = endpoint_id - 1;
+  if (index < kTotalDynamicEndpoints && this->endpoint_allocated[index]) {
     this->endpoint_allocated[index] = false;
     sl_zigbee_af_endpoint_enable_disable(endpoint_id, false);
   }

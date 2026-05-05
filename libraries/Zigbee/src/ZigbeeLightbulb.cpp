@@ -39,7 +39,7 @@ ZigbeeLightbulb::~ZigbeeLightbulb()
 
 bool ZigbeeLightbulb::begin()
 {
-  uint8_t ep = Zigbee.allocateEndpoint();
+  uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_ON_OFF_LIGHT);
   if (ep == 0) {
     return false;
   }
