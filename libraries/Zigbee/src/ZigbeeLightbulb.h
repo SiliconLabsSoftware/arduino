@@ -46,7 +46,6 @@ public:
   void operator=(bool state);
 
 private:
-  static const uint8_t kDefaultEndpoint = 1;
   DeviceOnOffLight* light_device;
   bool initialized;
 };

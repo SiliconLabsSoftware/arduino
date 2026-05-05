@@ -139,6 +139,12 @@ void ZigbeeClass::begin()
     return;
   }
   this->started = true;
+
+  // Disable all dynamic endpoints - they'll be enabled individually when devices call begin()
+  for (uint8_t i = 0; i < kMaxDynamicEndpoints; i++) {
+    sl_zigbee_af_endpoint_enable_disable(kFirstEndpointId + i, false);
+  }
+
   if (!this->isJoinedToNetwork()) {
     sl_zigbee_af_network_steering_start();
   }
@@ -176,4 +182,26 @@ void ZigbeeClass::factoryReset()
 {
   nvm3_eraseAll(nvm3_defaultHandle);
   NVIC_SystemReset();
+}
+
+uint8_t ZigbeeClass::allocateEndpoint()
+{
+  for (uint8_t i = 0; i < kMaxDynamicEndpoints; i++) {
+    if (!this->endpoint_allocated[i]) {
+      this->endpoint_allocated[i] = true;
+      uint8_t ep_id = kFirstEndpointId + i;
+      sl_zigbee_af_endpoint_enable_disable(ep_id, true);
+      return ep_id;
+    }
+  }
+  return 0;
+}
+
+void ZigbeeClass::freeEndpoint(uint8_t endpoint_id)
+{
+  uint8_t index = endpoint_id - kFirstEndpointId;
+  if (index < kMaxDynamicEndpoints && this->endpoint_allocated[index]) {
+    this->endpoint_allocated[index] = false;
+    sl_zigbee_af_endpoint_enable_disable(endpoint_id, false);
+  }
 }
