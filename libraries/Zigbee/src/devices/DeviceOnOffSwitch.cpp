@@ -28,7 +28,6 @@
 
 extern "C" {
 #include "af.h"
-#include "binding-table.h"
 }
 
 DeviceOnOffSwitch::DeviceOnOffSwitch(const char* device_name, uint8_t endpoint_id) :
@@ -55,34 +54,14 @@ void DeviceOnOffSwitch::SendCommand(OnOffCmd cmd)
 {
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
-  // Always send to coordinator so HA sees the event
   FillBuffer(cmd);
   sl_zigbee_af_send_command_unicast(SL_ZIGBEE_OUTGOING_DIRECT, 0x0000);
 
-  // Also send via any On/Off bindings for direct device control.
-  // Iterates the full binding table because ZHA on multi-endpoint devices
-  // may place bindings on a different endpoint than the switch.
-  uint8_t table_size = sl_zigbee_get_binding_table_size();
-  for (uint8_t i = 0; i < table_size; i++) {
-    sl_zigbee_binding_table_entry_t entry;
-    if (sl_zigbee_get_binding(i, &entry) != SL_STATUS_OK) {
-      continue;
-    }
-    if (entry.type == SL_ZIGBEE_UNUSED_BINDING) {
-      continue;
-    }
-    if (entry.clusterId != ZCL_ON_OFF_CLUSTER_ID) {
-      continue;
-    }
-    if (entry.type == SL_ZIGBEE_UNICAST_BINDING) {
-      FillBuffer(cmd);
-      sl_zigbee_af_send_command_unicast(SL_ZIGBEE_OUTGOING_VIA_BINDING, i);
-    } else if (entry.type == SL_ZIGBEE_MULTICAST_BINDING) {
-      FillBuffer(cmd);
-      uint16_t group_id = entry.identifier[0] | (entry.identifier[1] << 8);
-      sl_zigbee_af_send_command_multicast(group_id, SL_ZIGBEE_NULL_NODE_ID, 0);
-    }
-  }
+  FillBuffer(cmd);
+  sl_zigbee_af_send_command_unicast_to_bindings();
+
+  FillBuffer(cmd);
+  sl_zigbee_af_send_command_multicast_to_bindings();
 }
 
 void DeviceOnOffSwitch::SendOn()
