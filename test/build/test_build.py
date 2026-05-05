@@ -11,6 +11,7 @@ all_variants = [
     ["nano_matter", "ble_arduino"],
     ["nano_matter", "ble_silabs"],
     ["nano_matter", "matter"],
+    ["nano_matter", "zigbee"],
     ["thingplusmatter", "none"],
     ["thingplusmatter", "ble_arduino"],
     ["thingplusmatter", "ble_silabs"],
@@ -119,6 +120,10 @@ all_matter = [
     ["xiao_mg24", "matter"],
 ]
 
+all_zigbee = [
+    ["nano_matter", "zigbee"],
+]
+
 all_ai_ml = [
    ["nano_matter", "none"],
    ["nano_matter", "ble_arduino"],
@@ -140,6 +145,10 @@ all_ai_ml = [
 
 nano_matter_matter = [
     ["nano_matter", "matter"],
+]
+
+nano_matter_zigbee = [
+    ["nano_matter", "zigbee"],
 ]
 
 library_dependencies = {
@@ -262,6 +271,13 @@ testlist_matter = {
     "../../libraries/Matter/examples/nano_matter_lightbulb_color/nano_matter_lightbulb_color.ino":                     nano_matter_matter,
 }
 
+testlist_zigbee = {
+    "../../libraries/Zigbee/examples/zigbee_lightbulb/zigbee_lightbulb.ino":                                           all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_temp_sensor/zigbee_temp_sensor.ino":                                       all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_humidity_sensor/zigbee_humidity_sensor.ino":                               all_zigbee,
+}
+
 testlist_github = {
      "test_sketch/test_sketch.ino":                                                                                     all_variants,
      "../../libraries/SiliconLabs/examples/ble_blinky/ble_blinky.ino":                                                  all_ble_silabs,
@@ -276,6 +292,8 @@ testlist_github = {
      "../../libraries/Matter/examples/matter_lightbulb/matter_lightbulb.ino":                                           all_matter,
      "../../libraries/Matter/examples/matter_sensor_and_bulb/matter_sensor_and_bulb.ino":                               all_matter,
      "../../libraries/Matter/examples/nano_matter_lightbulb_color/nano_matter_lightbulb_color.ino":                     nano_matter_matter,
+     "../../libraries/Zigbee/examples/zigbee_lightbulb/zigbee_lightbulb.ino":                                           nano_matter_zigbee,
+     "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 nano_matter_zigbee,
 }
 
 
@@ -293,6 +311,8 @@ def main():
     elif test_config == "matter":
         testlist = testlist_matter
         arduino_cli_install_library_dependencies()
+    elif test_config == "zigbee":
+        testlist = testlist_zigbee
     elif test_config == "github":
         testlist = testlist_github
         arduino_cli_install_library_dependencies()
@@ -301,6 +321,7 @@ def main():
         testlist.update(testlist_quick)
         testlist.update(testlist_common)
         testlist.update(testlist_matter)
+        testlist.update(testlist_zigbee)
         arduino_cli_install_library_dependencies()
 
     testcase_count = count_testcases(testlist)
@@ -480,6 +501,9 @@ def get_config_from_arguments():
     elif input_config_name == "matter":
         print("Running Matter tests")
         return "matter"
+    elif input_config_name == "zigbee":
+        print("Running Zigbee tests")
+        return "zigbee"
     elif input_config_name == "github":
         print("Running tests for GitHub CI")
         return "github"
