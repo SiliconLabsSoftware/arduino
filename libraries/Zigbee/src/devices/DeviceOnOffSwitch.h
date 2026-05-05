@@ -41,6 +41,11 @@ public:
                              uint16_t attribute_id,
                              uint8_t size,
                              uint8_t* value) override;
+
+private:
+  enum OnOffCmd { CMD_ON, CMD_OFF, CMD_TOGGLE };
+  void FillBuffer(OnOffCmd cmd);
+  void SendCommand(OnOffCmd cmd);
 };
 
 #endif // DEVICE_ON_OFF_SWITCH_H
