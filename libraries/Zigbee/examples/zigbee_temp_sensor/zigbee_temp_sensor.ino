@@ -21,6 +21,7 @@ const uint8_t button_pin = BTN_BUILTIN;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Zigbee temperature sensor");
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
@@ -37,32 +38,25 @@ void setup()
   }
 
   Zigbee.setVendorName("Arduino");
-  Zigbee.setProductName("Nano Zigbee");
+  Zigbee.setProductName("Zigbee Temperature Sensor");
   Zigbee.begin();
   zigbee_temp_sensor.begin();
 
-  Serial.println("Zigbee temperature sensor");
   Serial.println("Waiting for Zigbee network...");
+  while (!Zigbee.isJoinedToNetwork()) {
+    delay(200);
+  }
+  Serial.println("Joined Zigbee network!");
+  Serial.print("Channel: ");
+  Serial.println(Zigbee.getChannel());
+  Serial.print("PAN ID: 0x");
+  Serial.println(Zigbee.getPanId(), HEX);
 }
 
 void loop()
 {
-  static bool joined = false;
-
-  if (!joined && Zigbee.isJoinedToNetwork()) {
-    joined = true;
-    Serial.println("Joined Zigbee network!");
-    Serial.print("Channel: ");
-    Serial.println(Zigbee.getChannel());
-    Serial.print("PAN ID: 0x");
-    Serial.println(Zigbee.getPanId(), HEX);
-  }
-
-  if (joined) {
-    float current_cpu_temp = getCPUTemp();
-    zigbee_temp_sensor.set_measured_value_celsius(current_cpu_temp);
-    Serial.printf("Current CPU temperature: %.02f C\n", current_cpu_temp);
-  }
-
+  float current_cpu_temp = getCPUTemp();
+  zigbee_temp_sensor.set_measured_value_celsius(current_cpu_temp);
+  Serial.printf("Current CPU temperature: %.02f C\n", current_cpu_temp);
   delay(2000);
 }

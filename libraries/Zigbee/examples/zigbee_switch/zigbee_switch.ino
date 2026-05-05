@@ -23,6 +23,7 @@ const uint8_t button_pin = BTN_BUILTIN;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Zigbee on/off switch");
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
@@ -39,40 +40,34 @@ void setup()
   }
 
   Zigbee.setVendorName("Arduino");
-  Zigbee.setProductName("Nano Zigbee");
+  Zigbee.setProductName("Zigbee Switch");
   Zigbee.begin();
   zigbee_switch.begin();
 
-  Serial.println("Zigbee on/off switch");
   Serial.println("Waiting for Zigbee network...");
+  while (!Zigbee.isJoinedToNetwork()) {
+    delay(200);
+  }
+  Serial.println("Joined Zigbee network!");
+  Serial.print("Channel: ");
+  Serial.println(Zigbee.getChannel());
+  Serial.print("PAN ID: 0x");
+  Serial.println(Zigbee.getPanId(), HEX);
 }
 
 void loop()
 {
-  static bool joined = false;
   static bool last_button_state = HIGH;
 
-  if (!joined && Zigbee.isJoinedToNetwork()) {
-    joined = true;
-    Serial.println("Joined Zigbee network!");
-    Serial.print("Channel: ");
-    Serial.println(Zigbee.getChannel());
-    Serial.print("PAN ID: 0x");
-    Serial.println(Zigbee.getPanId(), HEX);
-    Serial.println("Press the button to toggle bound lights");
+  bool button_state = digitalRead(button_pin);
+  if (last_button_state == HIGH && button_state == LOW) {
+    Serial.println("Sending toggle command to bound lights...");
+    zigbee_switch.toggle();
+    digitalWrite(LED_BUILTIN, LED_BUILTIN_ACTIVE);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
   }
-
-  if (joined) {
-    bool button_state = digitalRead(button_pin);
-    if (last_button_state == HIGH && button_state == LOW) {
-      Serial.println("Sending toggle command to bound lights...");
-      zigbee_switch.toggle();
-      digitalWrite(LED_BUILTIN, LED_BUILTIN_ACTIVE);
-      delay(100);
-      digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
-    }
-    last_button_state = button_state;
-  }
+  last_button_state = button_state;
 
   delay(50);
 }
