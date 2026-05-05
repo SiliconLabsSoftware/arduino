@@ -30,9 +30,6 @@ extern "C" {
 #include "af.h"
 }
 
-#define ZCL_ON_OFF_CLUSTER_ID     0x0006
-#define ZCL_ON_OFF_ATTRIBUTE_ID   0x0000
-
 DeviceOnOffLight::DeviceOnOffLight(const char* device_name, uint8_t endpoint_id) :
   ZigbeeDevice(device_name, endpoint_id),
   onoff(false)
