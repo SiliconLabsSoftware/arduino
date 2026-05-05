@@ -39,6 +39,9 @@ sl_zigbee_af_event_t sl_zigbee_af_ota_bootload_cluster_client_tick_cbEvent3; \
 sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent4; \
 sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent5; \
 sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent6; \
+sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent7; \
+sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent8; \
+sl_zigbee_af_event_t sl_zigbee_af_identify_cluster_server_tick_cbEvent9; \
 
 
 #define SL_ZIGBEE_AF_GENERATED_UC_EVENTS_INIT \
@@ -61,6 +64,9 @@ sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_ota_bootload_cluster_client_tick_
 sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent4, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 4); \
 sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent5, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 5); \
 sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent6, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 6); \
+sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent7, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 7); \
+sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent8, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 8); \
+sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEvent9, (void *)sl_zigbee_af_identify_cluster_server_tick_cb, 9); \
 
 // sl_zigbee_event_context_t structs used to populate the sli_zigbee_app_event_context table
 #define SL_ZIGBEE_AF_GENERATED_UC_EVENT_CONTEXT \
@@ -79,7 +85,10 @@ sl_zigbee_af_endpoint_event_init(&sl_zigbee_af_identify_cluster_server_tick_cbEv
 { 4, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent4 },     \
 { 5, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent5 },     \
 { 6, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent6 },     \
+{ 7, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent7 },     \
+{ 8, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent8 },     \
+{ 9, 0x3, false, SL_ZIGBEE_AF_LONG_POLL, SL_ZIGBEE_AF_OK_TO_SLEEP, &sl_zigbee_af_identify_cluster_server_tick_cbEvent9 },     \
 
 
 #endif // SL_CATALOG_ZIGBEE_ZCL_FRAMEWORK_CORE_PRESENT
-#define SL_ZIGBEE_AF_GENERATED_UC_EVENT_CONTEXT_COUNT 15
+#define SL_ZIGBEE_AF_GENERATED_UC_EVENT_CONTEXT_COUNT 18
