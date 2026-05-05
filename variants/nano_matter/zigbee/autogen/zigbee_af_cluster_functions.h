@@ -21,7 +21,6 @@
 #include "af.h"
 
 
-void sl_zigbee_af_color_control_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_groups_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_identify_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_identify_cluster_server_attribute_changed_cb (uint8_t endpoint, sl_zigbee_af_attribute_id_t attributeId);
@@ -32,11 +31,6 @@ void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
 // Array of cluster function (aka cluster action callbacks) structures.
 // Last entry is a dummy, otherwise an empty array would fail IAR builds.
 #define GENERATED_FUNCTION_STRUCTURES_ARRAY  { \
-  {\
-    768u,\
-    (CLUSTER_MASK_SERVER | CLUSTER_MASK_INIT_FUNCTION),\
-    (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_color_control_cluster_server_init_cb\
-  },\
   {\
     4u,\
     (CLUSTER_MASK_SERVER | CLUSTER_MASK_INIT_FUNCTION),\
@@ -82,7 +76,6 @@ void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
 // template contribution.
 
 struct unused_structure {
-int clust_768_server_init_function; 
 int clust_4_server_init_function; 
 int clust_3_server_init_function; 
 int clust_3_server_attribute_changed_function; 

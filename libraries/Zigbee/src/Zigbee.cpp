@@ -32,6 +32,8 @@ extern "C" {
 #include "network-steering.h"
 #include "network-formation.h"
 #include "stack-info.h"
+#include "nvm3_default.h"
+#include "nvm3_generic.h"
 }
 
 ZigbeeClass Zigbee;
@@ -56,6 +58,11 @@ extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
   }
 }
 
+// Called by the Zigbee framework once the stack is fully initialized
+extern "C" void sl_zigbee_af_main_init_cb(void)
+{
+}
+
 // Callback from the network steering plugin when steering completes
 extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
                                                           uint8_t total_beacons,
@@ -67,7 +74,6 @@ extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
   (void)final_state;
 
   if (status != SL_STATUS_OK) {
-    // Retry network steering if it failed
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -105,13 +111,37 @@ void ArduinoZigbeeAppliance::set_device_change_callback(void (*cb)(void))
 
 // ZigbeeClass implementation
 
+void ZigbeeClass::setVendorName(const char* name)
+{
+  uint8_t zcl_string[33];
+  uint8_t len = strlen(name);
+  if (len > 32) len = 32;
+  zcl_string[0] = len;
+  memcpy(&zcl_string[1], name, len);
+  sl_zigbee_af_write_server_attribute(1, ZCL_BASIC_CLUSTER_ID, ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
+                                      zcl_string, ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+}
+
+void ZigbeeClass::setProductName(const char* name)
+{
+  uint8_t zcl_string[33];
+  uint8_t len = strlen(name);
+  if (len > 32) len = 32;
+  zcl_string[0] = len;
+  memcpy(&zcl_string[1], name, len);
+  sl_zigbee_af_write_server_attribute(1, ZCL_BASIC_CLUSTER_ID, ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
+                                      zcl_string, ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+}
+
 void ZigbeeClass::begin()
 {
   if (this->started) {
     return;
   }
   this->started = true;
-  sl_zigbee_af_network_steering_start();
+  if (!this->isJoinedToNetwork()) {
+    sl_zigbee_af_network_steering_start();
+  }
 }
 
 bool ZigbeeClass::isJoinedToNetwork()
@@ -144,7 +174,6 @@ void ZigbeeClass::leaveNetwork()
 
 void ZigbeeClass::factoryReset()
 {
-  leaveNetwork();
-  sl_zigbee_token_factory_reset(false, false);
+  nvm3_eraseAll(nvm3_defaultHandle);
   NVIC_SystemReset();
 }

@@ -53,6 +53,9 @@ class ZigbeeClass {
 public:
   void begin();
 
+  void setVendorName(const char* name);
+  void setProductName(const char* name);
+
   bool isJoinedToNetwork();
   uint8_t getChannel();
   uint16_t getPanId();
