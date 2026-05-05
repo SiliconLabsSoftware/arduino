@@ -53,13 +53,14 @@ enum ZigbeeEndpointType {
   ZIGBEE_ON_OFF_LIGHT = 0,
   ZIGBEE_TEMPERATURE_SENSOR = 1,
   ZIGBEE_HUMIDITY_SENSOR = 2,
-  ZIGBEE_ENDPOINT_TYPE_COUNT = 3
+  ZIGBEE_ON_OFF_SWITCH = 3,
+  ZIGBEE_ENDPOINT_TYPE_COUNT = 4
 };
 
 class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3;
-  static const uint8_t kTotalDynamicEndpoints = 9;
+  static const uint8_t kTotalDynamicEndpoints = 12;
 
   void begin();
 
