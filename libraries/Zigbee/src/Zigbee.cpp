@@ -253,6 +253,8 @@ void ZigbeeClass::leaveNetwork()
 
 void ZigbeeClass::factoryReset()
 {
+  this->leaveNetwork();
+  sl_zigbee_token_factory_reset(false, false);
   nvm3_eraseAll(nvm3_defaultHandle);
   NVIC_SystemReset();
 }
