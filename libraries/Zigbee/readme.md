@@ -13,6 +13,7 @@ Zigbee protocol stack selected.
 ## Supported Boards
 
 - **Arduino Nano Matter**
+- **SparkFun Thing Plus Matter**
 - **Seeed Studio XIAO MG24 (Sense)**
 
 Make sure `Tools > Protocol Stack > Zigbee` is selected in order to use the Zigbee library.

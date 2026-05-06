@@ -122,6 +122,7 @@ all_matter = [
 
 all_zigbee = [
     ["nano_matter", "zigbee"],
+    ["thingplusmatter", "zigbee"],
     ["xiao_mg24", "zigbee"],
 ]
 
