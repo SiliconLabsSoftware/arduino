@@ -24,7 +24,6 @@
 void sl_zigbee_af_groups_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_identify_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_identify_cluster_server_attribute_changed_cb (uint8_t endpoint, sl_zigbee_af_attribute_id_t attributeId);
-void sl_zigbee_af_level_control_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_on_off_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
 
@@ -45,11 +44,6 @@ void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
     3u,\
     (CLUSTER_MASK_SERVER | CLUSTER_MASK_ATTRIBUTE_CHANGED_FUNCTION),\
     (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_identify_cluster_server_attribute_changed_cb\
-  },\
-  {\
-    8u,\
-    (CLUSTER_MASK_SERVER | CLUSTER_MASK_INIT_FUNCTION),\
-    (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_level_control_cluster_server_init_cb\
   },\
   {\
     6u,\
@@ -79,7 +73,6 @@ struct unused_structure {
 int clust_4_server_init_function; 
 int clust_3_server_init_function; 
 int clust_3_server_attribute_changed_function; 
-int clust_8_server_init_function; 
 int clust_6_server_init_function; 
 int clust_5_server_init_function; 
 };
