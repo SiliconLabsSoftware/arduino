@@ -39,6 +39,7 @@ void setup()
 
   Zigbee.setVendorName("Arduino");
   Zigbee.setProductName("Zigbee Humidity Sensor");
+  Zigbee.setFirmwareVersion(0x00000042);
   Zigbee.begin();
   zigbee_humidity_sensor.begin();
 

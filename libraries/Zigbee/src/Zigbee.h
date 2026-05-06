@@ -69,6 +69,8 @@ public:
 
   void setVendorName(const char* name);
   void setProductName(const char* name);
+  void setFirmwareVersion(const char* version);
+  void setFirmwareVersion(uint32_t file_version);
   bool setPairingChannel(uint8_t channel);
 
   bool isJoinedToNetwork();
@@ -86,6 +88,7 @@ private:
   static uint32_t channelToMask(uint8_t channel);
   static bool isValidPairingChannelMask(uint32_t channel_mask);
   static uint32_t sanitizePairingChannelMask(uint32_t channel_mask);
+  static bool parseFirmwareVersion(const char* version, uint32_t* file_version);
   bool setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask = 0);
 
   bool started;
