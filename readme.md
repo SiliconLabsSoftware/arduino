@@ -10,7 +10,7 @@ This project enables **Silicon Labs** hardware to be used with the **Arduino** e
 #### Currently supported hardware:
  - [Arduino Nano Matter](https://store.arduino.cc/pages/nano-matter) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
  - [SparkFun Thing Plus Matter MGM240P](https://www.sparkfun.com/products/20270) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
- - [Silicon Labs xG24 Explorer Kit](https://www.silabs.com/development-tools/wireless/efr32xg24-explorer-kit) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+ - [Silicon Labs xG24 Explorer Kit](https://www.silabs.com/development-tools/wireless/efr32xg24-explorer-kit) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
  - [Silicon Labs xG24 Dev Kit](https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
  - [Silicon Labs xG27 Dev Kit](https://www.silabs.com/development-tools/wireless/efr32xg27-development-kit) ![BLE](doc/bluetooth_logo_icon.png)
  - [Silicon Labs BGM220 Explorer Kit](https://www.silabs.com/development-tools/wireless/bluetooth/bgm220-explorer-kit) ![BLE](doc/bluetooth_logo_icon.png)
