@@ -32,6 +32,7 @@ extern "C" {
 #include "zigbee_app_framework_event.h"
 #include "network-steering.h"
 #include "network-formation.h"
+#include "identify.h"
 #include "stack-info.h"
 #include "nvm3_default.h"
 #include "nvm3_generic.h"
@@ -85,6 +86,23 @@ extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
   }
 }
 
+// Callbacks from the Identify plugin when a remote Identify command changes state
+extern "C" void sl_zigbee_af_identify_start_feedback_cb(uint8_t endpoint, uint16_t identify_time)
+{
+  ZigbeeDevice* dev = zigbee_endpoint_get_device(endpoint);
+  if (dev) {
+    dev->HandleIdentifyStart(identify_time);
+  }
+}
+
+extern "C" void sl_zigbee_af_identify_stop_feedback_cb(uint8_t endpoint)
+{
+  ZigbeeDevice* dev = zigbee_endpoint_get_device(endpoint);
+  if (dev) {
+    dev->HandleIdentifyStop();
+  }
+}
+
 // Called by the Zigbee framework once the stack is fully initialized
 extern "C" void sl_zigbee_af_main_init_cb(void)
 {
@@ -115,6 +133,14 @@ ArduinoZigbeeAppliance::ArduinoZigbeeAppliance() :
 
 ArduinoZigbeeAppliance::~ArduinoZigbeeAppliance()
 {
+}
+
+bool ArduinoZigbeeAppliance::get_identify_in_progress()
+{
+  if (this->base_zigbee_device) {
+    return this->base_zigbee_device->GetIdentifyInProgress();
+  }
+  return false;
 }
 
 bool ArduinoZigbeeAppliance::is_online()
