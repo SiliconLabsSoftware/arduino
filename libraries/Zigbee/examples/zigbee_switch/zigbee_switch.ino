@@ -10,12 +10,18 @@
    After pairing, create a binding from this switch's On/Off cluster to the target lightbulb.
 
    Compatible boards:
-   - Arduino Nano Matter (with Zigbee protocol stack selected)
+   - Arduino Nano Matter
+   - Seeed Studio XIAO MG24 (Sense)
 
    Author: Tamas Jozsi (Silicon Labs)
  */
 #include <Zigbee.h>
 #include <ZigbeeSwitch.h>
+
+// If there's no built-in button set a pin where a button is connected
+#ifndef BTN_BUILTIN
+#define BTN_BUILTIN PA0
+#endif
 
 ZigbeeSwitch zigbee_switch;
 const uint8_t button_pin = BTN_BUILTIN;

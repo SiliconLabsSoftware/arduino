@@ -15,7 +15,7 @@ This project enables **Silicon Labs** hardware to be used with the **Arduino** e
  - [Silicon Labs xG27 Dev Kit](https://www.silabs.com/development-tools/wireless/efr32xg27-development-kit) ![BLE](doc/bluetooth_logo_icon.png)
  - [Silicon Labs BGM220 Explorer Kit](https://www.silabs.com/development-tools/wireless/bluetooth/bgm220-explorer-kit) ![BLE](doc/bluetooth_logo_icon.png)
  - [Ezurio Lyra 24P 20dBm Dev Kit](https://www.ezurio.com/part/453-00145-k1) ![BLE](doc/bluetooth_logo_icon.png)
- - [Seeed Studio XIAO MG24 (Sense)](https://www.seeedstudio.com/Seeed-Studio-XIAO-MG24-p-6247.html) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+ - [Seeed Studio XIAO MG24 (Sense)](https://www.seeedstudio.com/Seeed-Studio-XIAO-MG24-p-6247.html) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
 
 ![Arduino Nano Matter](doc/nanomatter.png)
 ![SparkFun Thing Plus Matter MGM240P](doc/thingplusmatter.png)

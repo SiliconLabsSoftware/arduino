@@ -7,16 +7,19 @@ devices on Silicon Labs hardware. It wraps the Silicon Labs EmberZNet stack and
 the generated Zigbee endpoint configuration with Arduino-style classes for
 lights, switches, temperature sensors, and humidity sensors.
 
-The library is currently intended for the Arduino Nano Matter with the Zigbee
-protocol stack selected.
+The library is intended for Silicon Labs based Arduino boards with the
+Zigbee protocol stack selected.
 
 ## Supported Boards
 
-- **Arduino Nano Matter**, with `Tools > Protocol Stack > Zigbee` selected
+- **Arduino Nano Matter**
+- **Seeed Studio XIAO MG24 (Sense)**
 
+Make sure `Tools > Protocol Stack > Zigbee` is selected in order to use the Zigbee library.
 Sketches that include `Zigbee.h` intentionally fail to compile on non-Zigbee
 board variants. If you see an error saying the selected board or variant is not
-Zigbee compatible, select the Nano Matter Zigbee stack.
+Zigbee compatible, select a board and protocol stack combination that supports
+Zigbee.
 
 ## Included Examples
 
