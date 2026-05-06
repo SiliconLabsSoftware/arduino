@@ -39,6 +39,7 @@ void setup()
 
   Zigbee.setVendorName("Arduino");
   Zigbee.setProductName("Zigbee Lightbulb");
+  Zigbee.setFirmwareVersion(0x00000067);
   Zigbee.begin();
   zigbee_bulb.begin();
 

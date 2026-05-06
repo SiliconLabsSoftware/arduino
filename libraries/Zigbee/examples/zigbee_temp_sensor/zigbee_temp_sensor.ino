@@ -39,6 +39,7 @@ void setup()
 
   Zigbee.setVendorName("Arduino");
   Zigbee.setProductName("Zigbee Temperature Sensor");
+  Zigbee.setFirmwareVersion(0x00000420);
   Zigbee.begin();
   zigbee_temp_sensor.begin();
 

@@ -41,6 +41,7 @@ void setup()
 
   Zigbee.setVendorName("Arduino");
   Zigbee.setProductName("Zigbee Switch");
+  Zigbee.setFirmwareVersion(0x00000069);
   Zigbee.begin();
   zigbee_switch.begin();
 
