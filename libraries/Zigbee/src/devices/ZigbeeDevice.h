@@ -43,6 +43,10 @@ public:
   void SetOnline(bool online);
   uint8_t GetEndpointId();
   const char* GetName();
+  bool GetIdentifyInProgress();
+
+  void HandleIdentifyStart(uint16_t identify_time);
+  void HandleIdentifyStop();
 
   void SetDeviceChangeCallback(void (*cb)(void));
   void CallDeviceChangeCallback();
@@ -56,6 +60,8 @@ protected:
   char device_name[kMaxNameSize + 1];
   uint8_t endpoint_id;
   bool online;
+  bool identify_in_progress;
+  uint16_t identify_time;
   void (*device_change_callback)(void);
 };
 

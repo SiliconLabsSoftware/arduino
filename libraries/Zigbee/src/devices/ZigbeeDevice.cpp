@@ -29,6 +29,8 @@
 ZigbeeDevice::ZigbeeDevice(const char* device_name, uint8_t endpoint_id) :
   endpoint_id(endpoint_id),
   online(false),
+  identify_in_progress(false),
+  identify_time(0),
   device_change_callback(nullptr)
 {
   strncpy(this->device_name, device_name, kMaxNameSize);
@@ -57,6 +59,33 @@ uint8_t ZigbeeDevice::GetEndpointId()
 const char* ZigbeeDevice::GetName()
 {
   return this->device_name;
+}
+
+bool ZigbeeDevice::GetIdentifyInProgress()
+{
+  return this->identify_in_progress;
+}
+
+void ZigbeeDevice::HandleIdentifyStart(uint16_t identify_time)
+{
+  if (identify_time == 0) {
+    return;
+  }
+
+  this->identify_time = identify_time;
+  if (!this->identify_in_progress) {
+    this->identify_in_progress = true;
+    this->CallDeviceChangeCallback();
+  }
+}
+
+void ZigbeeDevice::HandleIdentifyStop()
+{
+  this->identify_time = 0;
+  if (this->identify_in_progress) {
+    this->identify_in_progress = false;
+    this->CallDeviceChangeCallback();
+  }
 }
 
 void ZigbeeDevice::SetDeviceChangeCallback(void (*cb)(void))
