@@ -951,6 +951,32 @@ thingplusmatter_matter_prebuilt_platform_config = {
     "matter_vendor_id": "0x1049"
 }
 
+thingplusmatter_zigbee_platform_config = {
+    "name": "thingplusmatter_zigbee",
+    "arduino_variant_name": "thingplusmatter",
+    "board_opn": "brd2704a",
+    "ai_capable": False,
+    "prebuild": False,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/thingplusmatter/thingplusmatter_zigbee.slcp",
+    "additional_files": ["slcp/thingplusmatter/sl_spidrv_eusart_thingplus1_config.h",
+                         "slcp/thingplusmatter/sl_iostream_eusart_thingplus1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
+thingplusmatter_zigbee_prebuilt_platform_config = {
+    "name": "thingplusmatter_zigbee_precomp",
+    "arduino_variant_name": "thingplusmatter",
+    "board_opn": "brd2704a",
+    "ai_capable": False,
+    "prebuild": True,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/thingplusmatter/thingplusmatter_zigbee.slcp",
+    "additional_files": ["slcp/thingplusmatter/sl_spidrv_eusart_thingplus1_config.h",
+                         "slcp/thingplusmatter/sl_iostream_eusart_thingplus1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
 xg27devkit_noradio_platform_config = {
     "name": "xg27devkit_noradio",
     "arduino_variant_name": "xg27devkit",
@@ -1823,6 +1849,8 @@ platform_configurations = [all_platform_config,
                            thingplusmatter_ble_silabs_prebuilt_platform_config,
                            thingplusmatter_matter_platform_config,
                            thingplusmatter_matter_prebuilt_platform_config,
+                           thingplusmatter_zigbee_platform_config,
+                           thingplusmatter_zigbee_prebuilt_platform_config,
                            xg27devkit_noradio_platform_config,
                            xg27devkit_noradio_prebuilt_platform_config,
                            xg27devkit_ble_arduino_platform_config,

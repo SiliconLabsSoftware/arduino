@@ -11,6 +11,7 @@
 
    Compatible boards:
    - Arduino Nano Matter
+   - SparkFun Thing Plus Matter
    - Seeed Studio XIAO MG24 (Sense)
 
    Author: Tamas Jozsi (Silicon Labs)

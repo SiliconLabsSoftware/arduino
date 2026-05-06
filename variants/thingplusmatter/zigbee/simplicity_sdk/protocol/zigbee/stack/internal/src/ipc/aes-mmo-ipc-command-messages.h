@@ -1,0 +1,77 @@
+/***************************************************************************//**
+ * @file aes-mmo-ipc-command-messages.h
+ * @brief defines structured format for 'aes-mmo' ipc messages
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2024 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+// automatically generated from aes-mmo.h.  Do not manually edit
+#ifndef AES_MMO_IPC_COMMAND_MESSAGES_H
+#define AES_MMO_IPC_COMMAND_MESSAGES_H
+
+#include "stack/include/aes-mmo.h"
+#include "stack/internal/inc/aes-mmo-internal-def.h"
+
+typedef struct {
+  uint8_t totalLength;
+  uint8_t data[MAX_IPC_VEC_ARG_CAPACITY];
+  uint8_t result[MAX_IPC_VEC_ARG_CAPACITY];
+} sli_zigbee_stack_aes_hash_simple_ipc_req_t;
+
+typedef struct {
+  sl_status_t result;
+} sli_zigbee_stack_aes_hash_simple_ipc_rsp_t;
+
+typedef struct {
+  sli_zigbee_stack_aes_hash_simple_ipc_req_t request;
+  sli_zigbee_stack_aes_hash_simple_ipc_rsp_t response;
+} sli_zigbee_stack_aes_hash_simple_ipc_msg_t;
+
+typedef struct {
+  sl_zigbee_aes_mmo_hash_context_t context;
+  uint32_t length;
+  uint8_t finalData[MAX_IPC_VEC_ARG_CAPACITY];
+} sli_zigbee_stack_aes_mmo_hash_final_ipc_req_t;
+
+typedef struct {
+  sl_status_t result;
+} sli_zigbee_stack_aes_mmo_hash_final_ipc_rsp_t;
+
+typedef struct {
+  sli_zigbee_stack_aes_mmo_hash_final_ipc_req_t request;
+  sli_zigbee_stack_aes_mmo_hash_final_ipc_rsp_t response;
+} sli_zigbee_stack_aes_mmo_hash_final_ipc_msg_t;
+
+typedef struct {
+  sl_zigbee_aes_mmo_hash_context_t context;
+} sli_zigbee_stack_aes_mmo_hash_init_ipc_req_t;
+
+typedef struct {
+  sli_zigbee_stack_aes_mmo_hash_init_ipc_req_t request;
+} sli_zigbee_stack_aes_mmo_hash_init_ipc_msg_t;
+
+typedef struct {
+  sl_zigbee_aes_mmo_hash_context_t context;
+  uint32_t length;
+  uint8_t data[MAX_IPC_VEC_ARG_CAPACITY];
+} sli_zigbee_stack_aes_mmo_hash_update_ipc_req_t;
+
+typedef struct {
+  sl_status_t result;
+} sli_zigbee_stack_aes_mmo_hash_update_ipc_rsp_t;
+
+typedef struct {
+  sli_zigbee_stack_aes_mmo_hash_update_ipc_req_t request;
+  sli_zigbee_stack_aes_mmo_hash_update_ipc_rsp_t response;
+} sli_zigbee_stack_aes_mmo_hash_update_ipc_msg_t;
+
+#endif // AES_MMO_IPC_COMMAND_MESSAGES_H
