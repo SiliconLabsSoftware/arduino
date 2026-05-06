@@ -8,7 +8,7 @@ This project enables **Silicon Labs** hardware to be used with the **Arduino** e
 [![Latest release date](https://img.shields.io/github/release-date/SiliconLabs/arduino)](https://github.com/SiliconLabs/arduino/releases/latest/)
 
 #### Currently supported hardware:
- - [Arduino Nano Matter](https://store.arduino.cc/pages/nano-matter) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+ - [Arduino Nano Matter](https://store.arduino.cc/pages/nano-matter) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
  - [SparkFun Thing Plus Matter MGM240P](https://www.sparkfun.com/products/20270) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
  - [Silicon Labs xG24 Explorer Kit](https://www.silabs.com/development-tools/wireless/efr32xg24-explorer-kit) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
  - [Silicon Labs xG24 Dev Kit](https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
@@ -49,6 +49,7 @@ Burning the bootloader fully erases the flash memory first, then burns the bootl
 Each board supports a number of different radio protocol stacks (like *'Matter'*, *'BLE (Arduino)'*, *'BLE (Silabs)'* and *'None'*) which can be selected under *'Tools > Protocol stack'* in the Arduino IDE.
 
  - Selecting `Matter` includes the Matter stack - which is quite resource heavy. Selecting this is only recommended when developing Matter applications. BLE is also included and can be used for custom applications after the Matter pairing finished. Matter examples will only work with this option.
+ - Selecting `Zigbee` includes the Zigbee stack - which is moderately resource heavy. Selecting this is only recommended when developing Zigbee applications. Zigbee examples will only work with this option.
  - Selecting `BLE (Arduino)` provides compatibility with the [ArduinoBLE](https://github.com/arduino-libraries/ArduinoBLE) library and is moderately resource heavy. This variant is compatible with all ArduinoBLE examples and applications based on the library.
  - Selecting `BLE (Silabs)` includes Silicon Labs' BLE stack and API ([BGAPI](https://docs.silabs.com/bluetooth/latest/bluetooth-stack-api/)) - which is moderately resource heavy. Select this if you're developing BLE applications based on BGAPI. The included Silicon Labs BLE examples will only work with this option.
  - Selecting `None` does not include a radio protocol stack in your sketch - and saves a considerable amount of Flash/RAM. You can use your board as a regular Arduino without wireless hardware.
@@ -63,6 +64,15 @@ The core comes bundled with the `Matter` library. The library's goal is to make 
 The library sits on top of Silicon Labs' Matter SDK which is included in the *Matter* protocol stack variant of the supported boards. Make sure to select *Matter* in the *'Tools > Protocol stack'* menu to have the Matter SDK / radio stack included in your sketch.
 
 See the docs for the Matter library [here](libraries/Matter/readme.md).
+
+## Zigbee library
+![Matter](doc/zigbee_logo.png)
+
+The core also comes bundled with the `Zigbee` library. The library's goal is to make creating and managing Zigbee devices easy and user-friendly.
+
+The library sits on top of Silicon Labs' Zigbee SDK which is included in the *Zigbee* protocol stack variant of the supported boards. Make sure to select *Zigbee* in the *'Tools > Protocol stack'* menu to have the Zigbee SDK / radio stack included in your sketch.
+
+See the docs for the Zigbee library [here](libraries/Zigbee/readme.md).
 
 ## Libraries
 
@@ -83,6 +93,7 @@ See the docs for the Matter library [here](libraries/Matter/readme.md).
  - **SPI** - the standard Arduino SPI library
  - **WatchdogTimer 🐶** - for keeping an eye on correct behavior - [[docs](libraries/WatchdogTimer/readme.md)]
  - **Wire** - the standard Arduino Wire library
+ - **Zigbee** ![Zigbee](doc/zigbee_logo_icon.png) - [[docs](libraries/Zigbee/readme.md)]
 
 ### Separately supplied:
 
