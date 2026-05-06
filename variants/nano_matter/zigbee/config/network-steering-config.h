@@ -36,7 +36,7 @@
 // <o SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_SCAN_DURATION> Scan duration exponent <0-14>
 // <i> Default: 4
 // <i> The exponent of the number of scan periods, where a scan period is 960 symbols, and a symbol is 16 miscroseconds.  The scan will occur for ((2^duration) + 1) scan periods.
-#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_SCAN_DURATION   4
+#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_SCAN_DURATION   3
 
 // <o SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_COMMISSIONING_TIME_S> Network steering commissioning time (seconds) <180-255>
 // <i> Default: 180
@@ -51,7 +51,7 @@
 // <q SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_TRY_ALL_KEYS> Try all keys at once
 // <i> Default: FALSE
 // <i> When enabled, network steering will attempt to join each network using the install code derived key, centralized key, and distributed key at the same time, rather than trying each key individually. Users that wish to prioritize joining using install code keys should not check this option.
-#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_TRY_ALL_KEYS   0
+#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_TRY_ALL_KEYS   1
 
 // <q SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_ENABLE_AUTOSTART> Enable steering auto-start
 // <i> Default: TRUE
