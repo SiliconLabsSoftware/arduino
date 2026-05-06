@@ -29,6 +29,7 @@
 extern "C" {
 #include "af.h"
 #include "sl_zigbee_system_common.h"
+#include "zigbee_app_framework_event.h"
 #include "network-steering.h"
 #include "network-formation.h"
 #include "stack-info.h"
@@ -37,6 +38,32 @@ extern "C" {
 }
 
 ZigbeeClass Zigbee;
+
+static sl_zigbee_af_event_t network_steering_retry_event;
+
+static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
+{
+  (void)event;
+  if (!Zigbee.isJoinedToNetwork()) {
+    sl_zigbee_af_network_steering_start();
+  }
+}
+
+static void initNetworkSteeringRetryEvent()
+{
+  static bool network_steering_retry_event_initialized = false;
+  if (!network_steering_retry_event_initialized) {
+    sl_zigbee_af_event_init(&network_steering_retry_event, networkSteeringRetryEventHandler);
+    network_steering_retry_event_initialized = true;
+  }
+}
+
+static void scheduleNetworkSteeringRetry()
+{
+  static constexpr uint32_t kNetworkSteeringRetryDelayMs = 250;
+  initNetworkSteeringRetryEvent();
+  sl_zigbee_af_event_set_delay_ms(&network_steering_retry_event, kNetworkSteeringRetryDelayMs);
+}
 
 // Callback from EmberZNet when an attribute changes due to a remote ZCL command
 extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
@@ -61,6 +88,7 @@ extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
 // Called by the Zigbee framework once the stack is fully initialized
 extern "C" void sl_zigbee_af_main_init_cb(void)
 {
+  initNetworkSteeringRetryEvent();
 }
 
 // Callback from the network steering plugin when steering completes
@@ -74,7 +102,7 @@ extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
   (void)final_state;
 
   if (status != SL_STATUS_OK) {
-    sl_zigbee_af_network_steering_start();
+    scheduleNetworkSteeringRetry();
   }
 }
 
@@ -139,6 +167,7 @@ void ZigbeeClass::begin()
     return;
   }
   this->started = true;
+  initNetworkSteeringRetryEvent();
 
   for (uint8_t i = 0; i < kTotalDynamicEndpoints; i++) {
     sl_zigbee_af_endpoint_enable_disable(i + 1, false);
@@ -147,6 +176,51 @@ void ZigbeeClass::begin()
   if (!this->isJoinedToNetwork()) {
     sl_zigbee_af_network_steering_start();
   }
+}
+
+uint32_t ZigbeeClass::channelToMask(uint8_t channel)
+{
+  if (channel < kMinPairingChannel || channel > kMaxPairingChannel) {
+    return 0;
+  }
+  return 1UL << channel;
+}
+
+bool ZigbeeClass::isValidPairingChannelMask(uint32_t channel_mask)
+{
+  return (channel_mask & kAllPairingChannelsMask) != 0;
+}
+
+uint32_t ZigbeeClass::sanitizePairingChannelMask(uint32_t channel_mask)
+{
+  return channel_mask & kAllPairingChannelsMask;
+}
+
+bool ZigbeeClass::setPairingChannel(uint8_t channel)
+{
+  uint32_t channel_mask = channelToMask(channel);
+  if (channel_mask == 0) {
+    return false;
+  }
+  return this->setPairingChannelMask(channel_mask);
+}
+
+bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask)
+{
+  primary_channel_mask = sanitizePairingChannelMask(primary_channel_mask);
+  secondary_channel_mask = sanitizePairingChannelMask(secondary_channel_mask);
+  if (!isValidPairingChannelMask(primary_channel_mask) && !isValidPairingChannelMask(secondary_channel_mask)) {
+    return false;
+  }
+
+  sli_zigbee_af_network_steering_set_channel_mask(primary_channel_mask, false);
+  sli_zigbee_af_network_steering_set_channel_mask(secondary_channel_mask, true);
+
+  if (this->started && !this->isJoinedToNetwork()) {
+    sl_zigbee_af_network_steering_stop();
+    scheduleNetworkSteeringRetry();
+  }
+  return true;
 }
 
 bool ZigbeeClass::isJoinedToNetwork()

@@ -59,13 +59,17 @@ enum ZigbeeEndpointType {
 
 class ZigbeeClass {
 public:
-  static const uint8_t kEndpointsPerType = 3;
-  static const uint8_t kTotalDynamicEndpoints = 12;
+  static const uint8_t kEndpointsPerType = 3u;
+  static const uint8_t kTotalDynamicEndpoints = 12u;
+  static constexpr uint8_t kMinPairingChannel = 11u;
+  static constexpr uint8_t kMaxPairingChannel = 26u;
+  static constexpr uint32_t kAllPairingChannelsMask = 0x07FFF800UL;
 
   void begin();
 
   void setVendorName(const char* name);
   void setProductName(const char* name);
+  bool setPairingChannel(uint8_t channel);
 
   bool isJoinedToNetwork();
   uint8_t getChannel();
@@ -79,6 +83,11 @@ public:
   void freeEndpoint(uint8_t endpoint_id);
 
 private:
+  static uint32_t channelToMask(uint8_t channel);
+  static bool isValidPairingChannelMask(uint32_t channel_mask);
+  static uint32_t sanitizePairingChannelMask(uint32_t channel_mask);
+  bool setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask = 0);
+
   bool started;
   bool endpoint_allocated[kTotalDynamicEndpoints];
 };
