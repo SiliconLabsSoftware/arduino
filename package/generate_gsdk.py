@@ -1775,6 +1775,40 @@ xiao_mg24_matter_prebuilt_platform_config = {
     "matter_vendor_id": "0x1049"
 }
 
+xiao_mg24_zigbee_platform_config = {
+    "name": "xiao_mg24_zigbee",
+    "arduino_variant_name": "xiao_mg24",
+    "board_opn": "brd4187c",
+    "ai_capable": True,
+    "prebuild": False,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/xiao_mg24/xiao_mg24_zigbee.slcp",
+    "additional_files": ["slcp/xiao_mg24/sl_spidrv_eusart_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_spidrv_eusart_xiao_mg24_1_config.h",
+                         "slcp/xiao_mg24/sl_iostream_usart_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_iostream_eusart_xiao_mg24_1_config.h",
+                         "slcp/xiao_mg24/sl_i2cspm_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_i2cspm_xiao_mg24_1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
+xiao_mg24_zigbee_prebuilt_platform_config = {
+    "name": "xiao_mg24_zigbee_precomp",
+    "arduino_variant_name": "xiao_mg24",
+    "board_opn": "brd4187c",
+    "ai_capable": True,
+    "prebuild": True,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/xiao_mg24/xiao_mg24_zigbee.slcp",
+    "additional_files": ["slcp/xiao_mg24/sl_spidrv_eusart_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_spidrv_eusart_xiao_mg24_1_config.h",
+                         "slcp/xiao_mg24/sl_iostream_usart_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_iostream_eusart_xiao_mg24_1_config.h",
+                         "slcp/xiao_mg24/sl_i2cspm_xiao_mg24_config.h",
+                         "slcp/xiao_mg24/sl_i2cspm_xiao_mg24_1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
 platform_configurations = [all_platform_config,
                            noradio_precomp_all_platform_config,
                            ble_arduino_precomp_all_platform_config,
@@ -1844,7 +1878,9 @@ platform_configurations = [all_platform_config,
                            xiao_mg24_ble_silabs_platform_config,
                            xiao_mg24_ble_silabs_prebuilt_platform_config,
                            xiao_mg24_matter_platform_config,
-                           xiao_mg24_matter_prebuilt_platform_config]
+                           xiao_mg24_matter_prebuilt_platform_config,
+                           xiao_mg24_zigbee_platform_config,
+                           xiao_mg24_zigbee_prebuilt_platform_config]
 
 
 if __name__ == "__main__":
