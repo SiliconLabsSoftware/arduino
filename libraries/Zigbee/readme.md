@@ -23,6 +23,28 @@ board variants. If you see an error saying the selected board or variant is not
 Zigbee compatible, select a board and protocol stack combination that supports
 Zigbee.
 
+## Coordinator Firmware
+
+The examples in this library run as Zigbee devices that join an existing
+network, but select Silicon Labs Arduino boards can also be turned into the
+Zigbee Coordinator for that network. The bundled Zigbee EZSP firmware in
+[`extra/firmware`](../../extra/firmware/readme.md) makes a supported board act
+as a USB EmberZNet Serial Protocol dongle for a host such as Home Assistant.
+
+Home Assistant's Zigbee Home Automation (ZHA) integration can use this EZSP
+dongle as the coordinator. With one compatible board running the coordinator
+firmware and other Arduino-compatible Silicon Labs boards running Zigbee
+sketches, you can set up a complete Zigbee network using these boards.
+
+Current Zigbee EZSP firmware images are provided for:
+
+- **Arduino Nano Matter**
+- **SparkFun Thing Plus Matter**
+- **Seeed Studio XIAO MG24 (Sense)**
+
+See the [`extra/firmware`](../../extra/firmware/readme.md) folder for the
+flasher script, firmware files, and Home Assistant ZHA setup link.
+
 ## Included Examples
 
 | Example | Description |
