@@ -1151,6 +1151,32 @@ xg24explorerkit_matter_prebuilt_platform_config = {
     "matter_vendor_id": "0x1049"
 }
 
+xg24explorerkit_zigbee_platform_config = {
+    "name": "xg24explorerkit_zigbee",
+    "arduino_variant_name": "xg24explorerkit",
+    "board_opn": "brd2703a",
+    "ai_capable": True,
+    "prebuild": False,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/xg24explorerkit/xg24explorerkit_zigbee.slcp",
+    "additional_files": ["slcp/xg24explorerkit/sl_spidrv_eusart_xg24explorerkit1_config.h",
+                         "slcp/xg24explorerkit/sl_iostream_eusart_xg24explorerkit1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
+xg24explorerkit_zigbee_prebuilt_platform_config = {
+    "name": "xg24explorerkit_zigbee_precomp",
+    "arduino_variant_name": "xg24explorerkit",
+    "board_opn": "brd2703a",
+    "ai_capable": True,
+    "prebuild": True,
+    "protocol_stack": 'zigbee',
+    "slcp_file": "slcp/xg24explorerkit/xg24explorerkit_zigbee.slcp",
+    "additional_files": ["slcp/xg24explorerkit/sl_spidrv_eusart_xg24explorerkit1_config.h",
+                         "slcp/xg24explorerkit/sl_iostream_eusart_xg24explorerkit1_config.h"],
+    "zigbee_zap_file": "slcp/common/arduino_zigbee.zap"
+}
+
 xg24devkit_noradio_platform_config = {
     "name": "xg24devkit_noradio",
     "arduino_variant_name": "xg24devkit",
@@ -1865,6 +1891,8 @@ platform_configurations = [all_platform_config,
                            xg24explorerkit_ble_silabs_prebuilt_platform_config,
                            xg24explorerkit_matter_platform_config,
                            xg24explorerkit_matter_prebuilt_platform_config,
+                           xg24explorerkit_zigbee_platform_config,
+                           xg24explorerkit_zigbee_prebuilt_platform_config,
                            xg24devkit_noradio_platform_config,
                            xg24devkit_noradio_prebuilt_platform_config,
                            xg24devkit_ble_arduino_platform_config,

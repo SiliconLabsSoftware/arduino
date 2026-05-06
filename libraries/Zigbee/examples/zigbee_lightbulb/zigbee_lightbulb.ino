@@ -9,6 +9,7 @@
 
    Compatible boards:
    - Arduino Nano Matter
+   - Silicon Labs xG24 Explorer Kit
    - SparkFun Thing Plus Matter
    - Seeed Studio XIAO MG24 (Sense)
 
