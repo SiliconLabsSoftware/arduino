@@ -2,7 +2,7 @@
 
 ![Zigbee](../../doc/zigbee_logo.png)
 
-The Zigbee library lets Arduino sketches create simple Zigbee 3.0 smart home
+The Arduino Zigbee library lets users create Zigbee 3.0 smart home
 devices on Silicon Labs hardware. It wraps the Silicon Labs EmberZNet stack and
 the generated Zigbee endpoint configuration with Arduino-style classes for
 lights, switches, temperature sensors, and humidity sensors.
@@ -119,7 +119,7 @@ To pair a sketch:
 3. Put your coordinator, such as Home Assistant ZHA, in pairing or permit-join mode.
 4. Wait for the sketch to print that it joined the network.
 
-Network credentials are stored in non-volatile memory, so a paired board usually
+Network credentials are stored in non-volatile memory, so a paired board
 rejoins automatically after reset or reflash.
 
 ### Restricting the Pairing Channel
@@ -518,7 +518,7 @@ or use the coordinator's reconfigure/read-attributes tools where available.
 ### The sketch does not compile
 
 Make sure the board is Arduino Nano Matter and the selected protocol stack is
-Zigbee. Matter, BLE, and "None" protocol stack variants cannot compile sketches
+Zigbee. `Matter`, `BLE`, and `None` protocol stack variants cannot compile sketches
 that include `Zigbee.h`.
 
 ### The device does not appear in the coordinator
@@ -529,6 +529,8 @@ boot in one of the examples, or call `Zigbee.factoryReset()` from your sketch.
 
 If you restricted the pairing channel, make sure it matches the coordinator's
 Zigbee channel.
+
+Be patient during pairing - sometimes it can take up to several minutes depending on your network setup.
 
 ### The device rejoins an old network after reflash
 
