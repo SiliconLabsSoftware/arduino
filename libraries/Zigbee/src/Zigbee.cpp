@@ -218,16 +218,7 @@ void ZigbeeClass::setFirmwareVersion(uint32_t file_version)
                                         ZCL_INT8U_ATTRIBUTE_TYPE);
   }
 
-  for (uint8_t endpoint_id = 1; endpoint_id <= kEndpointsPerType; endpoint_id++) {
-    sl_zigbee_af_write_client_attribute(endpoint_id,
-                                        ZCL_OTA_BOOTLOAD_CLUSTER_ID,
-                                        ZCL_CURRENT_FILE_VERSION_ATTRIBUTE_ID,
-                                        reinterpret_cast<uint8_t*>(&file_version),
-                                        ZCL_INT32U_ATTRIBUTE_TYPE);
-  }
-
-  uint8_t dimmable_light_start_endpoint = (ZIGBEE_DIMMABLE_LIGHT * kEndpointsPerType) + 1;
-  for (uint8_t endpoint_id = dimmable_light_start_endpoint; endpoint_id < dimmable_light_start_endpoint + kEndpointsPerType; endpoint_id++) {
+  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
     sl_zigbee_af_write_client_attribute(endpoint_id,
                                         ZCL_OTA_BOOTLOAD_CLUSTER_ID,
                                         ZCL_CURRENT_FILE_VERSION_ATTRIBUTE_ID,
