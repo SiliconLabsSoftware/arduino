@@ -28,7 +28,7 @@
 #define ZIGBEE_SWITCH_H
 
 #include "Zigbee.h"
-#include "devices/DeviceOnOffSwitch.h"
+#include "devices/DeviceSwitch.h"
 
 class ZigbeeSwitch : public ArduinoZigbeeAppliance {
 public:
@@ -48,7 +48,7 @@ public:
   void moveToPercent(uint8_t percent, uint32_t transition_time_ms = 0);
 
 private:
-  DeviceOnOffSwitch* switch_device;
+  DeviceSwitch* switch_device;
   bool initialized;
 };
 

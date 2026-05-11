@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-#include "DeviceOnOffSwitch.h"
+#include "DeviceSwitch.h"
 
 extern "C" {
 #include "af.h"
 }
 
-DeviceOnOffSwitch::DeviceOnOffSwitch(const char* device_name, uint8_t endpoint_id) :
+DeviceSwitch::DeviceSwitch(const char* device_name, uint8_t endpoint_id) :
   ZigbeeDevice(device_name, endpoint_id)
 {
 }
 
-void DeviceOnOffSwitch::FillOnOffBuffer(OnOffCmd cmd)
+void DeviceSwitch::FillOnOffBuffer(OnOffCmd cmd)
 {
   switch (cmd) {
     case CMD_ON:
@@ -50,22 +50,22 @@ void DeviceOnOffSwitch::FillOnOffBuffer(OnOffCmd cmd)
   }
 }
 
-void DeviceOnOffSwitch::FillLevelMoveBuffer(LevelMoveMode move_mode, uint8_t rate)
+void DeviceSwitch::FillLevelMoveBuffer(LevelMoveMode move_mode, uint8_t rate)
 {
   sl_zigbee_af_fill_command_level_control_cluster_move(move_mode, rate, 0x00, 0x00);
 }
 
-void DeviceOnOffSwitch::FillLevelStopBuffer()
+void DeviceSwitch::FillLevelStopBuffer()
 {
   sl_zigbee_af_fill_command_level_control_cluster_stop(0x00, 0x00);
 }
 
-void DeviceOnOffSwitch::FillMoveToLevelBuffer(uint8_t level, uint16_t transition_time_tenths)
+void DeviceSwitch::FillMoveToLevelBuffer(uint8_t level, uint16_t transition_time_tenths)
 {
   sl_zigbee_af_fill_command_level_control_cluster_move_to_level(level, transition_time_tenths, 0x00, 0x00);
 }
 
-void DeviceOnOffSwitch::SendOnOffCommand(OnOffCmd cmd)
+void DeviceSwitch::SendOnOffCommand(OnOffCmd cmd)
 {
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
@@ -79,7 +79,7 @@ void DeviceOnOffSwitch::SendOnOffCommand(OnOffCmd cmd)
   sl_zigbee_af_send_command_multicast_to_bindings();
 }
 
-void DeviceOnOffSwitch::SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t rate)
+void DeviceSwitch::SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t rate)
 {
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
@@ -93,7 +93,7 @@ void DeviceOnOffSwitch::SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t ra
   sl_zigbee_af_send_command_multicast_to_bindings();
 }
 
-void DeviceOnOffSwitch::SendLevelStopCommand()
+void DeviceSwitch::SendLevelStopCommand()
 {
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
@@ -107,7 +107,7 @@ void DeviceOnOffSwitch::SendLevelStopCommand()
   sl_zigbee_af_send_command_multicast_to_bindings();
 }
 
-void DeviceOnOffSwitch::SendMoveToLevelCommand(uint8_t level, uint16_t transition_time_tenths)
+void DeviceSwitch::SendMoveToLevelCommand(uint8_t level, uint16_t transition_time_tenths)
 {
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
@@ -121,47 +121,47 @@ void DeviceOnOffSwitch::SendMoveToLevelCommand(uint8_t level, uint16_t transitio
   sl_zigbee_af_send_command_multicast_to_bindings();
 }
 
-void DeviceOnOffSwitch::SendOn()
+void DeviceSwitch::SendOn()
 {
   SendOnOffCommand(CMD_ON);
 }
 
-void DeviceOnOffSwitch::SendOff()
+void DeviceSwitch::SendOff()
 {
   SendOnOffCommand(CMD_OFF);
 }
 
-void DeviceOnOffSwitch::SendToggle()
+void DeviceSwitch::SendToggle()
 {
   SendOnOffCommand(CMD_TOGGLE);
 }
 
-void DeviceOnOffSwitch::SendDimUp(uint8_t rate_percent)
+void DeviceSwitch::SendDimUp(uint8_t rate_percent)
 {
   SendLevelMoveCommand(LEVEL_MOVE_UP, PercentToLevel(rate_percent));
 }
 
-void DeviceOnOffSwitch::SendDimDown(uint8_t rate_percent)
+void DeviceSwitch::SendDimDown(uint8_t rate_percent)
 {
   SendLevelMoveCommand(LEVEL_MOVE_DOWN, PercentToLevel(rate_percent));
 }
 
-void DeviceOnOffSwitch::SendStopDimming()
+void DeviceSwitch::SendStopDimming()
 {
   SendLevelStopCommand();
 }
 
-void DeviceOnOffSwitch::SendMoveToLevel(uint8_t level, uint32_t transition_time_ms)
+void DeviceSwitch::SendMoveToLevel(uint8_t level, uint32_t transition_time_ms)
 {
   SendMoveToLevelCommand(level, MillisecondsToZclTransitionTime(transition_time_ms));
 }
 
-void DeviceOnOffSwitch::SendMoveToPercent(uint8_t percent, uint32_t transition_time_ms)
+void DeviceSwitch::SendMoveToPercent(uint8_t percent, uint32_t transition_time_ms)
 {
   SendMoveToLevel(PercentToLevel(percent), transition_time_ms);
 }
 
-uint8_t DeviceOnOffSwitch::PercentToLevel(uint8_t percent)
+uint8_t DeviceSwitch::PercentToLevel(uint8_t percent)
 {
   static const uint8_t LEVEL_PERCENT_MAX = 100u;
   if (percent >= LEVEL_PERCENT_MAX) {
@@ -171,7 +171,7 @@ uint8_t DeviceOnOffSwitch::PercentToLevel(uint8_t percent)
   return static_cast<uint8_t>((level + (LEVEL_PERCENT_MAX / 2)) / LEVEL_PERCENT_MAX);
 }
 
-uint16_t DeviceOnOffSwitch::MillisecondsToZclTransitionTime(uint32_t transition_time_ms)
+uint16_t DeviceSwitch::MillisecondsToZclTransitionTime(uint32_t transition_time_ms)
 {
   if (transition_time_ms == 0) {
     return 0;
@@ -183,7 +183,7 @@ uint16_t DeviceOnOffSwitch::MillisecondsToZclTransitionTime(uint32_t transition_
   return static_cast<uint16_t>(transition_time_tenths);
 }
 
-void DeviceOnOffSwitch::HandleAttributeChange(uint16_t cluster_id,
+void DeviceSwitch::HandleAttributeChange(uint16_t cluster_id,
                                               uint16_t attribute_id,
                                               uint8_t size,
                                               uint8_t* value)

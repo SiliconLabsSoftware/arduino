@@ -52,7 +52,7 @@ bool ZigbeeSwitch::begin(uint8_t endpoint_id)
     return false;
   }
 
-  this->switch_device = new DeviceOnOffSwitch("Zigbee Switch", endpoint_id);
+  this->switch_device = new DeviceSwitch("Zigbee Switch", endpoint_id);
   if (!this->switch_device) {
     return false;
   }
