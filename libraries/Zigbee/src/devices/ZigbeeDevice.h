@@ -34,7 +34,7 @@
 class ZigbeeDevice {
 public:
   static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 8;
+  static const uint8_t kMaxEndpoints = 15;
 
   ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
   virtual ~ZigbeeDevice();

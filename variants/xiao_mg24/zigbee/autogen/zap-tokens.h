@@ -20,7 +20,7 @@
 
 #include "af-types.h"
 
-#define NUM_PERSISTED_ZCL_ATTRIBUTES (6)
+#define NUM_PERSISTED_ZCL_ATTRIBUTES (18)
 
 
 // Identifier tags for tokens
@@ -42,12 +42,50 @@
 // Creator for attribute: start up on off, endpoint: 3
 #define CREATOR_START_UP_ON_OFF_3 0xB005
 #define NVM3KEY_START_UP_ON_OFF_3 (NVM3KEY_DOMAIN_ZIGBEE | 0xB005)
+// Creator for attribute: on/off, endpoint: 13
+#define CREATOR_ON_OFF_13 0xB006
+#define NVM3KEY_ON_OFF_13 (NVM3KEY_DOMAIN_ZIGBEE | 0xB006)
+// Creator for attribute: start up on off, endpoint: 13
+#define CREATOR_START_UP_ON_OFF_13 0xB007
+#define NVM3KEY_START_UP_ON_OFF_13 (NVM3KEY_DOMAIN_ZIGBEE | 0xB007)
+// Creator for attribute: current level, endpoint: 13
+#define CREATOR_CURRENT_LEVEL_13 0xB008
+#define NVM3KEY_CURRENT_LEVEL_13 (NVM3KEY_DOMAIN_ZIGBEE | 0xB008)
+// Creator for attribute: start up current level, endpoint: 13
+#define CREATOR_START_UP_CURRENT_LEVEL_13 0xB009
+#define NVM3KEY_START_UP_CURRENT_LEVEL_13 (NVM3KEY_DOMAIN_ZIGBEE | 0xB009)
+// Creator for attribute: on/off, endpoint: 14
+#define CREATOR_ON_OFF_14 0xB00A
+#define NVM3KEY_ON_OFF_14 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00A)
+// Creator for attribute: start up on off, endpoint: 14
+#define CREATOR_START_UP_ON_OFF_14 0xB00B
+#define NVM3KEY_START_UP_ON_OFF_14 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00B)
+// Creator for attribute: current level, endpoint: 14
+#define CREATOR_CURRENT_LEVEL_14 0xB00C
+#define NVM3KEY_CURRENT_LEVEL_14 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00C)
+// Creator for attribute: start up current level, endpoint: 14
+#define CREATOR_START_UP_CURRENT_LEVEL_14 0xB00D
+#define NVM3KEY_START_UP_CURRENT_LEVEL_14 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00D)
+// Creator for attribute: on/off, endpoint: 15
+#define CREATOR_ON_OFF_15 0xB00E
+#define NVM3KEY_ON_OFF_15 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00E)
+// Creator for attribute: start up on off, endpoint: 15
+#define CREATOR_START_UP_ON_OFF_15 0xB00F
+#define NVM3KEY_START_UP_ON_OFF_15 (NVM3KEY_DOMAIN_ZIGBEE | 0xB00F)
+// Creator for attribute: current level, endpoint: 15
+#define CREATOR_CURRENT_LEVEL_15 0xB010
+#define NVM3KEY_CURRENT_LEVEL_15 (NVM3KEY_DOMAIN_ZIGBEE | 0xB010)
+// Creator for attribute: start up current level, endpoint: 15
+#define CREATOR_START_UP_CURRENT_LEVEL_15 0xB011
+#define NVM3KEY_START_UP_CURRENT_LEVEL_15 (NVM3KEY_DOMAIN_ZIGBEE | 0xB011)
 
 
 // Types for the tokens
 #ifdef DEFINETYPES
 typedef uint8_t tokType_on_off;
         typedef uint8_t tokType_start_up_on_off;
+        typedef uint8_t tokType_current_level;
+        typedef uint8_t tokType_start_up_current_level;
         #endif // DEFINETYPES
 
 // Actual token definitions
@@ -59,6 +97,18 @@ DEFINE_BASIC_TOKEN(ON_OFF_2, tokType_on_off, 0x0)
 DEFINE_BASIC_TOKEN(START_UP_ON_OFF_2, tokType_start_up_on_off, 0xFF)
 DEFINE_BASIC_TOKEN(ON_OFF_3, tokType_on_off, 0x0)
 DEFINE_BASIC_TOKEN(START_UP_ON_OFF_3, tokType_start_up_on_off, 0xFF)
+DEFINE_BASIC_TOKEN(ON_OFF_13, tokType_on_off, 0x0)
+DEFINE_BASIC_TOKEN(START_UP_ON_OFF_13, tokType_start_up_on_off, 0xFF)
+DEFINE_BASIC_TOKEN(CURRENT_LEVEL_13, tokType_current_level, 0x00)
+DEFINE_BASIC_TOKEN(START_UP_CURRENT_LEVEL_13, tokType_start_up_current_level, 0x33)
+DEFINE_BASIC_TOKEN(ON_OFF_14, tokType_on_off, 0x0)
+DEFINE_BASIC_TOKEN(START_UP_ON_OFF_14, tokType_start_up_on_off, 0xFF)
+DEFINE_BASIC_TOKEN(CURRENT_LEVEL_14, tokType_current_level, 0x00)
+DEFINE_BASIC_TOKEN(START_UP_CURRENT_LEVEL_14, tokType_start_up_current_level, 0x33)
+DEFINE_BASIC_TOKEN(ON_OFF_15, tokType_on_off, 0x0)
+DEFINE_BASIC_TOKEN(START_UP_ON_OFF_15, tokType_start_up_on_off, 0xFF)
+DEFINE_BASIC_TOKEN(CURRENT_LEVEL_15, tokType_current_level, 0x00)
+DEFINE_BASIC_TOKEN(START_UP_CURRENT_LEVEL_15, tokType_start_up_current_level, 0x33)
 #endif // DEFINETOKENS
 
 // Macro snippet that loads all the attributes from tokens
@@ -86,6 +136,39 @@ DEFINE_BASIC_TOKEN(START_UP_ON_OFF_3, tokType_start_up_on_off, 0xFF)
     sli_zigbee_af_write_attribute(3, ZCL_ON_OFF_CLUSTER_ID, ZCL_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_BOOLEAN_ATTRIBUTE_TYPE, true, false, false); \
     halCommonGetToken((tokType_start_up_on_off *)ptr, TOKEN_START_UP_ON_OFF_3); \
     sli_zigbee_af_write_attribute(3, ZCL_ON_OFF_CLUSTER_ID, ZCL_START_UP_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_ENUM8_ATTRIBUTE_TYPE, true, false, false); \
+  } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(13); \
+  if(13 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_on_off *)ptr, TOKEN_ON_OFF_13); \
+    sli_zigbee_af_write_attribute(13, ZCL_ON_OFF_CLUSTER_ID, ZCL_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_BOOLEAN_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_on_off *)ptr, TOKEN_START_UP_ON_OFF_13); \
+    sli_zigbee_af_write_attribute(13, ZCL_ON_OFF_CLUSTER_ID, ZCL_START_UP_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_ENUM8_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_current_level *)ptr, TOKEN_CURRENT_LEVEL_13); \
+    sli_zigbee_af_write_attribute(13, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_current_level *)ptr, TOKEN_START_UP_CURRENT_LEVEL_13); \
+    sli_zigbee_af_write_attribute(13, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_START_UP_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+  } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(14); \
+  if(14 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_on_off *)ptr, TOKEN_ON_OFF_14); \
+    sli_zigbee_af_write_attribute(14, ZCL_ON_OFF_CLUSTER_ID, ZCL_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_BOOLEAN_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_on_off *)ptr, TOKEN_START_UP_ON_OFF_14); \
+    sli_zigbee_af_write_attribute(14, ZCL_ON_OFF_CLUSTER_ID, ZCL_START_UP_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_ENUM8_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_current_level *)ptr, TOKEN_CURRENT_LEVEL_14); \
+    sli_zigbee_af_write_attribute(14, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_current_level *)ptr, TOKEN_START_UP_CURRENT_LEVEL_14); \
+    sli_zigbee_af_write_attribute(14, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_START_UP_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+  } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(15); \
+  if(15 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_on_off *)ptr, TOKEN_ON_OFF_15); \
+    sli_zigbee_af_write_attribute(15, ZCL_ON_OFF_CLUSTER_ID, ZCL_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_BOOLEAN_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_on_off *)ptr, TOKEN_START_UP_ON_OFF_15); \
+    sli_zigbee_af_write_attribute(15, ZCL_ON_OFF_CLUSTER_ID, ZCL_START_UP_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_ENUM8_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_current_level *)ptr, TOKEN_CURRENT_LEVEL_15); \
+    sli_zigbee_af_write_attribute(15, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_start_up_current_level *)ptr, TOKEN_START_UP_CURRENT_LEVEL_15); \
+    sli_zigbee_af_write_attribute(15, ZCL_LEVEL_CONTROL_CLUSTER_ID, ZCL_START_UP_CURRENT_LEVEL_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
   } \
 } while (false)
 
@@ -116,6 +199,48 @@ if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(meta
           halCommonSetToken(TOKEN_ON_OFF_3, data); \
 if ( 0x4003 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
           halCommonSetToken(TOKEN_START_UP_ON_OFF_3, data); \
+    } \
+} \
+if ( 13 == endpoint ) { \
+    if ( 0x0006 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ON_OFF_13, data); \
+if ( 0x4003 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_ON_OFF_13, data); \
+    } \
+    else if ( 0x0008 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_CURRENT_LEVEL_13, data); \
+if ( 0x4000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_CURRENT_LEVEL_13, data); \
+    } \
+} \
+if ( 14 == endpoint ) { \
+    if ( 0x0006 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ON_OFF_14, data); \
+if ( 0x4003 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_ON_OFF_14, data); \
+    } \
+    else if ( 0x0008 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_CURRENT_LEVEL_14, data); \
+if ( 0x4000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_CURRENT_LEVEL_14, data); \
+    } \
+} \
+if ( 15 == endpoint ) { \
+    if ( 0x0006 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ON_OFF_15, data); \
+if ( 0x4003 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_ON_OFF_15, data); \
+    } \
+    else if ( 0x0008 == clusterId ) { \
+if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_CURRENT_LEVEL_15, data); \
+if ( 0x4000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_START_UP_CURRENT_LEVEL_15, data); \
     } \
 } \
 } while (false)

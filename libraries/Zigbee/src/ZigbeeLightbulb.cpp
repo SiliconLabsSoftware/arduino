@@ -39,7 +39,12 @@ ZigbeeLightbulb::~ZigbeeLightbulb()
 
 bool ZigbeeLightbulb::begin()
 {
-  uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_ON_OFF_LIGHT);
+  return beginEndpointType(ZIGBEE_ON_OFF_LIGHT);
+}
+
+bool ZigbeeLightbulb::beginEndpointType(ZigbeeEndpointType type)
+{
+  uint8_t ep = Zigbee.allocateEndpoint(type);
   if (ep == 0) {
     return false;
   }
@@ -52,7 +57,7 @@ bool ZigbeeLightbulb::begin(uint8_t endpoint_id)
     return false;
   }
 
-  this->light_device = new DeviceOnOffLight("Zigbee Lightbulb", endpoint_id);
+  this->light_device = CreateLightDevice(GetDeviceName(), endpoint_id);
   if (!this->light_device) {
     return false;
   }
@@ -116,4 +121,14 @@ ZigbeeLightbulb::operator bool()
 void ZigbeeLightbulb::operator=(bool state)
 {
   set_onoff(state);
+}
+
+DeviceOnOffLight* ZigbeeLightbulb::CreateLightDevice(const char* device_name, uint8_t endpoint_id)
+{
+  return new DeviceOnOffLight(device_name, endpoint_id);
+}
+
+const char* ZigbeeLightbulb::GetDeviceName() const
+{
+  return "Zigbee Lightbulb";
 }

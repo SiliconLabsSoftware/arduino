@@ -33,7 +33,7 @@
 class ZigbeeLightbulb : public ArduinoZigbeeAppliance {
 public:
   ZigbeeLightbulb();
-  ~ZigbeeLightbulb();
+  ~ZigbeeLightbulb() override;
   bool begin() override;
   bool begin(uint8_t endpoint_id);
   void end() override;
@@ -45,7 +45,11 @@ public:
   operator bool();
   void operator=(bool state);
 
-private:
+protected:
+  bool beginEndpointType(ZigbeeEndpointType type);
+  virtual DeviceOnOffLight* CreateLightDevice(const char* device_name, uint8_t endpoint_id);
+  virtual const char* GetDeviceName() const;
+
   DeviceOnOffLight* light_device;
   bool initialized;
 };

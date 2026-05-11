@@ -26,7 +26,7 @@ component:
   - id: zigbee_identify
   - id: zigbee_groups_server
   - id: zigbee_on_off
-  #- id: zigbee_level_control
+  - id: zigbee_level_control
   - id: zigbee_scenes
   - id: zigbee_reporting
   - id: zigbee_counters
@@ -36,7 +36,7 @@ component:
   - id: zigbee_zll_commissioning_common
   - id: zigbee_zll_commissioning_server
   - id: zigbee_zll_on_off_server
-  #- id: zigbee_zll_level_control_server
+  - id: zigbee_zll_level_control_server
   - id: zigbee_zll_identify_server
   - id: zigbee_zll_scenes_server
   - id: zigbee_zll_utility_server
