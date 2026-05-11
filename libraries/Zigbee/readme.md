@@ -50,6 +50,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | Example | Description |
 | --- | --- |
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
+| `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
 | `zigbee_switch` | Creates an On/Off switch that sends On, Off, and Toggle commands to bound lights. |
 | `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
@@ -292,6 +293,62 @@ bulb = true;
 
 if (bulb) {
   // Bulb state is on.
+}
+```
+
+## ZigbeeDimmableLightbulb
+
+Header:
+
+```cpp
+#include <ZigbeeDimmableLightbulb.h>
+```
+
+Creates a Dimmable Light endpoint. It inherits the `ZigbeeLightbulb` On/Off API
+and adds Level Control server support. Remote level changes update the local
+brightness, and local calls update the Zigbee Current Level attribute.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_onoff(bool value);
+bool get_onoff();
+void toggle();
+
+void set_level(uint8_t level);
+uint8_t get_level();
+void set_brightness(uint8_t percent);
+uint8_t get_brightness();
+```
+
+`set_level()` and `get_level()` use raw Zigbee Level Control values from 0-254.
+`set_brightness()` and `get_brightness()` use percent values from 0-100.
+
+Example:
+
+```cpp
+ZigbeeDimmableLightbulb bulb;
+
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  Zigbee.begin();
+  bulb.begin();
+  bulb.set_brightness(100);
+}
+
+void loop()
+{
+  if (bulb.get_onoff()) {
+    uint8_t pwm = (static_cast<uint16_t>(bulb.get_brightness()) * 255 + 50) / 100;
+    analogWrite(LED_BUILTIN, pwm);
+  } else {
+    analogWrite(LED_BUILTIN, 0);
+  }
 }
 ```
 
