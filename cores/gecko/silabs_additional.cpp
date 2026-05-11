@@ -146,6 +146,8 @@ silabs_radio_stack_t getCurrentRadioStackType()
   return silabs_radio_stack_t::RADIO_STACK_BLE_ARDUINO;
   #elif defined(ARDUINO_SILABS_STACK_MATTER_OVER_THREAD)
   return silabs_radio_stack_t::RADIO_STACK_MATTER;
+  #elif defined(ARDUINO_SILABS_STACK_ZIGBEE)
+  return silabs_radio_stack_t::RADIO_STACK_ZIGBEE;
   #else
   return silabs_radio_stack_t::RADIO_STACK_UNKNOWN;
   #endif

@@ -58,7 +58,8 @@ typedef enum {
   RADIO_STACK_NONE,
   RADIO_STACK_BLE_SILABS,
   RADIO_STACK_BLE_ARDUINO,
-  RADIO_STACK_MATTER
+  RADIO_STACK_MATTER,
+  RADIO_STACK_ZIGBEE
 } silabs_radio_stack_t;
 
 /***************************************************************************//**
