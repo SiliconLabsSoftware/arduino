@@ -41,6 +41,11 @@ public:
   void on();
   void off();
   void toggle();
+  void dimUp(uint8_t rate_percent = 50);
+  void dimDown(uint8_t rate_percent = 50);
+  void stopDimming();
+  void moveToLevel(uint8_t level, uint32_t transition_time_ms = 0);
+  void moveToPercent(uint8_t percent, uint32_t transition_time_ms = 0);
 
 private:
   DeviceOnOffSwitch* switch_device;

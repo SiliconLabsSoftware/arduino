@@ -279,6 +279,7 @@ testlist_zigbee = {
     "../../libraries/Zigbee/examples/zigbee_lightbulb/zigbee_lightbulb.ino":                                           all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_lightbulb_identify/zigbee_lightbulb_identify.ino":                         all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch_dimmer.ino":                                          all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_temp_sensor/zigbee_temp_sensor.ino":                                       all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_humidity_sensor/zigbee_humidity_sensor.ino":                               all_zigbee,
 }

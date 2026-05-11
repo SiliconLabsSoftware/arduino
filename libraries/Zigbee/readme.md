@@ -52,6 +52,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
 | `zigbee_switch` | Creates an On/Off switch that sends On, Off, and Toggle commands to bound lights. |
+| `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
 | `zigbee_temp_sensor` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster. |
 | `zigbee_humidity_sensor` | Publishes a simulated relative humidity value through the Zigbee Relative Humidity Measurement cluster. |
 
@@ -302,9 +303,10 @@ Header:
 #include <ZigbeeSwitch.h>
 ```
 
-Creates an On/Off Switch endpoint. The switch sends On, Off, or Toggle commands
-to the coordinator and to configured bindings. After pairing, create a binding
-from the switch's On/Off cluster to the target light in your coordinator.
+Creates an On/Off Switch endpoint. The switch sends On, Off, Toggle, and Level
+Control commands to the coordinator and to configured bindings. After pairing,
+create bindings from the switch's On/Off and Level Control client clusters to
+the target light in your coordinator.
 
 API:
 
@@ -316,7 +318,18 @@ void end();
 void on();
 void off();
 void toggle();
+void dimUp(uint8_t rate_percent = 50);
+void dimDown(uint8_t rate_percent = 50);
+void stopDimming();
+void moveToLevel(uint8_t level, uint32_t transition_time_ms = 0);
+void moveToPercent(uint8_t percent, uint32_t transition_time_ms = 0);
 ```
+
+`dimUp()` and `dimDown()` use percent-per-second rates converted to raw Level
+Control rates. `moveToPercent()` converts 0-100 brightness percent values to
+raw Level Control levels. `moveToLevel()` is the raw Level Control command for
+devices that need direct Zigbee level values.
+Transition time arguments are specified in milliseconds.
 
 Example:
 
