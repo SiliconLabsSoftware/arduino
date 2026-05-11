@@ -126,6 +126,8 @@ String get_radio_stack_name()
       return "BLE (Arduino)";
     case RADIO_STACK_MATTER:
       return "Matter";
+    case RADIO_STACK_ZIGBEE:
+      return "Zigbee";
     default:
       return "unknown";
   }
