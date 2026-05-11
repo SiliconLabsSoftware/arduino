@@ -36,6 +36,11 @@ public:
   void SendOn();
   void SendOff();
   void SendToggle();
+  void SendDimUp(uint8_t rate_percent = 50);
+  void SendDimDown(uint8_t rate_percent = 50);
+  void SendStopDimming();
+  void SendMoveToLevel(uint8_t level, uint32_t transition_time_ms = 0);
+  void SendMoveToPercent(uint8_t percent, uint32_t transition_time_ms = 0);
 
   void HandleAttributeChange(uint16_t cluster_id,
                              uint16_t attribute_id,
@@ -43,9 +48,21 @@ public:
                              uint8_t* value) override;
 
 private:
+  static const uint8_t LEVEL_CONTROL_MAX_LEVEL = 254;
+  static const uint16_t ZCL_TRANSITION_TIME_MAX = 0xFFFE;
   enum OnOffCmd { CMD_ON, CMD_OFF, CMD_TOGGLE };
-  void FillBuffer(OnOffCmd cmd);
-  void SendCommand(OnOffCmd cmd);
+  enum LevelMoveMode { LEVEL_MOVE_UP = 0x00, LEVEL_MOVE_DOWN = 0x01 };
+
+  static uint8_t PercentToLevel(uint8_t percent);
+  static uint16_t MillisecondsToZclTransitionTime(uint32_t transition_time_ms);
+  void FillOnOffBuffer(OnOffCmd cmd);
+  void FillLevelMoveBuffer(LevelMoveMode move_mode, uint8_t rate);
+  void FillLevelStopBuffer();
+  void FillMoveToLevelBuffer(uint8_t level, uint16_t transition_time_tenths);
+  void SendOnOffCommand(OnOffCmd cmd);
+  void SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t rate);
+  void SendLevelStopCommand();
+  void SendMoveToLevelCommand(uint8_t level, uint16_t transition_time_tenths);
 };
 
 #endif // DEVICE_ON_OFF_SWITCH_H
