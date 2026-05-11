@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef DEVICE_ON_OFF_SWITCH_H
-#define DEVICE_ON_OFF_SWITCH_H
+#ifndef DEVICE_SWITCH_H
+#define DEVICE_SWITCH_H
 
 #include "ZigbeeDevice.h"
 
-class DeviceOnOffSwitch : public ZigbeeDevice {
+class DeviceSwitch : public ZigbeeDevice {
 public:
-  DeviceOnOffSwitch(const char* device_name, uint8_t endpoint_id);
+  DeviceSwitch(const char* device_name, uint8_t endpoint_id);
 
   void SendOn();
   void SendOff();
@@ -65,4 +65,4 @@ private:
   void SendMoveToLevelCommand(uint8_t level, uint16_t transition_time_tenths);
 };
 
-#endif // DEVICE_ON_OFF_SWITCH_H
+#endif // DEVICE_SWITCH_H
