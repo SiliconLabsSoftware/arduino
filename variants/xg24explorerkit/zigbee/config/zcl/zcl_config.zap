@@ -4023,6 +4023,154 @@
           ]
         },
         {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
           "name": "Temperature Measurement",
           "code": 1026,
           "mfgCode": null,
@@ -4434,6 +4582,154 @@
               "code": 65533,
               "mfgCode": null,
               "side": "server",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
               "type": "int16u",
               "included": 1,
               "storageOption": "RAM",
@@ -4873,6 +5169,154 @@
           ]
         },
         {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
           "name": "Temperature Measurement",
           "code": 1026,
           "mfgCode": null,
@@ -5284,6 +5728,154 @@
               "code": 65533,
               "mfgCode": null,
               "side": "server",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
               "type": "int16u",
               "included": 1,
               "storageOption": "RAM",
@@ -5723,6 +6315,154 @@
           ]
         },
         {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
           "name": "Relative Humidity Measurement",
           "code": 1029,
           "mfgCode": null,
@@ -6134,6 +6874,154 @@
               "code": 65533,
               "mfgCode": null,
               "side": "server",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
               "type": "int16u",
               "included": 1,
               "storageOption": "RAM",
@@ -6623,6 +7511,154 @@
               "reportableChange": 0
             }
           ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
         }
       ]
     },
@@ -7026,6 +8062,154 @@
               "reportableChange": 0
             }
           ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
         }
       ]
     },
@@ -7412,6 +8596,154 @@
           "side": "client",
           "enabled": 1,
           "attributes": [
+            {
+              "name": "cluster revision",
+              "code": 65533,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int16u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            }
+          ]
+        },
+        {
+          "name": "Over the Air Bootloading",
+          "code": 25,
+          "mfgCode": null,
+          "define": "OTA_BOOTLOAD_CLUSTER",
+          "side": "client",
+          "enabled": 1,
+          "commands": [
+            {
+              "name": "ImageNotify",
+              "code": 0,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageRequest",
+              "code": 1,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "QueryNextImageResponse",
+              "code": 2,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockRequest",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "ImageBlockResponse",
+              "code": 5,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndRequest",
+              "code": 6,
+              "mfgCode": null,
+              "source": "client",
+              "isIncoming": 0,
+              "isEnabled": 1
+            },
+            {
+              "name": "UpgradeEndResponse",
+              "code": 7,
+              "mfgCode": null,
+              "source": "server",
+              "isIncoming": 1,
+              "isEnabled": 1
+            }
+          ],
+          "attributes": [
+            {
+              "name": "OTA Upgrade Server ID",
+              "code": 0,
+              "mfgCode": null,
+              "side": "client",
+              "type": "ieee_address",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "-1",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "Offset (address) into the file",
+              "code": 1,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "4294967295",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Current File Version",
+              "code": 2,
+              "mfgCode": null,
+              "side": "client",
+              "type": "int32u",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
+            {
+              "name": "OTA Upgrade Status",
+              "code": 6,
+              "mfgCode": null,
+              "side": "client",
+              "type": "enum8",
+              "included": 1,
+              "storageOption": "RAM",
+              "singleton": 0,
+              "bounded": null,
+              "defaultValue": "0",
+              "reportable": 0,
+              "minInterval": 1,
+              "maxInterval": 65534,
+              "reportableChange": 0
+            },
             {
               "name": "cluster revision",
               "code": 65533,
