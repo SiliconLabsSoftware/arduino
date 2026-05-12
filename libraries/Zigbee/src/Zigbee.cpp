@@ -66,6 +66,25 @@ static void scheduleNetworkSteeringRetry()
   sl_zigbee_af_event_set_delay_ms(&network_steering_retry_event, kNetworkSteeringRetryDelayMs);
 }
 
+static void writeServerAttributeToDynamicEndpoints(sl_zigbee_af_cluster_id_t cluster_id,
+                                                   sl_zigbee_af_attribute_id_t attribute_id,
+                                                   uint8_t* value,
+                                                   uint8_t attribute_type)
+{
+  for (uint8_t endpoint_id = 1; endpoint_id <= ZigbeeClass::kApplicationEndpointCount; endpoint_id++) {
+    sl_zigbee_af_write_server_attribute(endpoint_id,
+                                        cluster_id,
+                                        attribute_id,
+                                        value,
+                                        attribute_type);
+  }
+  sl_zigbee_af_write_server_attribute(ZigbeeClass::kTimeClientEndpointId,
+                                      cluster_id,
+                                      attribute_id,
+                                      value,
+                                      attribute_type);
+}
+
 // Callback from EmberZNet when an attribute changes due to a remote ZCL command
 extern "C" void sl_zigbee_af_post_attribute_change_cb(uint8_t endpoint,
                                                       sl_zigbee_af_cluster_id_t cluster_id,
@@ -172,13 +191,10 @@ void ZigbeeClass::setVendorName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
-  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
-    sl_zigbee_af_write_server_attribute(endpoint_id,
-                                        ZCL_BASIC_CLUSTER_ID,
-                                        ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
-                                        zcl_string,
-                                        ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
-  }
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
+                                         zcl_string,
+                                         ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
 }
 
 void ZigbeeClass::setProductName(const char* name)
@@ -188,13 +204,10 @@ void ZigbeeClass::setProductName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
-  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
-    sl_zigbee_af_write_server_attribute(endpoint_id,
-                                        ZCL_BASIC_CLUSTER_ID,
-                                        ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
-                                        zcl_string,
-                                        ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
-  }
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
+                                         zcl_string,
+                                         ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
 }
 
 void ZigbeeClass::setFirmwareVersion(const char* version)
@@ -208,25 +221,19 @@ void ZigbeeClass::setFirmwareVersion(const char* version)
   if (len > 16) len = 16;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], version, len);
-  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
-    sl_zigbee_af_write_server_attribute(endpoint_id,
-                                        ZCL_BASIC_CLUSTER_ID,
-                                        ZCL_SW_BUILD_ID_ATTRIBUTE_ID,
-                                        zcl_string,
-                                        ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
-  }
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_SW_BUILD_ID_ATTRIBUTE_ID,
+                                         zcl_string,
+                                         ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
 }
 
 void ZigbeeClass::setFirmwareVersion(uint32_t file_version)
 {
   uint8_t application_version = (file_version <= 0xFF) ? file_version : (file_version >> 24);
-  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
-    sl_zigbee_af_write_server_attribute(endpoint_id,
-                                        ZCL_BASIC_CLUSTER_ID,
-                                        ZCL_APPLICATION_VERSION_ATTRIBUTE_ID,
-                                        &application_version,
-                                        ZCL_INT8U_ATTRIBUTE_TYPE);
-  }
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_APPLICATION_VERSION_ATTRIBUTE_ID,
+                                         &application_version,
+                                         ZCL_INT8U_ATTRIBUTE_TYPE);
 
   for (uint8_t endpoint_id = 1; endpoint_id <= kApplicationEndpointCount; endpoint_id++) {
     sl_zigbee_af_write_client_attribute(endpoint_id,
@@ -245,9 +252,10 @@ void ZigbeeClass::begin()
   this->started = true;
   initNetworkSteeringRetryEvent();
 
-  for (uint8_t i = 0; i < kTotalDynamicEndpoints; i++) {
+  for (uint8_t i = 0; i < kApplicationEndpointCount; i++) {
     sl_zigbee_af_endpoint_enable_disable(i + 1, false);
   }
+  sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, false);
 
   if (!this->isJoinedToNetwork()) {
     sl_zigbee_af_network_steering_start();
@@ -359,19 +367,24 @@ uint8_t ZigbeeClass::allocateEndpoint(ZigbeeEndpointType type)
 
 uint8_t ZigbeeClass::allocateTimeClientEndpoint()
 {
-  uint8_t index = kTimeClientEndpointId - 1;
-  if (this->endpoint_allocated[index]) {
+  if (this->time_client_endpoint_allocated) {
     return 0;
   }
-  this->endpoint_allocated[index] = true;
+  this->time_client_endpoint_allocated = true;
   sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, true);
   return kTimeClientEndpointId;
 }
 
 void ZigbeeClass::freeEndpoint(uint8_t endpoint_id)
 {
+  if (endpoint_id == kTimeClientEndpointId && this->time_client_endpoint_allocated) {
+    this->time_client_endpoint_allocated = false;
+    sl_zigbee_af_endpoint_enable_disable(endpoint_id, false);
+    return;
+  }
+
   uint8_t index = endpoint_id - 1;
-  if (index < kTotalDynamicEndpoints && this->endpoint_allocated[index]) {
+  if (index < kApplicationEndpointCount && this->endpoint_allocated[index]) {
     this->endpoint_allocated[index] = false;
     sl_zigbee_af_endpoint_enable_disable(endpoint_id, false);
   }

@@ -63,8 +63,7 @@ class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3u;
   static const uint8_t kApplicationEndpointCount = 15u;
-  static const uint8_t kTimeClientEndpointId = 16u;
-  static const uint8_t kTotalDynamicEndpoints = 16u;
+  static const uint8_t kTimeClientEndpointId = 240u;
   static constexpr uint8_t kMinPairingChannel = 11u;
   static constexpr uint8_t kMaxPairingChannel = 26u;
   static constexpr uint32_t kAllPairingChannelsMask = 0x07FFF800UL;
@@ -97,7 +96,8 @@ private:
   bool setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask = 0);
 
   bool started;
-  bool endpoint_allocated[kTotalDynamicEndpoints];
+  bool endpoint_allocated[kApplicationEndpointCount];
+  bool time_client_endpoint_allocated;
 };
 
 extern ZigbeeClass Zigbee;

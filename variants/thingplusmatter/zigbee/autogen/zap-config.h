@@ -231,9 +231,9 @@
 	  { 0x0019, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[41]), 5, 19, CLUSTER_MASK_CLIENT, NULL }, /* 87, Endpoint Id: 15, Cluster: Over the Air Bootloading, Side: client*/ \
 	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[62]), 1, 2, CLUSTER_MASK_CLIENT, NULL }, /* 88, Endpoint Id: 15, Cluster: Occupancy Sensing, Side: client*/ \
 	  { 0x1000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[63]), 1, 2, CLUSTER_MASK_SERVER, NULL }, /* 89, Endpoint Id: 15, Cluster: ZLL Commissioning, Side: server*/ \
-	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 90, Endpoint Id: 16, Cluster: Basic, Side: server*/ \
-	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 91, Endpoint Id: 16, Cluster: Identify, Side: server*/ \
-	  { 0x000A, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[40]), 1, 0, CLUSTER_MASK_CLIENT, NULL }, /* 92, Endpoint Id: 16, Cluster: Time, Side: client*/ \
+	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 90, Endpoint Id: 240, Cluster: Basic, Side: server*/ \
+	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 91, Endpoint Id: 240, Cluster: Identify, Side: server*/ \
+	  { 0x000A, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[40]), 1, 0, CLUSTER_MASK_CLIENT, NULL }, /* 92, Endpoint Id: 240, Cluster: Time, Side: client*/ \
 	  { 0x0021, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[46]), 8, 297, CLUSTER_MASK_CLIENT, NULL } /* 93, Endpoint Id: 242, Cluster: Green Power, Side: client*/ \
 	 }
 
@@ -290,7 +290,7 @@
   13, \
   14, \
   15, \
-  16, \
+  240, \
   242 \
 }
 
