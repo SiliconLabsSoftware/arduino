@@ -24,45 +24,33 @@
  * THE SOFTWARE.
  */
 
-#ifndef ZIGBEE_DEVICE_H
-#define ZIGBEE_DEVICE_H
+#ifndef ZIGBEE_TIME_CLIENT_H
+#define ZIGBEE_TIME_CLIENT_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "Zigbee.h"
+#include "devices/DeviceTimeClient.h"
 
-class ZigbeeDevice {
+class ZigbeeTimeClient : public ArduinoZigbeeAppliance {
 public:
-  static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 16;
+  ZigbeeTimeClient();
+  ~ZigbeeTimeClient() override;
+  bool begin() override;
+  void end() override;
 
-  ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
-  virtual ~ZigbeeDevice();
+  bool requestTime(uint8_t coordinator_endpoint_id = 1);
+  bool hasTime();
+  uint32_t getZigbeeTime();
+  uint32_t getUnixTime();
+  uint32_t getLocalUnixTime();
+  bool hasTimeZone();
+  int32_t getTimeZone();
+  uint8_t getTimeStatus();
+  void setTimeUpdateCallback(void (*cb)(void));
 
-  bool IsOnline();
-  void SetOnline(bool online);
-  uint8_t GetEndpointId();
-  const char* GetName();
-  bool GetIdentifyInProgress();
-
-  void HandleIdentifyStart(uint16_t identify_time);
-  void HandleIdentifyStop();
-
-  void SetDeviceChangeCallback(void (*cb)(void));
-  void CallDeviceChangeCallback();
-
-  virtual void HandleAttributeChange(uint16_t cluster_id,
-                                     uint16_t attribute_id,
-                                     uint8_t size,
-                                     uint8_t* value) = 0;
-
-protected:
-  char device_name[kMaxNameSize + 1];
-  uint8_t endpoint_id;
-  bool online;
-  bool identify_in_progress;
-  uint16_t identify_time;
-  void (*device_change_callback)(void);
+private:
+  DeviceTimeClient* time_client_device;
+  bool initialized;
+  void (*time_update_callback)(void);
 };
 
-#endif // ZIGBEE_DEVICE_H
+#endif // ZIGBEE_TIME_CLIENT_H

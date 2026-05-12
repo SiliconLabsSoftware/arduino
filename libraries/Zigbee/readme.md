@@ -56,6 +56,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
 | `zigbee_temp_sensor` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster. |
 | `zigbee_humidity_sensor` | Publishes a simulated relative humidity value through the Zigbee Relative Humidity Measurement cluster. |
+| `zigbee_time` | Requests the current timestamp from the Zigbee coordinator Time cluster. |
 
 Open the examples from the Arduino IDE with **File > Examples > Zigbee**.
 
@@ -219,10 +220,11 @@ measurement is written, or Identify starts/stops. Register the callback after th
 appliance `begin()` call, because the underlying endpoint object is created
 during `begin()`.
 
-The generated endpoint configuration currently supports 12 dynamic endpoints:
-three On/Off lights, three temperature sensors, three humidity sensors, and
-three On/Off switches. Use the default `begin()` overload unless you specifically
-need to bind to a known generated endpoint ID.
+The generated endpoint configuration currently supports 15 application
+endpoints: three On/Off lights, three temperature sensors, three humidity
+sensors, three On/Off switches, and three dimmable lights. It also provides one
+opt-in Time Client endpoint. Use the default `begin()` overload unless you
+specifically need to bind to a known generated endpoint ID.
 
 ## Identifying a Device
 
@@ -515,6 +517,62 @@ void loop()
 {
   humidity.set_measured_value_percent(52.5f);
   delay(2000);
+}
+```
+
+## ZigbeeTimeClient
+
+Header:
+
+```cpp
+#include <ZigbeeTimeClient.h>
+```
+
+Creates a dedicated Time Client endpoint. Instantiate this class only in
+sketches that need coordinator time.
+
+API:
+
+```cpp
+bool begin();
+void end();
+
+bool requestTime(uint8_t coordinator_endpoint_id = 1);
+bool hasTime();
+uint32_t getZigbeeTime();
+uint32_t getUnixTime();
+uint32_t getLocalUnixTime();
+bool hasTimeZone();
+int32_t getTimeZone();
+uint8_t getTimeStatus();
+void setTimeUpdateCallback(void (*cb)(void));
+```
+
+`requestTime()` reads the Time cluster from the coordinator endpoint. The
+default coordinator endpoint is `1`.
+
+`getZigbeeTime()` returns ZCL time in seconds since 2000-01-01 00:00:00 UTC.
+`getUnixTime()` returns UTC Unix time in seconds since 1970-01-01 00:00:00 UTC.
+`getLocalUnixTime()` returns the coordinator's local Unix time if local time or
+timezone data was provided, otherwise it returns UTC Unix time.
+
+Example:
+
+```cpp
+ZigbeeTimeClient zigbee_time;
+
+void setup()
+{
+  zigbee_time.setTimeUpdateCallback(onZigbeeTimeUpdated);
+  Zigbee.begin();
+  zigbee_time.begin();
+}
+
+void loop()
+{
+  if (Zigbee.isJoinedToNetwork()) {
+    zigbee_time.requestTime();
+  }
 }
 ```
 

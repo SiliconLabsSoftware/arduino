@@ -172,8 +172,13 @@ void ZigbeeClass::setVendorName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
-  sl_zigbee_af_write_server_attribute(1, ZCL_BASIC_CLUSTER_ID, ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
-                                      zcl_string, ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
+    sl_zigbee_af_write_server_attribute(endpoint_id,
+                                        ZCL_BASIC_CLUSTER_ID,
+                                        ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
+                                        zcl_string,
+                                        ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  }
 }
 
 void ZigbeeClass::setProductName(const char* name)
@@ -183,8 +188,13 @@ void ZigbeeClass::setProductName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
-  sl_zigbee_af_write_server_attribute(1, ZCL_BASIC_CLUSTER_ID, ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
-                                      zcl_string, ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
+    sl_zigbee_af_write_server_attribute(endpoint_id,
+                                        ZCL_BASIC_CLUSTER_ID,
+                                        ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
+                                        zcl_string,
+                                        ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  }
 }
 
 void ZigbeeClass::setFirmwareVersion(const char* version)
@@ -218,7 +228,7 @@ void ZigbeeClass::setFirmwareVersion(uint32_t file_version)
                                         ZCL_INT8U_ATTRIBUTE_TYPE);
   }
 
-  for (uint8_t endpoint_id = 1; endpoint_id <= kTotalDynamicEndpoints; endpoint_id++) {
+  for (uint8_t endpoint_id = 1; endpoint_id <= kApplicationEndpointCount; endpoint_id++) {
     sl_zigbee_af_write_client_attribute(endpoint_id,
                                         ZCL_OTA_BOOTLOAD_CLUSTER_ID,
                                         ZCL_CURRENT_FILE_VERSION_ATTRIBUTE_ID,
@@ -327,7 +337,15 @@ void ZigbeeClass::factoryReset()
 
 uint8_t ZigbeeClass::allocateEndpoint(ZigbeeEndpointType type)
 {
+  if (type >= ZIGBEE_ENDPOINT_TYPE_COUNT) {
+    return 0;
+  }
+
   uint8_t start = type * kEndpointsPerType;
+  if ((start + kEndpointsPerType) > kApplicationEndpointCount) {
+    return 0;
+  }
+
   for (uint8_t i = start; i < start + kEndpointsPerType; i++) {
     if (!this->endpoint_allocated[i]) {
       this->endpoint_allocated[i] = true;
@@ -337,6 +355,17 @@ uint8_t ZigbeeClass::allocateEndpoint(ZigbeeEndpointType type)
     }
   }
   return 0;
+}
+
+uint8_t ZigbeeClass::allocateTimeClientEndpoint()
+{
+  uint8_t index = kTimeClientEndpointId - 1;
+  if (this->endpoint_allocated[index]) {
+    return 0;
+  }
+  this->endpoint_allocated[index] = true;
+  sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, true);
+  return kTimeClientEndpointId;
 }
 
 void ZigbeeClass::freeEndpoint(uint8_t endpoint_id)
