@@ -62,7 +62,9 @@ enum ZigbeeEndpointType {
 class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3u;
-  static const uint8_t kTotalDynamicEndpoints = 15u;
+  static const uint8_t kApplicationEndpointCount = 15u;
+  static const uint8_t kTimeClientEndpointId = 16u;
+  static const uint8_t kTotalDynamicEndpoints = 16u;
   static constexpr uint8_t kMinPairingChannel = 11u;
   static constexpr uint8_t kMaxPairingChannel = 26u;
   static constexpr uint32_t kAllPairingChannelsMask = 0x07FFF800UL;
@@ -84,6 +86,7 @@ public:
   void factoryReset();
 
   uint8_t allocateEndpoint(ZigbeeEndpointType type);
+  uint8_t allocateTimeClientEndpoint();
   void freeEndpoint(uint8_t endpoint_id);
 
 private:
