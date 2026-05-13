@@ -24,45 +24,28 @@
  * THE SOFTWARE.
  */
 
-#ifndef ZIGBEE_DEVICE_H
-#define ZIGBEE_DEVICE_H
+#ifndef DEVICE_LIGHT_SENSOR_H
+#define DEVICE_LIGHT_SENSOR_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "ZigbeeDevice.h"
 
-class ZigbeeDevice {
+class DeviceLightSensor : public ZigbeeDevice {
 public:
-  static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 19;
+  DeviceLightSensor(const char* device_name, uint8_t endpoint_id);
 
-  ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
-  virtual ~ZigbeeDevice();
+  uint16_t GetMeasuredValue();
+  void SetMeasuredValue(uint16_t value);
+  void SetMinMeasuredValue(uint16_t value);
+  void SetMaxMeasuredValue(uint16_t value);
+  void SetLightSensorType(uint8_t type);
 
-  bool IsOnline();
-  void SetOnline(bool online);
-  uint8_t GetEndpointId();
-  const char* GetName();
-  bool GetIdentifyInProgress();
+  void HandleAttributeChange(uint16_t cluster_id,
+                             uint16_t attribute_id,
+                             uint8_t size,
+                             uint8_t* value) override;
 
-  void HandleIdentifyStart(uint16_t identify_time);
-  void HandleIdentifyStop();
-
-  void SetDeviceChangeCallback(void (*cb)(void));
-  void CallDeviceChangeCallback();
-
-  virtual void HandleAttributeChange(uint16_t cluster_id,
-                                     uint16_t attribute_id,
-                                     uint8_t size,
-                                     uint8_t* value) = 0;
-
-protected:
-  char device_name[kMaxNameSize + 1];
-  uint8_t endpoint_id;
-  bool online;
-  bool identify_in_progress;
-  uint16_t identify_time;
-  void (*device_change_callback)(void);
+private:
+  uint16_t measured_value;
 };
 
-#endif // ZIGBEE_DEVICE_H
+#endif // DEVICE_LIGHT_SENSOR_H
