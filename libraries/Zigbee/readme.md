@@ -5,7 +5,7 @@
 The Arduino Zigbee library lets users create Zigbee 3.0 smart home
 devices on Silicon Labs hardware. It wraps the Silicon Labs EmberZNet stack and
 the generated Zigbee endpoint configuration with Arduino-style classes for
-lights, switches, temperature sensors, and humidity sensors.
+lights, switches, temperature sensors, humidity sensors, and light sensors.
 
 The library is intended for Silicon Labs based Arduino boards with the
 Zigbee protocol stack selected.
@@ -56,6 +56,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
 | `zigbee_temp_sensor` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster. |
 | `zigbee_humidity_sensor` | Publishes a simulated relative humidity value through the Zigbee Relative Humidity Measurement cluster. |
+| `zigbee_light_sensor` | Publishes a simulated illuminance value through the Zigbee Illuminance Measurement cluster. |
 | `zigbee_time` | Requests the current timestamp from the Zigbee coordinator Time cluster. |
 
 Open the examples from the Arduino IDE with **File > Examples > Zigbee**.
@@ -255,6 +256,12 @@ local state, and local calls update the Zigbee On/Off attribute.
 API:
 
 ```cpp
+enum LightSensorType : uint8_t {
+  LIGHT_SENSOR_TYPE_PHOTODIODE = 0x00,
+  LIGHT_SENSOR_TYPE_CMOS = 0x01,
+  LIGHT_SENSOR_TYPE_UNKNOWN = 0xFF
+};
+
 bool begin();
 bool begin(uint8_t endpoint_id);
 void end();
@@ -516,6 +523,61 @@ void setup()
 void loop()
 {
   humidity.set_measured_value_percent(52.5f);
+  delay(2000);
+}
+```
+
+## ZigbeeLightSensor
+
+Header:
+
+```cpp
+#include <ZigbeeLightSensor.h>
+```
+
+Creates an Illuminance Measurement endpoint.
+
+Zigbee illuminance values are represented as a logarithmic raw value. The
+convenience lux APIs convert to and from lux using the Zigbee Illuminance
+Measurement formula.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_measured_value(uint16_t value);
+void set_measured_value_lux(float lux);
+uint16_t get_measured_value();
+float get_measured_value_lux();
+void set_min_value(uint16_t value);
+void set_min_value_lux(float lux);
+void set_max_value(uint16_t value);
+void set_max_value_lux(float lux);
+void set_light_sensor_type(LightSensorType type);
+
+operator float();
+void operator=(float lux);
+```
+
+Example:
+
+```cpp
+ZigbeeLightSensor light;
+
+void setup()
+{
+  Zigbee.begin();
+  light.begin();
+  light.set_min_value_lux(1.0f);
+  light.set_max_value_lux(100000.0f);
+}
+
+void loop()
+{
+  light.set_measured_value_lux(250.0f);
   delay(2000);
 }
 ```

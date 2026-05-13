@@ -24,45 +24,45 @@
  * THE SOFTWARE.
  */
 
-#ifndef ZIGBEE_DEVICE_H
-#define ZIGBEE_DEVICE_H
+#ifndef ZIGBEE_LIGHT_SENSOR_H
+#define ZIGBEE_LIGHT_SENSOR_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "Zigbee.h"
+#include "devices/DeviceLightSensor.h"
 
-class ZigbeeDevice {
+class ZigbeeLightSensor : public ArduinoZigbeeAppliance {
 public:
-  static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 19;
+  enum LightSensorType : uint8_t {
+    LIGHT_SENSOR_TYPE_PHOTODIODE = 0x00,
+    LIGHT_SENSOR_TYPE_CMOS = 0x01,
+    LIGHT_SENSOR_TYPE_UNKNOWN = 0xFF
+  };
 
-  ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
-  virtual ~ZigbeeDevice();
+  ZigbeeLightSensor();
+  ~ZigbeeLightSensor();
+  bool begin() override;
+  bool begin(uint8_t endpoint_id);
+  void end() override;
 
-  bool IsOnline();
-  void SetOnline(bool online);
-  uint8_t GetEndpointId();
-  const char* GetName();
-  bool GetIdentifyInProgress();
+  void set_measured_value(uint16_t value);
+  void set_measured_value_lux(float lux);
+  uint16_t get_measured_value();
+  float get_measured_value_lux();
+  void set_min_value(uint16_t value);
+  void set_min_value_lux(float lux);
+  void set_max_value(uint16_t value);
+  void set_max_value_lux(float lux);
+  void set_light_sensor_type(LightSensorType type);
 
-  void HandleIdentifyStart(uint16_t identify_time);
-  void HandleIdentifyStop();
+  operator float();
+  void operator=(float lux);
 
-  void SetDeviceChangeCallback(void (*cb)(void));
-  void CallDeviceChangeCallback();
+private:
+  static uint16_t lux_to_measured_value(float lux);
+  static float measured_value_to_lux(uint16_t value);
 
-  virtual void HandleAttributeChange(uint16_t cluster_id,
-                                     uint16_t attribute_id,
-                                     uint8_t size,
-                                     uint8_t* value) = 0;
-
-protected:
-  char device_name[kMaxNameSize + 1];
-  uint8_t endpoint_id;
-  bool online;
-  bool identify_in_progress;
-  uint16_t identify_time;
-  void (*device_change_callback)(void);
+  DeviceLightSensor* sensor_device;
+  bool initialized;
 };
 
-#endif // ZIGBEE_DEVICE_H
+#endif // ZIGBEE_LIGHT_SENSOR_H
