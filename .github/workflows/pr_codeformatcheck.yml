@@ -11,8 +11,7 @@ on:
 
 jobs:
   uncrustify_check:
-    # The 'noble' label is important here - 'jammy' runners install an older version of uncrustify which is not compatible
-    runs-on: [self-hosted, linux, x64, noble]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out PR HEAD
