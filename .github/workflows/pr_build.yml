@@ -1,0 +1,156 @@
+name: PR build tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+
+permissions:
+  contents: read
+
+jobs:
+  build_test:
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'Run CI Quick') ||
+      contains(github.event.pull_request.labels.*.name, 'Run CI Common') ||
+      contains(github.event.pull_request.labels.*.name, 'Run CI Matter') ||
+      contains(github.event.pull_request.labels.*.name, 'Run CI GitHub') ||
+      contains(github.event.pull_request.labels.*.name, 'Run CI Full')
+
+    runs-on: ubuntu-latest
+
+    env:
+      ARDUINO_USER_DIR: ${{ github.workspace }}/.arduino-user
+      ARDUINO_DATA_DIR: ${{ github.workspace }}/.arduino-data
+      ARDUINO_DOWNLOADS_DIR: ${{ github.workspace }}/.arduino-downloads
+      ARDUINO_CLI_CACHE_VERSION: v1
+      SILABS_CORE_BASE_VERSION: 4.0.0
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache Arduino CLI
+        id: cache-arduino-cli
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/bin
+          key: ${{ runner.os }}-arduino-cli-${{ env.ARDUINO_CLI_CACHE_VERSION }}
+
+      - name: Install Arduino CLI
+        if: steps.cache-arduino-cli.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+
+      - name: Add Arduino CLI to PATH
+        run: |
+          echo "${GITHUB_WORKSPACE}/bin" >> "${GITHUB_PATH}"
+
+      - name: Check Arduino CLI
+        run: arduino-cli version
+
+      - name: Create Arduino CLI config
+        run: |
+          mkdir -p "${ARDUINO_USER_DIR}" "${ARDUINO_DATA_DIR}" "${ARDUINO_DOWNLOADS_DIR}"
+          cat > arduino-cli.yaml <<EOF
+          directories:
+            user: ${ARDUINO_USER_DIR}
+            data: ${ARDUINO_DATA_DIR}
+            downloads: ${ARDUINO_DOWNLOADS_DIR}
+          EOF
+          arduino-cli config dump --config-file arduino-cli.yaml
+
+      - name: Cache public base Silicon Labs core
+        id: cache-silabs-core
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ARDUINO_DATA_DIR }}/packages
+            ${{ env.ARDUINO_DATA_DIR }}/package_index.json
+            ${{ env.ARDUINO_DATA_DIR }}/package_index.json.sig
+          key: ${{ runner.os }}-silabs-core-${{ env.SILABS_CORE_BASE_VERSION }}
+
+      - name: Install public base Silicon Labs core
+        if: steps.cache-silabs-core.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli core update-index --config-file arduino-cli.yaml
+          arduino-cli core install SiliconLabs:silabs@${SILABS_CORE_BASE_VERSION} --config-file arduino-cli.yaml
+
+      - name: Bootstrap core
+        run: |
+          chmod +x package/bootstrap.sh
+          cd package
+          ./bootstrap.sh
+
+      - name: Replace installed core with PR contents
+        run: |
+          DATA_DIR=$(arduino-cli config dump --config-file arduino-cli.yaml | awk '/data:/ {print $2}')
+          echo "Arduino data dir: ${DATA_DIR}"
+
+          PLATFORM_DIR="${DATA_DIR}/packages/SiliconLabs/hardware/silabs/${SILABS_CORE_BASE_VERSION}"
+          echo "Platform dir: ${PLATFORM_DIR}"
+          test -d "${PLATFORM_DIR}"
+
+          echo "Removing installed core..."
+          rm -rf "${PLATFORM_DIR}"
+          mkdir -p "${PLATFORM_DIR}"
+
+          echo "Copying new core contents..."
+          rsync -a \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "package" \
+            --exclude "test" \
+            --exclude "docs" \
+            --exclude "build" \
+            --exclude "out" \
+            --exclude "bin" \
+            --exclude ".venv" \
+            --exclude "__pycache__" \
+            "${GITHUB_WORKSPACE}/" "${PLATFORM_DIR}/"
+
+          test -f "${PLATFORM_DIR}/platform.txt"
+          test -f "${PLATFORM_DIR}/boards.txt"
+          echo "Copying finished successfully"
+
+      - name: Run quick build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI Quick')
+        run: |
+          cd test/build
+          python -u test_build.py quick
+
+      - name: Run common build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI Common')
+        run: |
+          cd test/build
+          python -u test_build.py common
+
+      - name: Run Matter build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI Matter')
+        run: |
+          cd test/build
+          python -u test_build.py matter
+
+      - name: Run GitHub specific build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI GitHub')
+        run: |
+          cd test/build
+          python -u test_build.py github
+
+      - name: Run full build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI Full')
+        run: |
+          cd test/build
+          python -u test_build.py
