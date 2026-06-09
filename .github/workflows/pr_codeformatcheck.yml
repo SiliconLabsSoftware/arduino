@@ -1,0 +1,71 @@
+name: PR code format check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  uncrustify_check:
+    # The 'noble' label is important here - 'jammy' runners install an older version of uncrustify which is not compatible
+    runs-on: [self-hosted, linux, x64, noble]
+
+    steps:
+      - name: Check out PR HEAD
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install uncrustify
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y uncrustify
+
+      - name: Check uncrustify version
+        run: uncrustify --version
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin "${{ github.base_ref }}"
+
+      - name: Get changed source files
+        id: changed
+        shell: bash
+        run: |
+          mapfile -t files < <(
+            git diff --name-only --diff-filter=ACMR \
+              "origin/${{ github.base_ref }}...HEAD" |
+            grep -E '\.(c|h|cpp|hpp)$' || true
+          )
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "files<<EOF"
+            printf '%s\n' "${files[@]}"
+            echo "EOF"
+            echo "count=${#files[@]}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run uncrustify check
+        if: steps.changed.outputs.count != '0'
+        shell: bash
+        run: |
+          failed=0
+          while IFS= read -r file; do
+            echo "Checking $file"
+            uncrustify -c package/uncrustify.cfg --check "$file" || failed=1
+          done <<< "${{ steps.changed.outputs.files }}"
+
+          exit $failed
+
+      - name: Skip if no C/C++ files changed
+        if: steps.changed.outputs.count == '0'
+        run: echo "No C/C++ files changed in this PR"
