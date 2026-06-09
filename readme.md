@@ -296,9 +296,7 @@ You can also open a *Discussion* if you have general or usability questions, or 
 ## Core development
 
 ### Contributing
-Currently the development is in-house with each release open-sourced at publication.
-We're currently committed and working towards opening up the development for the community - we're going to get there soon - but unfortunately at the moment we can't yet accept community PRs
-into this repository. Until we open things up feel free to submit feature requests, bug reports and ideas for improvement.
+Community contributions are welcome! Please refer to our [contributing guidelines and rules](contributing.md) to get started.
 
 ### Environment setup
 
