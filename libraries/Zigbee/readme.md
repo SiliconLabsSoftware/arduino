@@ -51,6 +51,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | --- | --- |
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
+| `zigbee_lightbulb_color` | Creates a color dimmable light controlled by a Zigbee coordinator. The Nano Matter RGB LED follows the Zigbee On/Off state, brightness, hue, and saturation. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
 | `zigbee_switch` | Creates an On/Off switch that sends On, Off, and Toggle commands to bound lights. |
 | `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
@@ -221,11 +222,12 @@ measurement is written, or Identify starts/stops. Register the callback after th
 appliance `begin()` call, because the underlying endpoint object is created
 during `begin()`.
 
-The generated endpoint configuration currently supports 15 application
+The generated endpoint configuration currently supports 21 application
 endpoints: three On/Off lights, three temperature sensors, three humidity
-sensors, three On/Off switches, and three dimmable lights. It also provides one
-opt-in Time Client endpoint. Use the default `begin()` overload unless you
-specifically need to bind to a known generated endpoint ID.
+sensors, three On/Off switches, three dimmable lights, three light sensors, and
+three color dimmable lights. It also provides one opt-in Time Client endpoint.
+Use the default `begin()` overload unless you specifically need to bind to a
+known generated endpoint ID.
 
 ## Identifying a Device
 
@@ -358,6 +360,94 @@ void loop()
   } else {
     analogWrite(LED_BUILTIN, 0);
   }
+}
+```
+
+## ZigbeeColorLightbulb
+
+Header:
+
+```cpp
+#include <ZigbeeColorLightbulb.h>
+```
+
+Creates a color dimmable light endpoint. It inherits the
+`ZigbeeDimmableLightbulb` On/Off and brightness API and adds Color Control
+server support for hue and saturation. Remote color changes update the local
+color state, and local calls update the Zigbee Color Control attributes.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_onoff(bool value);
+bool get_onoff();
+void toggle();
+
+void set_level(uint8_t level);
+uint8_t get_level();
+void set_brightness(uint8_t percent);
+uint8_t get_brightness();
+
+void set_hue(uint8_t hue);
+uint8_t get_hue();
+void set_saturation(uint8_t saturation);
+uint8_t get_saturation();
+void set_color(uint8_t hue, uint8_t saturation);
+
+void set_true_hue(uint16_t true_hue);
+uint16_t get_true_hue();
+void set_saturation_percent(uint8_t saturation);
+uint8_t get_saturation_percent();
+
+void get_rgb(uint8_t* r, uint8_t* g, uint8_t* b);
+void get_rgb_raw(uint8_t* r, uint8_t* g, uint8_t* b);
+void set_rgb(uint8_t r, uint8_t g, uint8_t b);
+void boost_saturation(uint8_t amount);
+```
+
+`set_hue()` and `get_hue()` use raw Zigbee Color Control values from 0-254.
+`set_true_hue()` and `get_true_hue()` use degrees from 0-360.
+`set_saturation()` and `get_saturation()` use raw Zigbee values from 0-254.
+`set_saturation_percent()` and `get_saturation_percent()` use percent values
+from 0-100.
+
+`get_rgb()` returns the current color converted to RGB and scaled by the current
+brightness. `get_rgb_raw()` returns the color at full brightness. `set_rgb()`
+converts the supplied RGB value to hue, saturation, and brightness.
+
+Example:
+
+```cpp
+ZigbeeColorLightbulb bulb;
+
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN_1, OUTPUT);
+  pinMode(LED_BUILTIN_2, OUTPUT);
+  Zigbee.begin();
+  bulb.begin();
+  bulb.set_brightness(100);
+  bulb.set_saturation_percent(100);
+}
+
+void loop()
+{
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+
+  if (bulb.get_onoff()) {
+    bulb.get_rgb(&r, &g, &b);
+    analogWrite(LED_BUILTIN, r);
+    analogWrite(LED_BUILTIN_1, g);
+    analogWrite(LED_BUILTIN_2, b);
+  }
+  delay(50);
 }
 ```
 
