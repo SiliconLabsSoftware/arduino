@@ -25,6 +25,7 @@
 void sli_zigbee_af_event_init(void);
 void sli_zigbee_af_zcl_framework_core_init_events_callback(uint8_t init_level);
 void sli_zigbee_af_service_discovery_init_events_callback(uint8_t init_level);
+void sli_zigbee_af_color_control_server_init_callback(uint8_t init_level);
 void sl_zigbee_af_green_power_client_init_cb(uint8_t init_level);
 void sl_zigbee_af_interpan_init_cb(uint8_t init_level);
 void sli_zigbee_af_network_steering_init_callback(uint8_t init_level);

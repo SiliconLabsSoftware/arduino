@@ -28,6 +28,7 @@ component:
   - id: zigbee_groups_server
   - id: zigbee_on_off
   - id: zigbee_level_control
+  - id: zigbee_color_control_server
   - id: zigbee_scenes
   - id: zigbee_reporting
   - id: zigbee_counters
