@@ -19,6 +19,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'Run CI Quick') ||
       contains(github.event.pull_request.labels.*.name, 'Run CI Common') ||
       contains(github.event.pull_request.labels.*.name, 'Run CI Matter') ||
+      contains(github.event.pull_request.labels.*.name, 'Run CI Zigbee') ||
       contains(github.event.pull_request.labels.*.name, 'Run CI GitHub') ||
       contains(github.event.pull_request.labels.*.name, 'Run CI Full')
 
@@ -142,6 +143,12 @@ jobs:
         run: |
           cd test/build
           python -u test_build.py matter
+
+      - name: Run Zigbee build test
+        if: contains(github.event.pull_request.labels.*.name, 'Run CI Zigbee')
+        run: |
+          cd test/build
+          python -u test_build.py zigbee
 
       - name: Run GitHub specific build test
         if: contains(github.event.pull_request.labels.*.name, 'Run CI GitHub')
