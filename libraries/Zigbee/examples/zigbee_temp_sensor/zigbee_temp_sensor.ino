@@ -20,7 +20,7 @@
 
 // If there's no built-in button set a pin where a button is connected
 #ifndef BTN_BUILTIN
-#define BTN_BUILTIN PA0
+#define BTN_BUILTIN D0
 #endif
 
 ZigbeeTemperatureSensor zigbee_temp_sensor;

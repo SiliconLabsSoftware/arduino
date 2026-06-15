@@ -20,6 +20,11 @@
 #include <Zigbee.h>
 #include <ZigbeeSwitch.h>
 
+// If there's no built-in button set a pin where a button is connected
+#ifndef BTN_BUILTIN
+#define BTN_BUILTIN D0
+#endif
+
 ZigbeeSwitch zigbee_switch;
 
 const uint8_t dim_rate_percent = 50;
@@ -108,7 +113,6 @@ void setup()
   Serial.begin(115200);
   Serial.println("Zigbee dimmer switch");
 
-#ifdef BTN_BUILTIN
   pinMode(BTN_BUILTIN, INPUT_PULLUP);
   if (digitalRead(BTN_BUILTIN) == LOW) {
     Serial.println("Factory resetting...");
@@ -118,7 +122,6 @@ void setup()
     }
     Zigbee.factoryReset();
   }
-#endif
 
   Zigbee.setVendorName("Arduino");
   Zigbee.setProductName("Zigbee Dimmer Switch");
