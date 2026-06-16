@@ -276,6 +276,7 @@ testlist_matter = {
 
 testlist_zigbee = {
     "../../libraries/Zigbee/examples/zigbee_lightbulb/zigbee_lightbulb.ino":                                           all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_on_off_outlet/zigbee_on_off_outlet.ino":                                   all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_lightbulb_dimmable/zigbee_lightbulb_dimmable.ino":                         all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_lightbulb_color/zigbee_lightbulb_color.ino":                               all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_lightbulb_identify/zigbee_lightbulb_identify.ino":                         all_zigbee,
@@ -302,6 +303,7 @@ testlist_github = {
      "../../libraries/Matter/examples/matter_sensor_and_bulb/matter_sensor_and_bulb.ino":                               all_matter,
      "../../libraries/Matter/examples/nano_matter_lightbulb_color/nano_matter_lightbulb_color.ino":                     nano_matter_matter,
      "../../libraries/Zigbee/examples/zigbee_lightbulb/zigbee_lightbulb.ino":                                           nano_matter_zigbee,
+     "../../libraries/Zigbee/examples/zigbee_on_off_outlet/zigbee_on_off_outlet.ino":                                   nano_matter_zigbee,
      "../../libraries/Zigbee/examples/zigbee_lightbulb_color/zigbee_lightbulb_color.ino":                               nano_matter_zigbee,
      "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 nano_matter_zigbee,
 }
