@@ -169,7 +169,7 @@
 
  
 
-#define ZCL_GENERATED_CLUSTER_COUNT (136)
+#define ZCL_GENERATED_CLUSTER_COUNT (160)
 	
 // This is an array of sl_zigbee_af_cluster_t structures.
 #define ZCL_GENERATED_CLUSTERS { \
@@ -305,14 +305,38 @@
 	  { 0x0300, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[50]), 31, 50, CLUSTER_MASK_SERVER, NULL }, /* 129, Endpoint Id: 21, Cluster: Color Control, Side: server*/ \
 	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[94]), 1, 2, CLUSTER_MASK_CLIENT, NULL }, /* 130, Endpoint Id: 21, Cluster: Occupancy Sensing, Side: client*/ \
 	  { 0x1000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[95]), 1, 2, CLUSTER_MASK_SERVER, NULL }, /* 131, Endpoint Id: 21, Cluster: ZLL Commissioning, Side: server*/ \
-	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 132, Endpoint Id: 240, Cluster: Basic, Side: server*/ \
-	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 133, Endpoint Id: 240, Cluster: Identify, Side: server*/ \
-	  { 0x000A, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[36]), 1, 0, CLUSTER_MASK_CLIENT, NULL }, /* 134, Endpoint Id: 240, Cluster: Time, Side: client*/ \
-	  { 0x0021, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[42]), 8, 297, CLUSTER_MASK_CLIENT, NULL } /* 135, Endpoint Id: 242, Cluster: Green Power, Side: client*/ \
+	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 132, Endpoint Id: 22, Cluster: Basic, Side: server*/ \
+	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 133, Endpoint Id: 22, Cluster: Identify, Side: server*/ \
+	  { 0x0004, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[16]), 2, 3, CLUSTER_MASK_SERVER, NULL }, /* 134, Endpoint Id: 22, Cluster: Groups, Side: server*/ \
+	  { 0x0005, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[18]), 6, 8, CLUSTER_MASK_SERVER, NULL }, /* 135, Endpoint Id: 22, Cluster: Scenes, Side: server*/ \
+	  { 0x0006, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[25]), 5, 8, CLUSTER_MASK_SERVER, NULL }, /* 136, Endpoint Id: 22, Cluster: On/off, Side: server*/ \
+	  { 0x0019, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[37]), 5, 19, CLUSTER_MASK_CLIENT, NULL }, /* 137, Endpoint Id: 22, Cluster: Over the Air Bootloading, Side: client*/ \
+	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[94]), 1, 2, CLUSTER_MASK_CLIENT, NULL }, /* 138, Endpoint Id: 22, Cluster: Occupancy Sensing, Side: client*/ \
+	  { 0x1000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[95]), 1, 2, CLUSTER_MASK_SERVER, NULL }, /* 139, Endpoint Id: 22, Cluster: ZLL Commissioning, Side: server*/ \
+	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 140, Endpoint Id: 23, Cluster: Basic, Side: server*/ \
+	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 141, Endpoint Id: 23, Cluster: Identify, Side: server*/ \
+	  { 0x0004, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[16]), 2, 3, CLUSTER_MASK_SERVER, NULL }, /* 142, Endpoint Id: 23, Cluster: Groups, Side: server*/ \
+	  { 0x0005, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[18]), 6, 8, CLUSTER_MASK_SERVER, NULL }, /* 143, Endpoint Id: 23, Cluster: Scenes, Side: server*/ \
+	  { 0x0006, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[25]), 5, 8, CLUSTER_MASK_SERVER, NULL }, /* 144, Endpoint Id: 23, Cluster: On/off, Side: server*/ \
+	  { 0x0019, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[37]), 5, 19, CLUSTER_MASK_CLIENT, NULL }, /* 145, Endpoint Id: 23, Cluster: Over the Air Bootloading, Side: client*/ \
+	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[94]), 1, 2, CLUSTER_MASK_CLIENT, NULL }, /* 146, Endpoint Id: 23, Cluster: Occupancy Sensing, Side: client*/ \
+	  { 0x1000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[95]), 1, 2, CLUSTER_MASK_SERVER, NULL }, /* 147, Endpoint Id: 23, Cluster: ZLL Commissioning, Side: server*/ \
+	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 148, Endpoint Id: 24, Cluster: Basic, Side: server*/ \
+	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 149, Endpoint Id: 24, Cluster: Identify, Side: server*/ \
+	  { 0x0004, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[16]), 2, 3, CLUSTER_MASK_SERVER, NULL }, /* 150, Endpoint Id: 24, Cluster: Groups, Side: server*/ \
+	  { 0x0005, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[18]), 6, 8, CLUSTER_MASK_SERVER, NULL }, /* 151, Endpoint Id: 24, Cluster: Scenes, Side: server*/ \
+	  { 0x0006, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[25]), 5, 8, CLUSTER_MASK_SERVER, NULL }, /* 152, Endpoint Id: 24, Cluster: On/off, Side: server*/ \
+	  { 0x0019, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[37]), 5, 19, CLUSTER_MASK_CLIENT, NULL }, /* 153, Endpoint Id: 24, Cluster: Over the Air Bootloading, Side: client*/ \
+	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[94]), 1, 2, CLUSTER_MASK_CLIENT, NULL }, /* 154, Endpoint Id: 24, Cluster: Occupancy Sensing, Side: client*/ \
+	  { 0x1000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[95]), 1, 2, CLUSTER_MASK_SERVER, NULL }, /* 155, Endpoint Id: 24, Cluster: ZLL Commissioning, Side: server*/ \
+	  { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 14, 0, CLUSTER_MASK_SERVER, NULL }, /* 156, Endpoint Id: 240, Cluster: Basic, Side: server*/ \
+	  { 0x0003, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[14]), 2, 4, CLUSTER_MASK_SERVER, NULL }, /* 157, Endpoint Id: 240, Cluster: Identify, Side: server*/ \
+	  { 0x000A, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[36]), 1, 0, CLUSTER_MASK_CLIENT, NULL }, /* 158, Endpoint Id: 240, Cluster: Time, Side: client*/ \
+	  { 0x0021, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[42]), 8, 297, CLUSTER_MASK_CLIENT, NULL } /* 159, Endpoint Id: 242, Cluster: Green Power, Side: client*/ \
 	 }
 
  
-#define ZCL_GENERATED_ENDPOINT_TYPE_COUNT (23)
+#define ZCL_GENERATED_ENDPOINT_TYPE_COUNT (26)
 
 // This is an array of sl_zigbee_af_endpoint_type_t structures.
 #define ZCL_GENERATED_ENDPOINT_TYPES { \
@@ -337,8 +361,11 @@
 	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[102])), 10, 103 }, \
 	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[112])), 10, 103 }, \
 	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[122])), 10, 103 }, \
-	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[132])), 3, 4 }, \
-	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[135])), 1, 297 }, \
+	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[132])), 8, 46 }, \
+	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[140])), 8, 46 }, \
+	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[148])), 8, 46 }, \
+	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[156])), 3, 4 }, \
+	  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[159])), 1, 297 }, \
 	 } 
 // Largest attribute size is needed for various buffers
 #define ZCL_ATTRIBUTE_LARGEST (255)
@@ -347,10 +374,10 @@
 #define ZCL_ATTRIBUTE_SINGLETONS_SIZE (193)
 
 // Total size of attribute storage
-#define ZCL_ATTRIBUTE_MAX_SIZE (1270)
+#define ZCL_ATTRIBUTE_MAX_SIZE (1408)
 
 // Number of fixed endpoints	
-#define ZCL_FIXED_ENDPOINT_COUNT (23)
+#define ZCL_FIXED_ENDPOINT_COUNT (26)
 
 // Array of endpoints that are supported, the data inside the array is the
 // endpoint number.
@@ -376,12 +403,18 @@
   19, \
   20, \
   21, \
+  22, \
+  23, \
+  24, \
   240, \
   242 \
 }
 
 // Array of profile ids
 #define ZCL_FIXED_PROFILE_IDS { \
+  260, \
+  260, \
+  260, \
   260, \
   260, \
   260, \
@@ -430,12 +463,18 @@
   258, \
   258, \
   258, \
+  266, \
+  266, \
+  266, \
   5, \
   97 \
 }
 
 // Array of device versions
 #define ZCL_FIXED_DEVICE_VERSIONS { \
+  1, \
+  1, \
+  1, \
   1, \
   1, \
   1, \
@@ -485,11 +524,17 @@
   19, \
   20, \
   21, \
-  22 \
+  22, \
+  23, \
+  24, \
+  25 \
 }
 
 // Array of networks supported on each endpoint
 #define ZCL_FIXED_NETWORKS { \
+  0, \
+  0, \
+  0, \
   0, \
   0, \
   0, \
@@ -619,14 +664,14 @@
 #define ZCL_GENERATED_CLUSTER_MANUFACTURER_CODE_COUNT (0)
 #define ZCL_GENERATED_CLUSTER_MANUFACTURER_CODES { \
   { 0x00, 0x00 }  \
-																																																																																																																																								 } 
+																																																																																																																																																																 } 
 // This is an array of sl_zigbee_af_manufacturer_code_entry_t structures for attributes.
 #define ZCL_GENERATED_ATTRIBUTE_MANUFACTURER_CODE_COUNT (0)
 #define ZCL_GENERATED_ATTRIBUTE_MANUFACTURER_CODES { \
   { 0x00, 0x00 } \
 																																																																																																 } 
 // Array of sl_zigbee_af_plugin_reporting_entry_t structures.
-#define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS_TABLE_SIZE (63)
+#define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS_TABLE_SIZE (66)
 #define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS { \
   { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0001, 0x0006, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 1, Cluster: On/off, Attribute: on/off */ \
 	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0002, 0x0006, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 2, Cluster: On/off, Attribute: on/off */ \
@@ -691,6 +736,9 @@
 	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0015, 0x0300, 0x0001, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 21, Cluster: Color Control, Attribute: current saturation */ \
 	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0015, 0x0300, 0x0003, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 21, Cluster: Color Control, Attribute: current x */ \
 	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0015, 0x0300, 0x0004, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 21, Cluster: Color Control, Attribute: current y */ \
+	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0016, 0x0006, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 22, Cluster: On/off, Attribute: on/off */ \
+	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0017, 0x0006, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 23, Cluster: On/off, Attribute: on/off */ \
+	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0018, 0x0006, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 1, 65534, 0 }, /* Endpoint Id: 24, Cluster: On/off, Attribute: on/off */ \
 	 } 
 
 #define SL_ZIGBEE_ZCL_MANUFACTURER_CODE 0x1002
@@ -716,23 +764,23 @@
 #define ZCL_USING_ZLL_COMMISSIONING_CLUSTER_SERVER
 
 // Cluster Counts
-#define SL_ZIGBEE_ZCL_BASIC_CLUSTER_SERVER_ENDPOINT_COUNT (22)
-#define SL_ZIGBEE_ZCL_IDENTIFY_CLUSTER_SERVER_ENDPOINT_COUNT (22)
-#define SL_ZIGBEE_ZCL_GROUPS_CLUSTER_SERVER_ENDPOINT_COUNT (9)
-#define SL_ZIGBEE_ZCL_SCENES_CLUSTER_SERVER_ENDPOINT_COUNT (9)
+#define SL_ZIGBEE_ZCL_BASIC_CLUSTER_SERVER_ENDPOINT_COUNT (25)
+#define SL_ZIGBEE_ZCL_IDENTIFY_CLUSTER_SERVER_ENDPOINT_COUNT (25)
+#define SL_ZIGBEE_ZCL_GROUPS_CLUSTER_SERVER_ENDPOINT_COUNT (12)
+#define SL_ZIGBEE_ZCL_SCENES_CLUSTER_SERVER_ENDPOINT_COUNT (12)
 #define SL_ZIGBEE_ZCL_ON_OFF_CLUSTER_CLIENT_ENDPOINT_COUNT (3)
-#define SL_ZIGBEE_ZCL_ON_OFF_CLUSTER_SERVER_ENDPOINT_COUNT (9)
+#define SL_ZIGBEE_ZCL_ON_OFF_CLUSTER_SERVER_ENDPOINT_COUNT (12)
 #define SL_ZIGBEE_ZCL_LEVEL_CONTROL_CLUSTER_CLIENT_ENDPOINT_COUNT (3)
 #define SL_ZIGBEE_ZCL_LEVEL_CONTROL_CLUSTER_SERVER_ENDPOINT_COUNT (6)
 #define SL_ZIGBEE_ZCL_TIME_CLUSTER_CLIENT_ENDPOINT_COUNT (1)
-#define SL_ZIGBEE_ZCL_OTA_BOOTLOAD_CLUSTER_CLIENT_ENDPOINT_COUNT (21)
+#define SL_ZIGBEE_ZCL_OTA_BOOTLOAD_CLUSTER_CLIENT_ENDPOINT_COUNT (24)
 #define SL_ZIGBEE_ZCL_GREEN_POWER_CLUSTER_CLIENT_ENDPOINT_COUNT (1)
 #define SL_ZIGBEE_ZCL_COLOR_CONTROL_CLUSTER_SERVER_ENDPOINT_COUNT (3)
 #define SL_ZIGBEE_ZCL_ILLUM_MEASUREMENT_CLUSTER_SERVER_ENDPOINT_COUNT (3)
 #define SL_ZIGBEE_ZCL_TEMP_MEASUREMENT_CLUSTER_SERVER_ENDPOINT_COUNT (3)
 #define SL_ZIGBEE_ZCL_RELATIVE_HUMIDITY_MEASUREMENT_CLUSTER_SERVER_ENDPOINT_COUNT (3)
-#define SL_ZIGBEE_ZCL_OCCUPANCY_SENSING_CLUSTER_CLIENT_ENDPOINT_COUNT (9)
-#define SL_ZIGBEE_ZCL_ZLL_COMMISSIONING_CLUSTER_SERVER_ENDPOINT_COUNT (9)
+#define SL_ZIGBEE_ZCL_OCCUPANCY_SENSING_CLUSTER_CLIENT_ENDPOINT_COUNT (12)
+#define SL_ZIGBEE_ZCL_ZLL_COMMISSIONING_CLUSTER_SERVER_ENDPOINT_COUNT (12)
 
 // All Enabled Cluster Attributes
 #define ZCL_USING_BASIC_CLUSTER_VERSION_ATTRIBUTE

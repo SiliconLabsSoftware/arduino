@@ -5,7 +5,8 @@
 The Arduino Zigbee library lets users create Zigbee 3.0 smart home
 devices on Silicon Labs hardware. It wraps the Silicon Labs EmberZNet stack and
 the generated Zigbee endpoint configuration with Arduino-style classes for
-lights, switches, temperature sensors, humidity sensors, and light sensors.
+lights, outlets, switches, temperature sensors, humidity sensors, and light
+sensors.
 
 The library is intended for Silicon Labs based Arduino boards with the
 Zigbee protocol stack selected.
@@ -50,6 +51,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | Example | Description |
 | --- | --- |
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
+| `zigbee_on_off_outlet` | Creates an On/Off plug-in unit controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
 | `zigbee_lightbulb_color` | Creates a color dimmable light controlled by a Zigbee coordinator. The Nano Matter RGB LED follows the Zigbee On/Off state, brightness, hue, and saturation. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
