@@ -151,6 +151,10 @@ void sli_zigbee_af_green_power_client_stack_status_callback(
       // Stack status
       sl_status_t status)
 ;
+void sl_zigbee_af_ias_zone_server_stack_status_cb(
+      // Stack status
+      sl_status_t status)
+;
 void sli_zigbee_af_network_creator_security_stack_status_callback(
       // Stack status
       sl_status_t status)

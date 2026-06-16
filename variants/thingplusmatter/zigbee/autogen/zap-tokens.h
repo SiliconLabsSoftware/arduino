@@ -20,7 +20,7 @@
 
 #include "af-types.h"
 
-#define NUM_PERSISTED_ZCL_ATTRIBUTES (18)
+#define NUM_PERSISTED_ZCL_ATTRIBUTES (24)
 
 
 // Identifier tags for tokens
@@ -78,12 +78,32 @@
 // Creator for attribute: on/off, endpoint: 24
 #define CREATOR_ON_OFF_24 0xB011
 #define NVM3KEY_ON_OFF_24 (NVM3KEY_DOMAIN_ZIGBEE | 0xB011)
+// Creator for attribute: IAS CIE address, endpoint: 25
+#define CREATOR_IAS_CIE_ADDRESS_25 0xB012
+#define NVM3KEY_IAS_CIE_ADDRESS_25 (NVM3KEY_DOMAIN_ZIGBEE | 0xB012)
+// Creator for attribute: Zone ID, endpoint: 25
+#define CREATOR_ZONE_ID_25 0xB013
+#define NVM3KEY_ZONE_ID_25 (NVM3KEY_DOMAIN_ZIGBEE | 0xB013)
+// Creator for attribute: IAS CIE address, endpoint: 26
+#define CREATOR_IAS_CIE_ADDRESS_26 0xB014
+#define NVM3KEY_IAS_CIE_ADDRESS_26 (NVM3KEY_DOMAIN_ZIGBEE | 0xB014)
+// Creator for attribute: Zone ID, endpoint: 26
+#define CREATOR_ZONE_ID_26 0xB015
+#define NVM3KEY_ZONE_ID_26 (NVM3KEY_DOMAIN_ZIGBEE | 0xB015)
+// Creator for attribute: IAS CIE address, endpoint: 27
+#define CREATOR_IAS_CIE_ADDRESS_27 0xB016
+#define NVM3KEY_IAS_CIE_ADDRESS_27 (NVM3KEY_DOMAIN_ZIGBEE | 0xB016)
+// Creator for attribute: Zone ID, endpoint: 27
+#define CREATOR_ZONE_ID_27 0xB017
+#define NVM3KEY_ZONE_ID_27 (NVM3KEY_DOMAIN_ZIGBEE | 0xB017)
 
 
 // Types for the tokens
 #ifdef DEFINETYPES
 typedef uint8_t tokType_on_off;
         typedef uint8_t tokType_current_level;
+        typedef uint8_t tokType_ias_cie_address[8];
+typedef uint8_t tokType_zone_id;
         #endif // DEFINETYPES
 
 // Actual token definitions
@@ -107,11 +127,17 @@ DEFINE_BASIC_TOKEN(CURRENT_LEVEL_21, tokType_current_level, 0x00)
 DEFINE_BASIC_TOKEN(ON_OFF_22, tokType_on_off, 0x0)
 DEFINE_BASIC_TOKEN(ON_OFF_23, tokType_on_off, 0x0)
 DEFINE_BASIC_TOKEN(ON_OFF_24, tokType_on_off, 0x0)
+DEFINE_BASIC_TOKEN(IAS_CIE_ADDRESS_25, tokType_ias_cie_address, { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF })
+DEFINE_BASIC_TOKEN(ZONE_ID_25, tokType_zone_id, 0xFF)
+DEFINE_BASIC_TOKEN(IAS_CIE_ADDRESS_26, tokType_ias_cie_address, { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF })
+DEFINE_BASIC_TOKEN(ZONE_ID_26, tokType_zone_id, 0xFF)
+DEFINE_BASIC_TOKEN(IAS_CIE_ADDRESS_27, tokType_ias_cie_address, { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF })
+DEFINE_BASIC_TOKEN(ZONE_ID_27, tokType_zone_id, 0xFF)
 #endif // DEFINETOKENS
 
 // Macro snippet that loads all the attributes from tokens
 #define GENERATED_TOKEN_LOADER(endpoint) do { \
-  uint8_t ptr[1]; \
+  uint8_t ptr[8]; \
   uint8_t curNetwork = sl_zigbee_get_current_network(); \
   uint8_t epNetwork; \
   epNetwork = sl_zigbee_af_network_index_from_endpoint(1); \
@@ -186,12 +212,33 @@ DEFINE_BASIC_TOKEN(ON_OFF_24, tokType_on_off, 0x0)
     halCommonGetToken((tokType_on_off *)ptr, TOKEN_ON_OFF_24); \
     sli_zigbee_af_write_attribute(24, ZCL_ON_OFF_CLUSTER_ID, ZCL_ON_OFF_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_BOOLEAN_ATTRIBUTE_TYPE, true, false, false); \
   } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(25); \
+  if(25 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_ias_cie_address *)ptr, TOKEN_IAS_CIE_ADDRESS_25); \
+    sli_zigbee_af_write_attribute(25, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_IAS_CIE_ADDRESS_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_IEEE_ADDRESS_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_zone_id *)ptr, TOKEN_ZONE_ID_25); \
+    sli_zigbee_af_write_attribute(25, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_ZONE_ID_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+  } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(26); \
+  if(26 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_ias_cie_address *)ptr, TOKEN_IAS_CIE_ADDRESS_26); \
+    sli_zigbee_af_write_attribute(26, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_IAS_CIE_ADDRESS_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_IEEE_ADDRESS_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_zone_id *)ptr, TOKEN_ZONE_ID_26); \
+    sli_zigbee_af_write_attribute(26, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_ZONE_ID_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+  } \
+  epNetwork = sl_zigbee_af_network_index_from_endpoint(27); \
+  if(27 == (endpoint) || (SL_ZIGBEE_BROADCAST_ENDPOINT == (endpoint) && epNetwork == curNetwork)) { \
+    halCommonGetToken((tokType_ias_cie_address *)ptr, TOKEN_IAS_CIE_ADDRESS_27); \
+    sli_zigbee_af_write_attribute(27, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_IAS_CIE_ADDRESS_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_IEEE_ADDRESS_ATTRIBUTE_TYPE, true, false, false); \
+    halCommonGetToken((tokType_zone_id *)ptr, TOKEN_ZONE_ID_27); \
+    sli_zigbee_af_write_attribute(27, ZCL_IAS_ZONE_CLUSTER_ID, ZCL_ZONE_ID_ATTRIBUTE_ID, CLUSTER_MASK_SERVER, SL_ZIGBEE_AF_NULL_MANUFACTURER_CODE, (uint8_t*)ptr, ZCL_INT8U_ATTRIBUTE_TYPE, true, false, false); \
+  } \
 } while (false)
 
 // Macro snippet that saves the attribute to token
 #define GENERATED_TOKEN_SAVER do { \
-  uint8_t allZeroData[1]; \
-  memset(allZeroData, 0, 1);  \
+  uint8_t allZeroData[8]; \
+  memset(allZeroData, 0, 8);  \
   if ( data == NULL ) { data = allZeroData; } \
 if ( 1 == endpoint ) { \
     if ( 0x0006 == clusterId ) { \
@@ -287,6 +334,30 @@ if ( 24 == endpoint ) { \
     if ( 0x0006 == clusterId ) { \
 if ( 0x0000 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
           halCommonSetToken(TOKEN_ON_OFF_24, data); \
+    } \
+} \
+if ( 25 == endpoint ) { \
+    if ( 0x0500 == clusterId ) { \
+if ( 0x0010 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_IAS_CIE_ADDRESS_25, data); \
+if ( 0x0011 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ZONE_ID_25, data); \
+    } \
+} \
+if ( 26 == endpoint ) { \
+    if ( 0x0500 == clusterId ) { \
+if ( 0x0010 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_IAS_CIE_ADDRESS_26, data); \
+if ( 0x0011 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ZONE_ID_26, data); \
+    } \
+} \
+if ( 27 == endpoint ) { \
+    if ( 0x0500 == clusterId ) { \
+if ( 0x0010 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_IAS_CIE_ADDRESS_27, data); \
+if ( 0x0011 == metadata->attributeId && 0x0000 == sl_zigbee_af_get_mfg_code(metadata) && !sl_zigbee_af_attribute_is_client(metadata) ) \
+          halCommonSetToken(TOKEN_ZONE_ID_27, data); \
     } \
 } \
 } while (false)

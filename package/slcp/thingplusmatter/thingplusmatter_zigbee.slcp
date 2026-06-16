@@ -28,6 +28,7 @@ component:
   - id: zigbee_scenes
   - id: zigbee_reporting
   - id: zigbee_counters
+  - id: zigbee_ias_zone_server
 
   # ZLL
   - id: zigbee_zll
@@ -135,6 +136,8 @@ configuration:
     value: 3
   - name: SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_TRY_ALL_KEYS
     value: 1
+  - name: SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ZONE_TYPE
+    value: SL_ZIGBEE_ZCL_IAS_ZONE_TYPE_CONTACT_SWITCH
   - name: SL_PSA_KEY_USER_SLOT_COUNT
     value: "0"
     condition:

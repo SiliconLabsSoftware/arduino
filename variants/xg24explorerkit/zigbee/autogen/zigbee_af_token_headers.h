@@ -21,6 +21,8 @@
 // *** Generated file. Do not edit! ***
 //
 
+#include "app/framework/plugin/ias-zone-server/ias-zone-server-tokens.h"
+
 #include "app/framework/plugin/reporting/reporting-tokens.h"
 
 #include "app/framework/plugin/scenes/scenes-tokens.h"

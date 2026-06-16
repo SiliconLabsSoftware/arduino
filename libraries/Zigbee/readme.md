@@ -5,8 +5,8 @@
 The Arduino Zigbee library lets users create Zigbee 3.0 smart home
 devices on Silicon Labs hardware. It wraps the Silicon Labs EmberZNet stack and
 the generated Zigbee endpoint configuration with Arduino-style classes for
-lights, outlets, switches, temperature sensors, humidity sensors, and light
-sensors.
+lights, outlets, contact sensors, switches, temperature sensors, humidity
+sensors, and light sensors.
 
 The library is intended for Silicon Labs based Arduino boards with the
 Zigbee protocol stack selected.
@@ -52,6 +52,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | --- | --- |
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_on_off_outlet` | Creates an On/Off plug-in unit controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
+| `zigbee_contact_sensor` | Creates an IAS Zone contact sensor controlled by a Zigbee coordinator. The onboard button drives the reported contact state and the onboard LED follows it. |
 | `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
 | `zigbee_lightbulb_color` | Creates a color dimmable light controlled by a Zigbee coordinator. The Nano Matter RGB LED follows the Zigbee On/Off state, brightness, hue, and saturation. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
@@ -224,10 +225,11 @@ measurement is written, or Identify starts/stops. Register the callback after th
 appliance `begin()` call, because the underlying endpoint object is created
 during `begin()`.
 
-The generated endpoint configuration currently supports 21 application
+The generated endpoint configuration currently supports 27 application
 endpoints: three On/Off lights, three temperature sensors, three humidity
-sensors, three On/Off switches, three dimmable lights, three light sensors, and
-three color dimmable lights. It also provides one opt-in Time Client endpoint.
+sensors, three On/Off switches, three dimmable lights, three light sensors,
+three color dimmable lights, three On/Off plug-in units, and three contact
+sensors. It also provides one opt-in Time Client endpoint.
 Use the default `begin()` overload unless you specifically need to bind to a
 known generated endpoint ID.
 
@@ -306,6 +308,53 @@ bulb = true;
 
 if (bulb) {
   // Bulb state is on.
+}
+```
+
+## ZigbeeOnOffPluginUnit
+
+Header:
+
+```cpp
+#include <ZigbeeOnOffPluginUnit.h>
+```
+
+Creates an On/Off plug-in unit endpoint for outlets and smart plugs. It
+inherits the `ZigbeeLightbulb` On/Off API and behaves like an outlet from the
+coordinator side. Remote On, Off, and Toggle commands update the local state,
+and local calls update the Zigbee On/Off attribute.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_onoff(bool value);
+bool get_onoff();
+void toggle();
+
+operator bool();
+void operator=(bool state);
+```
+
+Example:
+
+```cpp
+ZigbeeOnOffPluginUnit outlet;
+
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  Zigbee.begin();
+  outlet.begin();
+}
+
+void loop()
+{
+  digitalWrite(LED_BUILTIN, outlet.get_onoff() ? LED_BUILTIN_ACTIVE : LED_BUILTIN_INACTIVE);
+  delay(50);
 }
 ```
 
@@ -511,6 +560,70 @@ void loop()
   }
 
   last_button_state = button_state;
+  delay(50);
+}
+```
+
+## ZigbeeContact
+
+Header:
+
+```cpp
+#include <ZigbeeContact.h>
+```
+
+Creates an IAS Zone contact sensor endpoint. The contact state is reported to
+the coordinator using the IAS Zone cluster.
+
+The raw state API follows IAS semantics: `false` means contact detected
+(closed), and `true` means contact lost (open). The convenience `set_open()`,
+`set_closed()`, `is_open()`, and `is_closed()` helpers are usually easier to
+read in sketches.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_state(bool state);
+bool get_state();
+
+bool is_open();
+void set_open();
+bool is_closed();
+void set_closed();
+
+operator bool();
+void operator=(bool state);
+```
+
+Example:
+
+```cpp
+ZigbeeContact contact;
+
+void setup()
+{
+  pinMode(BTN_BUILTIN, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
+  Zigbee.begin();
+  contact.begin();
+  contact.set_closed();
+}
+
+void loop()
+{
+  bool open = (digitalRead(BTN_BUILTIN) == LOW);
+
+  if (open) {
+    contact.set_open();
+  } else {
+    contact.set_closed();
+  }
+
+  digitalWrite(LED_BUILTIN, open ? LED_BUILTIN_ACTIVE : LED_BUILTIN_INACTIVE);
   delay(50);
 }
 ```
