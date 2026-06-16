@@ -63,6 +63,11 @@ enum ZigbeeEndpointType {
   ZIGBEE_ENDPOINT_TYPE_COUNT = 9
 };
 
+enum ZigbeeDeviceType {
+  ZIGBEE_DEVICE_TYPE_ROUTER = 0,
+  ZIGBEE_DEVICE_TYPE_END_DEVICE = 1
+};
+
 class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3u;
@@ -72,6 +77,8 @@ public:
   static constexpr uint8_t kMaxPairingChannel = 26u;
   static constexpr uint32_t kAllPairingChannelsMask = 0x07FFF800UL;
 
+  ZigbeeClass();
+
   void begin();
 
   void setVendorName(const char* name);
@@ -79,6 +86,8 @@ public:
   void setFirmwareVersion(const char* version);
   void setFirmwareVersion(uint32_t file_version);
   bool setPairingChannel(uint8_t channel);
+  bool setDeviceType(ZigbeeDeviceType device_type);
+  ZigbeeDeviceType getDeviceType();
 
   bool isJoinedToNetwork();
   uint8_t getChannel();
@@ -102,6 +111,7 @@ private:
   bool started;
   bool endpoint_allocated[kApplicationEndpointCount];
   bool time_client_endpoint_allocated;
+  ZigbeeDeviceType device_type;
 };
 
 extern ZigbeeClass Zigbee;
