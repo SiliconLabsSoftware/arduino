@@ -59,13 +59,14 @@ enum ZigbeeEndpointType {
   ZIGBEE_LIGHT_SENSOR = 5,
   ZIGBEE_COLOR_LIGHT = 6,
   ZIGBEE_ON_OFF_PLUGIN_UNIT = 7,
-  ZIGBEE_ENDPOINT_TYPE_COUNT = 8
+  ZIGBEE_CONTACT_SENSOR = 8,
+  ZIGBEE_ENDPOINT_TYPE_COUNT = 9
 };
 
 class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3u;
-  static const uint8_t kApplicationEndpointCount = 24u;
+  static const uint8_t kApplicationEndpointCount = 27u;
   static const uint8_t kTimeClientEndpointId = 240u;
   static constexpr uint8_t kMinPairingChannel = 11u;
   static constexpr uint8_t kMaxPairingChannel = 26u;

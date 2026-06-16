@@ -23,6 +23,9 @@
 
 void sl_zigbee_af_color_control_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_groups_cluster_server_init_cb (uint8_t endpoint);
+void sl_zigbee_af_ias_zone_cluster_server_init_cb (uint8_t endpoint);
+sl_zigbee_af_status_t sl_zigbee_af_ias_zone_cluster_server_pre_attribute_changed_cb (uint8_t endpoint, sl_zigbee_af_attribute_id_t attributeId, sl_zigbee_af_attribute_type_t attributeType, uint8_t size, uint8_t * value);
+void sl_zigbee_af_ias_zone_cluster_server_message_sent_cb (sl_zigbee_outgoing_message_type_t type, uint16_t indexOrDestination, sl_zigbee_aps_frame_t * apsFrame, uint16_t msgLen, uint8_t * message, sl_status_t status);
 void sl_zigbee_af_identify_cluster_server_init_cb (uint8_t endpoint);
 void sl_zigbee_af_identify_cluster_server_attribute_changed_cb (uint8_t endpoint, sl_zigbee_af_attribute_id_t attributeId);
 void sl_zigbee_af_level_control_cluster_server_init_cb (uint8_t endpoint);
@@ -41,6 +44,21 @@ void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
     4u,\
     (CLUSTER_MASK_SERVER | CLUSTER_MASK_INIT_FUNCTION),\
     (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_groups_cluster_server_init_cb\
+  },\
+  {\
+    1280u,\
+    (CLUSTER_MASK_SERVER | CLUSTER_MASK_INIT_FUNCTION),\
+    (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_ias_zone_cluster_server_init_cb\
+  },\
+  {\
+    1280u,\
+    (CLUSTER_MASK_SERVER | CLUSTER_MASK_PRE_ATTRIBUTE_CHANGED_FUNCTION),\
+    (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_ias_zone_cluster_server_pre_attribute_changed_cb\
+  },\
+  {\
+    1280u,\
+    (CLUSTER_MASK_SERVER | CLUSTER_MASK_MESSAGE_SENT_FUNCTION),\
+    (sl_zigbee_af_generic_cluster_function_t)sl_zigbee_af_ias_zone_cluster_server_message_sent_cb\
   },\
   {\
     3u,\
@@ -84,6 +102,9 @@ void sl_zigbee_af_scenes_cluster_server_in (uint8_t endpoint);
 struct unused_structure {
 int clust_768_server_init_function; 
 int clust_4_server_init_function; 
+int clust_1280_server_init_function; 
+int clust_1280_server_pre_attribute_changed_function;
+int clust_1280_server_message_sent_function;
 int clust_3_server_init_function; 
 int clust_3_server_attribute_changed_function; 
 int clust_8_server_init_function; 
