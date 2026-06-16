@@ -42,6 +42,17 @@ ZigbeeClass Zigbee;
 
 static sl_zigbee_af_event_t network_steering_retry_event;
 
+static sl_zigbee_node_type_t zigbeeDeviceTypeToStackNodeType(ZigbeeDeviceType device_type)
+{
+  switch (device_type) {
+    case ZIGBEE_DEVICE_TYPE_END_DEVICE:
+      return SL_ZIGBEE_END_DEVICE;
+    case ZIGBEE_DEVICE_TYPE_ROUTER:
+    default:
+      return SL_ZIGBEE_ROUTER;
+  }
+}
+
 static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
 {
   (void)event;
@@ -143,6 +154,12 @@ extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
   }
 }
 
+extern "C" sl_zigbee_node_type_t sl_zigbee_af_network_steering_get_node_type_cb(sl_zigbee_af_plugin_network_steering_joining_state_t state)
+{
+  (void)state;
+  return zigbeeDeviceTypeToStackNodeType(Zigbee.getDeviceType());
+}
+
 // ArduinoZigbeeAppliance base class implementation
 
 ArduinoZigbeeAppliance::ArduinoZigbeeAppliance() :
@@ -183,6 +200,14 @@ void ArduinoZigbeeAppliance::set_device_change_callback(void (*cb)(void))
 }
 
 // ZigbeeClass implementation
+
+ZigbeeClass::ZigbeeClass() :
+  started(false),
+  endpoint_allocated(),
+  time_client_endpoint_allocated(false),
+  device_type(ZIGBEE_DEVICE_TYPE_ROUTER)
+{
+}
 
 void ZigbeeClass::setVendorName(const char* name)
 {
@@ -287,6 +312,25 @@ bool ZigbeeClass::setPairingChannel(uint8_t channel)
     return false;
   }
   return this->setPairingChannelMask(channel_mask);
+}
+
+bool ZigbeeClass::setDeviceType(ZigbeeDeviceType device_type)
+{
+  if (this->started) {
+    return false;
+  }
+
+  if (device_type != ZIGBEE_DEVICE_TYPE_ROUTER && device_type != ZIGBEE_DEVICE_TYPE_END_DEVICE) {
+    return false;
+  }
+
+  this->device_type = device_type;
+  return true;
+}
+
+ZigbeeDeviceType ZigbeeClass::getDeviceType()
+{
+  return this->device_type;
 }
 
 bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask)

@@ -59,6 +59,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_switch` | Creates an On/Off switch that sends On, Off, and Toggle commands to bound lights. |
 | `zigbee_switch_dimmer` | Creates a switch that sends On/Off and Level Control dimming commands to bound lights. |
 | `zigbee_temp_sensor` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster. |
+| `zigbee_end_device` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster and joins the Zigbee network as an end device. |
 | `zigbee_humidity_sensor` | Publishes a simulated relative humidity value through the Zigbee Relative Humidity Measurement cluster. |
 | `zigbee_light_sensor` | Publishes a simulated illuminance value through the Zigbee Illuminance Measurement cluster. |
 | `zigbee_time` | Requests the current timestamp from the Zigbee coordinator Time cluster. |
@@ -129,6 +130,19 @@ To pair a sketch:
 Network credentials are stored in non-volatile memory, so a paired board
 rejoins automatically after reset or reflash.
 
+By default, devices join as Zigbee routers. To join as an end device instead,
+set the device type before calling `Zigbee.begin()`:
+
+```cpp
+Zigbee.setDeviceType(ZIGBEE_DEVICE_TYPE_END_DEVICE);
+Zigbee.begin();
+```
+
+`setDeviceType()` returns `true` before `Zigbee.begin()` and `false` afterward.
+Changing the device type does not convert an already joined network identity.
+If you switch between router and end device for a device that has already
+paired, factory reset it and pair again.
+
 ### Restricting the Pairing Channel
 
 By default, network steering can use Zigbee channels 11 through 26. You can
@@ -177,6 +191,8 @@ void Zigbee.setVendorName(const char* name);
 void Zigbee.setProductName(const char* name);
 void Zigbee.setFirmwareVersion(const char* version);
 void Zigbee.setFirmwareVersion(uint32_t file_version);
+bool Zigbee.setNodeType(ZigbeeNodeType node_type);
+ZigbeeNodeType Zigbee.getNodeType();
 ```
 
 `setVendorName()` writes the Basic cluster Manufacturer Name attribute.
@@ -849,6 +865,11 @@ The global `Zigbee` object manages the Zigbee stack, network state, metadata, an
 dynamic endpoint allocation.
 
 ```cpp
+enum ZigbeeDeviceType {
+  ZIGBEE_DEVICE_TYPE_ROUTER = 0,
+  ZIGBEE_DEVICE_TYPE_END_DEVICE = 1
+};
+
 void begin();
 
 void setVendorName(const char* name);
@@ -856,6 +877,8 @@ void setProductName(const char* name);
 void setFirmwareVersion(const char* version);
 void setFirmwareVersion(uint32_t file_version);
 bool setPairingChannel(uint8_t channel);
+bool setDeviceType(ZigbeeDeviceType device_type);
+ZigbeeDeviceType getDeviceType();
 
 bool isJoinedToNetwork();
 uint8_t getChannel();
@@ -877,6 +900,12 @@ Network management helpers:
 
 - `leaveNetwork()` requests a Zigbee network leave when currently joined.
 - `factoryReset()` leaves the network, erases stored network data, and resets.
+
+Device type helpers:
+
+- `setDeviceType()` selects whether the device joins as a router or end device.
+  Call it before `begin()`. The default is `ZIGBEE_DEVICE_TYPE_ROUTER`.
+- `getDeviceType()` returns the currently configured join device type.
 
 ## Home Assistant Notes
 

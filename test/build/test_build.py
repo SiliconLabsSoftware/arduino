@@ -284,6 +284,7 @@ testlist_zigbee = {
     "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_switch_dimmer/zigbee_switch_dimmer.ino":                                   all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_temp_sensor/zigbee_temp_sensor.ino":                                       all_zigbee,
+    "../../libraries/Zigbee/examples/zigbee_end_device/zigbee_end_device.ino":                                         all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_humidity_sensor/zigbee_humidity_sensor.ino":                               all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_light_sensor/zigbee_light_sensor.ino":                                     all_zigbee,
     "../../libraries/Zigbee/examples/zigbee_time/zigbee_time.ino":                                                     all_zigbee,
@@ -308,6 +309,7 @@ testlist_github = {
      "../../libraries/Zigbee/examples/zigbee_contact_sensor/zigbee_contact_sensor.ino":                                 nano_matter_zigbee,
      "../../libraries/Zigbee/examples/zigbee_lightbulb_color/zigbee_lightbulb_color.ino":                               nano_matter_zigbee,
      "../../libraries/Zigbee/examples/zigbee_switch/zigbee_switch.ino":                                                 nano_matter_zigbee,
+     "../../libraries/Zigbee/examples/zigbee_end_device/zigbee_end_device.ino":                                         nano_matter_zigbee,
 }
 
 
