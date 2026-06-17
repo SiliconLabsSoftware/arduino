@@ -658,6 +658,12 @@ Zigbee temperature values are represented as signed hundredths of a degree
 Celsius. For example, `2350` means `23.50 C`. The convenience Celsius APIs do
 the conversion for you.
 
+`send_attribute_report()` queues the current Measured Value attribute for
+transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
+callback reports that the attribute report was sent successfully. This is
+useful for end-device workflows that wake up, take a reading, report it, and go
+back to sleep.
+
 API:
 
 ```cpp
@@ -667,6 +673,8 @@ void end();
 
 void set_measured_value(int16_t value);
 void set_measured_value_celsius(float celsius);
+bool send_attribute_report();
+bool get_attribute_report_sent();
 int16_t get_measured_value();
 float get_measured_value_celsius();
 void set_min_value(int16_t value);

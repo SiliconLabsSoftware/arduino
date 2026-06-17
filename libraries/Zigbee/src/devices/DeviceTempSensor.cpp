@@ -30,6 +30,35 @@ extern "C" {
 #include "af.h"
 }
 
+namespace {
+
+struct AttributeReportWaitState {
+  volatile bool pending;
+  volatile bool completed;
+  volatile sl_status_t status;
+};
+
+AttributeReportWaitState g_attribute_report_wait_state = { false, false, SL_STATUS_FAIL };
+
+void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
+                                        uint16_t index_or_destination,
+                                        sl_zigbee_aps_frame_t* aps_frame,
+                                        uint16_t msg_len,
+                                        uint8_t* message,
+                                        sl_status_t status)
+{
+  (void)type;
+  (void)index_or_destination;
+  (void)aps_frame;
+  (void)msg_len;
+  (void)message;
+  g_attribute_report_wait_state.status = status;
+  g_attribute_report_wait_state.completed = true;
+  g_attribute_report_wait_state.pending = false;
+}
+
+} // namespace
+
 DeviceTempSensor::DeviceTempSensor(const char* device_name, uint8_t endpoint_id) :
   ZigbeeDevice(device_name, endpoint_id),
   measured_value(0)
@@ -84,4 +113,63 @@ void DeviceTempSensor::HandleAttributeChange(uint16_t cluster_id,
       CallDeviceChangeCallback();
     }
   }
+}
+
+bool DeviceTempSensor::SendAttributeReport()
+{
+  uint8_t report_data[5];
+  report_data[0] = static_cast<uint8_t>(ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID & 0xFF);
+  report_data[1] = static_cast<uint8_t>((ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID >> 8) & 0xFF);
+  report_data[2] = ZCL_INT16S_ATTRIBUTE_TYPE;
+  report_data[3] = static_cast<uint8_t>(this->measured_value & 0xFF);
+  report_data[4] = static_cast<uint8_t>((this->measured_value >> 8) & 0xFF);
+
+  return this->SendAttributeReportWithCallback(report_data, sizeof(report_data));
+}
+
+bool DeviceTempSensor::GetAttributeReportSent()
+{
+  return g_attribute_report_wait_state.completed && (g_attribute_report_wait_state.status == SL_STATUS_OK);
+}
+
+bool DeviceTempSensor::SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length)
+{
+  if (g_attribute_report_wait_state.pending) {
+    return false;
+  }
+
+  g_attribute_report_wait_state.pending = true;
+  g_attribute_report_wait_state.completed = false;
+  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+
+  sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
+  sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
+                                                                      report_data,
+                                                                      report_data_length);
+
+  sl_status_t status = sl_zigbee_af_send_command_unicast_to_bindings_with_cb(AttributeReportMessageSentCallback);
+  if (status == SL_STATUS_OK) {
+    return true;
+  }
+
+  g_attribute_report_wait_state.pending = false;
+  g_attribute_report_wait_state.completed = false;
+  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+
+  sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
+  sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
+                                                                      report_data,
+                                                                      report_data_length);
+
+  status = sl_zigbee_af_send_command_unicast_with_cb(SL_ZIGBEE_OUTGOING_DIRECT,
+                                                     0x0000,
+                                                     AttributeReportMessageSentCallback);
+  if (status == SL_STATUS_OK) {
+    return true;
+  }
+
+  g_attribute_report_wait_state.pending = false;
+  g_attribute_report_wait_state.completed = false;
+  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+  return false;
 }
