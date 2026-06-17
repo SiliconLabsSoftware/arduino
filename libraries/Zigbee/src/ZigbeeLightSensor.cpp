@@ -98,6 +98,22 @@ void ZigbeeLightSensor::set_measured_value_lux(float lux)
   set_measured_value(lux_to_measured_value(lux));
 }
 
+bool ZigbeeLightSensor::send_attribute_report()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->SendAttributeReport();
+}
+
+bool ZigbeeLightSensor::get_attribute_report_sent()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->GetAttributeReportSent();
+}
+
 uint16_t ZigbeeLightSensor::get_measured_value()
 {
   if (!this->sensor_device) {

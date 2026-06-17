@@ -25,20 +25,13 @@
  */
 
 #include "DeviceTempSensor.h"
+#include "ZigbeeEndpoint.h"
 
 extern "C" {
 #include "af.h"
 }
 
 namespace {
-
-struct AttributeReportWaitState {
-  volatile bool pending;
-  volatile bool completed;
-  volatile sl_status_t status;
-};
-
-AttributeReportWaitState g_attribute_report_wait_state = { false, false, SL_STATUS_FAIL };
 
 void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
                                         uint16_t index_or_destination,
@@ -49,19 +42,30 @@ void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
 {
   (void)type;
   (void)index_or_destination;
-  (void)aps_frame;
   (void)msg_len;
   (void)message;
-  g_attribute_report_wait_state.status = status;
-  g_attribute_report_wait_state.completed = true;
-  g_attribute_report_wait_state.pending = false;
+
+  if (aps_frame == nullptr) {
+    return;
+  }
+
+  ZigbeeDevice* device = zigbee_endpoint_get_device(aps_frame->sourceEndpoint);
+  if (device == nullptr) {
+    return;
+  }
+
+  DeviceTempSensor* sensor = static_cast<DeviceTempSensor*>(device);
+  sensor->HandleAttributeReportSent(status);
 }
 
 } // namespace
 
 DeviceTempSensor::DeviceTempSensor(const char* device_name, uint8_t endpoint_id) :
   ZigbeeDevice(device_name, endpoint_id),
-  measured_value(0)
+  measured_value(0),
+  attribute_report_pending(false),
+  attribute_report_completed(false),
+  attribute_report_status(SL_STATUS_FAIL)
 {
 }
 
@@ -129,18 +133,25 @@ bool DeviceTempSensor::SendAttributeReport()
 
 bool DeviceTempSensor::GetAttributeReportSent()
 {
-  return g_attribute_report_wait_state.completed && (g_attribute_report_wait_state.status == SL_STATUS_OK);
+  return this->attribute_report_completed && (this->attribute_report_status == SL_STATUS_OK);
+}
+
+void DeviceTempSensor::HandleAttributeReportSent(uint32_t status)
+{
+  this->attribute_report_status = status;
+  this->attribute_report_completed = true;
+  this->attribute_report_pending = false;
 }
 
 bool DeviceTempSensor::SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length)
 {
-  if (g_attribute_report_wait_state.pending) {
+  if (this->attribute_report_pending) {
     return false;
   }
 
-  g_attribute_report_wait_state.pending = true;
-  g_attribute_report_wait_state.completed = false;
-  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+  this->attribute_report_pending = true;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
 
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
   sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
@@ -152,9 +163,9 @@ bool DeviceTempSensor::SendAttributeReportWithCallback(uint8_t* report_data, uin
     return true;
   }
 
-  g_attribute_report_wait_state.pending = false;
-  g_attribute_report_wait_state.completed = false;
-  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+  this->attribute_report_pending = false;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
 
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
   sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
@@ -168,8 +179,8 @@ bool DeviceTempSensor::SendAttributeReportWithCallback(uint8_t* report_data, uin
     return true;
   }
 
-  g_attribute_report_wait_state.pending = false;
-  g_attribute_report_wait_state.completed = false;
-  g_attribute_report_wait_state.status = SL_STATUS_FAIL;
+  this->attribute_report_pending = false;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
   return false;
 }

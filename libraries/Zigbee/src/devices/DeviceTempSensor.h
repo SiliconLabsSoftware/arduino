@@ -37,6 +37,7 @@ public:
   void SetMeasuredValue(int16_t value);
   bool SendAttributeReport();
   bool GetAttributeReportSent();
+  void HandleAttributeReportSent(uint32_t status);
   void SetMinMeasuredValue(int16_t value);
   void SetMaxMeasuredValue(int16_t value);
 
@@ -48,6 +49,9 @@ public:
 private:
   bool SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length);
   int16_t measured_value;
+  bool attribute_report_pending;
+  bool attribute_report_completed;
+  uint32_t attribute_report_status;
 };
 
 #endif // DEVICE_TEMP_SENSOR_H

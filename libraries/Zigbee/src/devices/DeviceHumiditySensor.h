@@ -35,6 +35,9 @@ public:
 
   uint16_t GetMeasuredValue();
   void SetMeasuredValue(uint16_t value);
+  bool SendAttributeReport();
+  bool GetAttributeReportSent();
+  void HandleAttributeReportSent(uint32_t status);
   void SetMinMeasuredValue(uint16_t value);
   void SetMaxMeasuredValue(uint16_t value);
 
@@ -44,7 +47,12 @@ public:
                              uint8_t* value) override;
 
 private:
+  bool SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length);
+
   uint16_t measured_value;
+  bool attribute_report_pending;
+  bool attribute_report_completed;
+  uint32_t attribute_report_status;
 };
 
 #endif // DEVICE_HUMIDITY_SENSOR_H
