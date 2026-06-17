@@ -96,6 +96,22 @@ void ZigbeeTemperatureSensor::set_measured_value_celsius(float celsius)
   set_measured_value((int16_t)(celsius * 100.0f));
 }
 
+bool ZigbeeTemperatureSensor::send_attribute_report()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->SendAttributeReport();
+}
+
+bool ZigbeeTemperatureSensor::get_attribute_report_sent()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->GetAttributeReportSent();
+}
+
 int16_t ZigbeeTemperatureSensor::get_measured_value()
 {
   if (!this->sensor_device) {

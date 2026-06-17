@@ -40,6 +40,8 @@ public:
 
   void set_measured_value(int16_t value);
   void set_measured_value_celsius(float celsius);
+  bool send_attribute_report();
+  bool get_attribute_report_sent();
   int16_t get_measured_value();
   float get_measured_value_celsius();
   void set_min_value(int16_t value);

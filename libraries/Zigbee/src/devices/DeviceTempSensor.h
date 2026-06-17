@@ -35,6 +35,8 @@ public:
 
   int16_t GetMeasuredValue();
   void SetMeasuredValue(int16_t value);
+  bool SendAttributeReport();
+  bool GetAttributeReportSent();
   void SetMinMeasuredValue(int16_t value);
   void SetMaxMeasuredValue(int16_t value);
 
@@ -44,6 +46,7 @@ public:
                              uint8_t* value) override;
 
 private:
+  bool SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length);
   int16_t measured_value;
 };
 
