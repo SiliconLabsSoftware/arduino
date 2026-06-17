@@ -96,6 +96,22 @@ void ZigbeeHumiditySensor::set_measured_value_percent(float percent)
   set_measured_value((uint16_t)(percent * 100.0f));
 }
 
+bool ZigbeeHumiditySensor::send_attribute_report()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->SendAttributeReport();
+}
+
+bool ZigbeeHumiditySensor::get_attribute_report_sent()
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->GetAttributeReportSent();
+}
+
 uint16_t ZigbeeHumiditySensor::get_measured_value()
 {
   if (!this->sensor_device) {

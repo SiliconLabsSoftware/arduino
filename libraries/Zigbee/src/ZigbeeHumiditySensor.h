@@ -40,6 +40,8 @@ public:
 
   void set_measured_value(uint16_t value);
   void set_measured_value_percent(float percent);
+  bool send_attribute_report();
+  bool get_attribute_report_sent();
   uint16_t get_measured_value();
   float get_measured_value_percent();
   void set_min_value(uint16_t value);

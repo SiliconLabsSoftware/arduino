@@ -25,14 +25,47 @@
  */
 
 #include "DeviceLightSensor.h"
+#include "ZigbeeEndpoint.h"
 
 extern "C" {
 #include "af.h"
 }
 
+namespace {
+
+void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
+                                        uint16_t index_or_destination,
+                                        sl_zigbee_aps_frame_t* aps_frame,
+                                        uint16_t msg_len,
+                                        uint8_t* message,
+                                        sl_status_t status)
+{
+  (void)type;
+  (void)index_or_destination;
+  (void)msg_len;
+  (void)message;
+
+  if (aps_frame == nullptr) {
+    return;
+  }
+
+  ZigbeeDevice* device = zigbee_endpoint_get_device(aps_frame->sourceEndpoint);
+  if (device == nullptr) {
+    return;
+  }
+
+  DeviceLightSensor* sensor = static_cast<DeviceLightSensor*>(device);
+  sensor->HandleAttributeReportSent(status);
+}
+
+} // namespace
+
 DeviceLightSensor::DeviceLightSensor(const char* device_name, uint8_t endpoint_id) :
   ZigbeeDevice(device_name, endpoint_id),
-  measured_value(0)
+  measured_value(0),
+  attribute_report_pending(false),
+  attribute_report_completed(false),
+  attribute_report_status(SL_STATUS_FAIL)
 {
 }
 
@@ -93,4 +126,70 @@ void DeviceLightSensor::HandleAttributeChange(uint16_t cluster_id,
       CallDeviceChangeCallback();
     }
   }
+}
+
+bool DeviceLightSensor::SendAttributeReport()
+{
+  uint8_t report_data[5];
+  report_data[0] = static_cast<uint8_t>(ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID & 0xFF);
+  report_data[1] = static_cast<uint8_t>((ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID >> 8) & 0xFF);
+  report_data[2] = ZCL_INT16U_ATTRIBUTE_TYPE;
+  report_data[3] = static_cast<uint8_t>(this->measured_value & 0xFF);
+  report_data[4] = static_cast<uint8_t>((this->measured_value >> 8) & 0xFF);
+
+  return this->SendAttributeReportWithCallback(report_data, sizeof(report_data));
+}
+
+bool DeviceLightSensor::GetAttributeReportSent()
+{
+  return this->attribute_report_completed && (this->attribute_report_status == SL_STATUS_OK);
+}
+
+void DeviceLightSensor::HandleAttributeReportSent(uint32_t status)
+{
+  this->attribute_report_status = status;
+  this->attribute_report_completed = true;
+  this->attribute_report_pending = false;
+}
+
+bool DeviceLightSensor::SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length)
+{
+  if (this->attribute_report_pending) {
+    return false;
+  }
+
+  this->attribute_report_pending = true;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
+
+  sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
+  sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
+                                                                      report_data,
+                                                                      report_data_length);
+
+  sl_status_t status = sl_zigbee_af_send_command_unicast_to_bindings_with_cb(AttributeReportMessageSentCallback);
+  if (status == SL_STATUS_OK) {
+    return true;
+  }
+
+  this->attribute_report_pending = false;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
+
+  sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
+  sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
+                                                                      report_data,
+                                                                      report_data_length);
+
+  status = sl_zigbee_af_send_command_unicast_with_cb(SL_ZIGBEE_OUTGOING_DIRECT,
+                                                     0x0000,
+                                                     AttributeReportMessageSentCallback);
+  if (status == SL_STATUS_OK) {
+    return true;
+  }
+
+  this->attribute_report_pending = false;
+  this->attribute_report_completed = false;
+  this->attribute_report_status = SL_STATUS_FAIL;
+  return false;
 }

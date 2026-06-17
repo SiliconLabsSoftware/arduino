@@ -718,6 +718,10 @@ Zigbee humidity values are represented as unsigned hundredths of a percent. For
 example, `5030` means `50.30%`. The convenience percent APIs do the conversion
 for you.
 
+`send_attribute_report()` queues the current Measured Value attribute for
+transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
+callback reports that the attribute report was sent successfully.
+
 API:
 
 ```cpp
@@ -727,6 +731,8 @@ void end();
 
 void set_measured_value(uint16_t value);
 void set_measured_value_percent(float percent);
+bool send_attribute_report();
+bool get_attribute_report_sent();
 uint16_t get_measured_value();
 float get_measured_value_percent();
 void set_min_value(uint16_t value);
@@ -770,6 +776,10 @@ Zigbee illuminance values are represented as a logarithmic raw value. The
 convenience lux APIs convert to and from lux using the Zigbee Illuminance
 Measurement formula.
 
+`send_attribute_report()` queues the current Measured Value attribute for
+transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
+callback reports that the attribute report was sent successfully.
+
 API:
 
 ```cpp
@@ -779,6 +789,8 @@ void end();
 
 void set_measured_value(uint16_t value);
 void set_measured_value_lux(float lux);
+bool send_attribute_report();
+bool get_attribute_report_sent();
 uint16_t get_measured_value();
 float get_measured_value_lux();
 void set_min_value(uint16_t value);
