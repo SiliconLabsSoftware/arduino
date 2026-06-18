@@ -73,19 +73,21 @@ void setup()
   zigbee_bulb.set_true_hue(0);
   zigbee_bulb.set_rgb(255, 255, 255);
 
-  Serial.println("Waiting for Zigbee network...");
+  if (!Zigbee.isPaired()) {
+    Serial.println("Device is not commissioned");
+    Serial.println("Please pair it to your Zigbee Coordinator");
+  }
 }
 
 void loop()
 {
-  // Check if we joined to the network and print network information
   static bool joined = false;
-  if (!joined && Zigbee.isJoinedToNetwork()) {
+  if (!joined && Zigbee.isConnectedToNetwork()) {
     joined = true;
-    Serial.println("Joined Zigbee network!");
+    Serial.print("Connected to Zigbee network; ");
     Serial.print("Channel: ");
-    Serial.println(Zigbee.getChannel());
-    Serial.print("PAN ID: 0x");
+    Serial.print(Zigbee.getChannel());
+    Serial.print(" | PAN ID: 0x");
     Serial.println(Zigbee.getPanId(), HEX);
   }
 

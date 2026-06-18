@@ -54,14 +54,22 @@ void setup()
   zigbee_light_sensor.set_max_value_lux(100000.0f);
   zigbee_light_sensor.set_light_sensor_type(ZigbeeLightSensor::LIGHT_SENSOR_TYPE_CMOS);
 
-  Serial.println("Waiting for Zigbee network...");
-  while (!Zigbee.isJoinedToNetwork()) {
+  if (!Zigbee.isPaired()) {
+    Serial.println("Device is not commissioned");
+    Serial.println("Waiting to join a Zigbee network...");
+  }
+  while (!Zigbee.isPaired ()) {
     delay(200);
   }
-  Serial.println("Joined Zigbee network!");
+
+  Serial.println("Connecting to Zigbee network...");
+  while (!Zigbee.isConnectedToNetwork()) {
+    delay(200);
+  }
+  Serial.print("Connected to Zigbee network; ");
   Serial.print("Channel: ");
-  Serial.println(Zigbee.getChannel());
-  Serial.print("PAN ID: 0x");
+  Serial.print(Zigbee.getChannel());
+  Serial.print(" | PAN ID: 0x");
   Serial.println(Zigbee.getPanId(), HEX);
 }
 
