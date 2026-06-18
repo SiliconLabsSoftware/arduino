@@ -42,6 +42,7 @@ public:
   void set_measured_value_celsius(float celsius);
   bool send_attribute_report();
   bool get_attribute_report_sent();
+  bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
   int16_t get_measured_value();
   float get_measured_value_celsius();
   void set_min_value(int16_t value);

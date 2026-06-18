@@ -112,6 +112,14 @@ bool ZigbeeTemperatureSensor::get_attribute_report_sent()
   return this->sensor_device->GetAttributeReportSent();
 }
 
+bool ZigbeeTemperatureSensor::set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s)
+{
+  if (!this->sensor_device) {
+    return false;
+  }
+  return this->sensor_device->SetReportingInterval(min_interval_s, max_interval_s);
+}
+
 int16_t ZigbeeTemperatureSensor::get_measured_value()
 {
   if (!this->sensor_device) {

@@ -29,6 +29,8 @@
 
 extern "C" {
 #include "af.h"
+#include "af-storage.h"
+#include "app/framework/plugin/reporting/reporting.h"
 }
 
 namespace {
@@ -143,6 +145,22 @@ bool DeviceLightSensor::SendAttributeReport()
 bool DeviceLightSensor::GetAttributeReportSent()
 {
   return this->attribute_report_completed && (this->attribute_report_status == SL_STATUS_OK);
+}
+
+bool DeviceLightSensor::SetReportingInterval(uint16_t min_interval_s, uint16_t max_interval_s)
+{
+  sl_zigbee_af_plugin_reporting_entry_t entry = {};
+  entry.direction = SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED;
+  entry.endpoint = this->endpoint_id;
+  entry.clusterId = ZCL_ILLUM_MEASUREMENT_CLUSTER_ID;
+  entry.attributeId = ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID;
+  entry.mask = CLUSTER_MASK_SERVER;
+  entry.manufacturerCode = 0;
+  entry.data.reported.minInterval = min_interval_s;
+  entry.data.reported.maxInterval = max_interval_s;
+  entry.data.reported.reportableChange = 0;
+
+  return sl_zigbee_af_reporting_configure_reported_attribute(&entry) == SL_ZIGBEE_ZCL_STATUS_SUCCESS;
 }
 
 void DeviceLightSensor::HandleAttributeReportSent(uint32_t status)
