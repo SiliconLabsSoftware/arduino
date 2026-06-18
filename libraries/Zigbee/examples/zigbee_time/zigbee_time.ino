@@ -57,7 +57,7 @@ void setup()
     Zigbee.factoryReset();
   }
 
-  Zigbee.setVendorName("Arduino");
+  Zigbee.setVendorName("Silicon Labs");
   Zigbee.setProductName("Zigbee time client");
   Zigbee.setFirmwareVersion(0x00000001);
   zigbee_time.setTimeUpdateCallback(onZigbeeTimeUpdated);

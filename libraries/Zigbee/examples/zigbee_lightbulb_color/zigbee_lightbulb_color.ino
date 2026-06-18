@@ -62,7 +62,7 @@ void setup()
     Zigbee.factoryReset();
   }
 
-  Zigbee.setVendorName("Arduino");
+  Zigbee.setVendorName("Silicon Labs");
   Zigbee.setProductName("Zigbee Color Lightbulb");
   Zigbee.setFirmwareVersion(0x00000072);
   Zigbee.begin();
