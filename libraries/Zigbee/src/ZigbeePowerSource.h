@@ -24,45 +24,32 @@
  * THE SOFTWARE.
  */
 
-#ifndef ZIGBEE_DEVICE_H
-#define ZIGBEE_DEVICE_H
+#ifndef ZIGBEE_POWER_SOURCE_H
+#define ZIGBEE_POWER_SOURCE_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "Zigbee.h"
+#include "devices/DevicePowerSource.h"
 
-class ZigbeeDevice {
+class ZigbeePowerSource : public ArduinoZigbeeAppliance {
 public:
-  static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 31;
+  ZigbeePowerSource();
+  ~ZigbeePowerSource();
+  bool begin() override;
+  bool begin(uint8_t endpoint_id);
+  void end() override;
 
-  ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
-  virtual ~ZigbeeDevice();
+  void set_battery_percent(uint8_t value);
+  bool send_attribute_report();
+  bool get_attribute_report_sent();
+  bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
+  uint8_t get_battery_percent();
 
-  bool IsOnline();
-  void SetOnline(bool online);
-  uint8_t GetEndpointId();
-  const char* GetName();
-  bool GetIdentifyInProgress();
+  operator uint8_t();
+  void operator=(uint8_t value);
 
-  void HandleIdentifyStart(uint16_t identify_time);
-  void HandleIdentifyStop();
-
-  void SetDeviceChangeCallback(void (*cb)(void));
-  void CallDeviceChangeCallback();
-
-  virtual void HandleAttributeChange(uint16_t cluster_id,
-                                     uint16_t attribute_id,
-                                     uint8_t size,
-                                     uint8_t* value) = 0;
-
-protected:
-  char device_name[kMaxNameSize + 1];
-  uint8_t endpoint_id;
-  bool online;
-  bool identify_in_progress;
-  uint16_t identify_time;
-  void (*device_change_callback)(void);
+private:
+  DevicePowerSource* power_source_device;
+  bool initialized;
 };
 
-#endif // ZIGBEE_DEVICE_H
+#endif // ZIGBEE_POWER_SOURCE_H
