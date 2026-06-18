@@ -48,7 +48,7 @@ void setup()
     Zigbee.factoryReset();
   }
 
-  Zigbee.setVendorName("Arduino");
+  Zigbee.setVendorName("Silicon Labs");
   Zigbee.setProductName("Zigbee End Device Thermometer");
   Zigbee.setFirmwareVersion(0x00000420);
   Zigbee.setDeviceType(ZIGBEE_DEVICE_TYPE_END_DEVICE);

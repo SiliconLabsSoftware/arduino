@@ -45,7 +45,7 @@ void setup()
     Zigbee.factoryReset();
   }
 
-  Zigbee.setVendorName("Arduino");
+  Zigbee.setVendorName("Silicon Labs");
   Zigbee.setProductName("Zigbee Light Sensor");
   Zigbee.setFirmwareVersion(0x00000043);
   Zigbee.begin();
