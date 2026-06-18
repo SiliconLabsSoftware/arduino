@@ -19,6 +19,7 @@
  */
 #include <Zigbee.h>
 #include <ZigbeeTemperatureSensor.h>
+#include <ArduinoLowPower.h>
 
 // If there's no built-in button set a pin where a button is connected
 #ifndef BTN_BUILTIN
@@ -67,8 +68,31 @@ void setup()
 
 void loop()
 {
+  // Take a temperature measurement
   float current_cpu_temp = getCPUTemp();
   zigbee_temp_sensor.set_measured_value_celsius(current_cpu_temp);
   Serial.printf("Current CPU temperature: %.02f C\n", current_cpu_temp);
-  delay(10000);
+
+  // Send the measurement immediately
+  zigbee_temp_sensor.send_attribute_report();
+  uint32_t report_send_check_count = 0u;
+  bool report_sent = true;
+  while(!zigbee_temp_sensor.get_attribute_report_sent()) {
+    report_send_check_count++;
+    delay(100);
+    // If the report is not sent after 5 seconds, print a message and stop checking
+    if (report_send_check_count == 50) {
+      Serial.println("Failed to send report");
+      report_sent = false;
+      break;
+    }
+  }
+
+  if (report_sent) {
+    Serial.println("Report sent successfully");
+  }
+
+  // Send the device to sleep for 10 seconds
+  Serial.println("Going to sleep for 10 seconds...");
+  LowPower.sleep(10000);
 }
