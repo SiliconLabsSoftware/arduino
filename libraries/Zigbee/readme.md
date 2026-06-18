@@ -53,6 +53,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_on_off_outlet` | Creates an On/Off plug-in unit controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_contact_sensor` | Creates an IAS Zone contact sensor controlled by a Zigbee coordinator. The onboard button drives the reported contact state and the onboard LED follows it. |
+| `zigbee_power_source` | Creates a standalone Zigbee Power Configuration endpoint that publishes simulated battery percentage data. |
 | `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
 | `zigbee_lightbulb_color` | Creates a color dimmable light controlled by a Zigbee coordinator. The Nano Matter RGB LED follows the Zigbee On/Off state, brightness, hue, and saturation. |
 | `zigbee_lightbulb_identify` | Adds Identify cluster behavior to the lightbulb example. The onboard LED blinks while a coordinator is identifying the device. |
@@ -142,6 +143,22 @@ Zigbee.begin();
 Changing the device type does not convert an already joined network identity.
 If you switch between router and end device for a device that has already
 paired, factory reset it and pair again.
+
+By default, devices also advertise themselves as mains powered. To advertise a
+device as battery powered instead, set the power source before calling
+`Zigbee.begin()`:
+
+```cpp
+Zigbee.setPowerSource(ZIGBEE_POWER_SOURCE_TYPE_BATTERY);
+Zigbee.begin();
+```
+
+Changing the advertised power source after a device has already paired may
+require re-pairing so coordinators like Home Assistant ZHA refresh their cached
+device interview data. In Home Assistant ZHA, battery entities are discovered
+from the initial device interview, so if you switch between mains and battery
+power sources, factory reset the device, remove the old ZHA device entry, and
+pair again from scratch.
 
 ### Restricting the Pairing Channel
 
@@ -708,6 +725,70 @@ void loop()
 }
 ```
 
+## ZigbeePowerSource
+
+Header:
+
+```cpp
+#include <ZigbeePowerSource.h>
+```
+
+Creates a standalone Power Configuration endpoint that exposes battery
+percentage data.
+
+The public API uses regular 0-100 percent values. Zigbee stores battery
+percentage in half-percent units internally, so the library handles that
+conversion for you.
+
+`send_attribute_report()` queues the current Battery Percentage Remaining
+attribute for transmission. `get_attribute_report_sent()` returns `true` once
+the Zigbee send callback reports success. `set_reporting_interval(min_interval_s,
+max_interval_s)` updates the Zigbee reporting configuration for the battery
+percentage attribute in seconds.
+
+API:
+
+```cpp
+bool begin();
+bool begin(uint8_t endpoint_id);
+void end();
+
+void set_battery_percent(uint8_t value);
+bool send_attribute_report();
+bool get_attribute_report_sent();
+bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
+uint8_t get_battery_percent();
+
+operator uint8_t();
+void operator=(uint8_t value);
+```
+
+Example:
+
+```cpp
+ZigbeePowerSource power_source;
+
+void setup()
+{
+  Zigbee.begin();
+  power_source.begin();
+  power_source.set_battery_percent(100);
+}
+
+void loop()
+{
+  static uint8_t battery_percent = 100;
+
+  power_source.set_battery_percent(battery_percent);
+  if (battery_percent > 0) {
+    battery_percent -= 5;
+  } else {
+    battery_percent = 100;
+  }
+  delay(10000);
+}
+```
+
 ## ZigbeeHumiditySensor
 
 Header:
@@ -902,6 +983,11 @@ enum ZigbeeDeviceType {
   ZIGBEE_DEVICE_TYPE_END_DEVICE = 1
 };
 
+enum ZigbeePowerSourceType {
+  ZIGBEE_POWER_SOURCE_TYPE_MAINS = 0,
+  ZIGBEE_POWER_SOURCE_TYPE_BATTERY = 1
+};
+
 void begin();
 
 void setVendorName(const char* name);
@@ -911,6 +997,8 @@ void setFirmwareVersion(uint32_t file_version);
 bool setPairingChannel(uint8_t channel);
 bool setDeviceType(ZigbeeDeviceType device_type);
 ZigbeeDeviceType getDeviceType();
+bool setPowerSource(ZigbeePowerSourceType power_source);
+ZigbeePowerSourceType getPowerSource();
 
 bool isPaired();
 bool isConnectedToNetwork();
@@ -940,6 +1028,16 @@ Device type helpers:
 - `setDeviceType()` selects whether the device joins as a router or end device.
   Call it before `begin()`. The default is `ZIGBEE_DEVICE_TYPE_ROUTER`.
 - `getDeviceType()` returns the currently configured join device type.
+
+Power source helpers:
+
+- `setPowerSource()` selects whether the device advertises itself as mains or
+  battery powered. Call it before `begin()` for the cleanest coordinator
+  interview. The default is `ZIGBEE_POWER_SOURCE_TYPE_MAINS`. Home Assistant
+  ZHA creates battery entities from that first interview, so changing this for
+  an already paired device usually requires a factory reset, removing the old
+  ZHA device entry, and pairing again.
+- `getPowerSource()` returns the currently configured advertised power source.
 
 ## Home Assistant Notes
 

@@ -36,6 +36,9 @@ extern "C" {
 #include "stack-info.h"
 #include "nvm3_default.h"
 #include "nvm3_generic.h"
+
+uint8_t sli_zigbee_get_local_capabilities(void);
+extern uint8_t sli_zigbee_dynamic_capabilities;
 }
 
 ZigbeeClass Zigbee;
@@ -51,6 +54,48 @@ static sl_zigbee_node_type_t zigbeeDeviceTypeToStackNodeType(ZigbeeDeviceType de
     default:
       return SL_ZIGBEE_ROUTER;
   }
+}
+
+static constexpr uint8_t kZigbeeDescriptorPowerModeSeeNodeDescriptor = 0x00;
+static constexpr uint8_t kZigbeeDescriptorPowerSourceMains = 0x01;
+static constexpr uint8_t kZigbeeDescriptorPowerSourceDisposable = 0x04;
+static constexpr uint8_t kZigbeeDescriptorPowerLevel100 = 0x0C;
+static constexpr uint8_t kMacCapabilityDeviceType = 0x02;
+static constexpr uint8_t kMacCapabilityPowerSource = 0x04;
+static constexpr uint8_t kMacCapabilityReceiverOnWhenIdle = 0x08;
+static constexpr uint8_t kMacCapabilityAllocateAddress = 0x80;
+
+static uint8_t getBasicClusterPowerSourceValue(ZigbeePowerSourceType power_source)
+{
+  if (power_source == ZIGBEE_POWER_SOURCE_TYPE_BATTERY) {
+    return SL_ZIGBEE_ZCL_POWER_SOURCE_BATTERY;
+  }
+  return SL_ZIGBEE_ZCL_POWER_SOURCE_SINGLE_PHASE_MAINS;
+}
+
+static uint16_t getConfiguredPowerDescriptor(ZigbeePowerSourceType power_source)
+{
+  uint8_t descriptor_power_source = kZigbeeDescriptorPowerSourceMains;
+  if (power_source == ZIGBEE_POWER_SOURCE_TYPE_BATTERY) {
+    descriptor_power_source = kZigbeeDescriptorPowerSourceDisposable;
+  }
+
+  uint8_t current_power = descriptor_power_source | (kZigbeeDescriptorPowerLevel100 << 4);
+  uint8_t available_power = kZigbeeDescriptorPowerModeSeeNodeDescriptor | (descriptor_power_source << 4);
+  return static_cast<uint16_t>(current_power << 8) | available_power;
+}
+
+static uint8_t getConfiguredMacCapabilities(ZigbeeDeviceType device_type,
+                                            ZigbeePowerSourceType power_source)
+{
+  uint8_t capabilities = kMacCapabilityReceiverOnWhenIdle | kMacCapabilityAllocateAddress;
+  if (device_type == ZIGBEE_DEVICE_TYPE_ROUTER) {
+    capabilities |= kMacCapabilityDeviceType;
+  }
+  if (power_source == ZIGBEE_POWER_SOURCE_TYPE_MAINS) {
+    capabilities |= kMacCapabilityPowerSource;
+  }
+  return capabilities;
 }
 
 static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
@@ -94,6 +139,21 @@ static void writeServerAttributeToDynamicEndpoints(sl_zigbee_af_cluster_id_t clu
                                       attribute_id,
                                       value,
                                       attribute_type);
+}
+
+static void applyStackPowerSource(ZigbeePowerSourceType power_source)
+{
+  (void)sl_zigbee_set_power_descriptor(getConfiguredPowerDescriptor(power_source));
+
+  uint8_t capabilities = getConfiguredMacCapabilities(Zigbee.getDeviceType(), power_source);
+  sli_zigbee_dynamic_capabilities = capabilities;
+}
+
+extern "C" void sl_zigbee_af_stack_status_cb(sl_status_t status)
+{
+  if (status == SL_STATUS_NETWORK_UP) {
+    applyStackPowerSource(Zigbee.getPowerSource());
+  }
 }
 
 // Callback from EmberZNet when an attribute changes due to a remote ZCL command
@@ -205,7 +265,8 @@ ZigbeeClass::ZigbeeClass() :
   started(false),
   endpoint_allocated(),
   time_client_endpoint_allocated(false),
-  device_type(ZIGBEE_DEVICE_TYPE_ROUTER)
+  device_type(ZIGBEE_DEVICE_TYPE_ROUTER),
+  power_source(ZIGBEE_POWER_SOURCE_TYPE_MAINS)
 {
 }
 
@@ -276,6 +337,12 @@ void ZigbeeClass::begin()
   }
   this->started = true;
   initNetworkSteeringRetryEvent();
+  applyStackPowerSource(this->power_source);
+  uint8_t basic_power_source = getBasicClusterPowerSourceValue(this->power_source);
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_POWER_SOURCE_ATTRIBUTE_ID,
+                                         &basic_power_source,
+                                         ZCL_ENUM8_ATTRIBUTE_TYPE);
 
   for (uint8_t i = 0; i < kApplicationEndpointCount; i++) {
     sl_zigbee_af_endpoint_enable_disable(i + 1, false);
@@ -331,6 +398,43 @@ bool ZigbeeClass::setDeviceType(ZigbeeDeviceType device_type)
 ZigbeeDeviceType ZigbeeClass::getDeviceType()
 {
   return this->device_type;
+}
+
+bool ZigbeeClass::setPowerSource(ZigbeePowerSourceType power_source)
+{
+  if (power_source != ZIGBEE_POWER_SOURCE_TYPE_MAINS
+      && power_source != ZIGBEE_POWER_SOURCE_TYPE_BATTERY) {
+    return false;
+  }
+
+  this->power_source = power_source;
+  uint8_t basic_power_source = getBasicClusterPowerSourceValue(power_source);
+  writeServerAttributeToDynamicEndpoints(ZCL_BASIC_CLUSTER_ID,
+                                         ZCL_POWER_SOURCE_ATTRIBUTE_ID,
+                                         &basic_power_source,
+                                         ZCL_ENUM8_ATTRIBUTE_TYPE);
+  if (this->started) {
+    applyStackPowerSource(power_source);
+    return true;
+  }
+  return true;
+}
+
+ZigbeePowerSourceType ZigbeeClass::getPowerSource()
+{
+  return this->power_source;
+}
+
+uint16_t ZigbeeClass::getPowerDescriptor(ZigbeePowerSourceType power_source)
+{
+  uint8_t descriptor_power_source = kZigbeeDescriptorPowerSourceMains;
+  if (power_source == ZIGBEE_POWER_SOURCE_TYPE_BATTERY) {
+    descriptor_power_source = kZigbeeDescriptorPowerSourceDisposable;
+  }
+
+  uint8_t current_power = descriptor_power_source | (kZigbeeDescriptorPowerLevel100 << 4);
+  uint8_t available_power = kZigbeeDescriptorPowerModeSeeNodeDescriptor | (descriptor_power_source << 4);
+  return static_cast<uint16_t>(current_power << 8) | available_power;
 }
 
 bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask)

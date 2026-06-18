@@ -24,45 +24,33 @@
  * THE SOFTWARE.
  */
 
-#ifndef ZIGBEE_DEVICE_H
-#define ZIGBEE_DEVICE_H
+#ifndef DEVICE_POWER_SOURCE_H
+#define DEVICE_POWER_SOURCE_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "ZigbeeDevice.h"
 
-class ZigbeeDevice {
+class DevicePowerSource : public ZigbeeDevice {
 public:
-  static const uint8_t kMaxNameSize = 32;
-  static const uint8_t kMaxEndpoints = 31;
+  DevicePowerSource(const char* device_name, uint8_t endpoint_id);
 
-  ZigbeeDevice(const char* device_name, uint8_t endpoint_id);
-  virtual ~ZigbeeDevice();
+  uint8_t GetBatteryPercentageRemaining();
+  void SetBatteryPercentageRemaining(uint8_t value);
+  bool SendAttributeReport();
+  bool GetAttributeReportSent();
+  bool SetReportingInterval(uint16_t min_interval_s, uint16_t max_interval_s);
+  void HandleAttributeReportSent(uint32_t status);
 
-  bool IsOnline();
-  void SetOnline(bool online);
-  uint8_t GetEndpointId();
-  const char* GetName();
-  bool GetIdentifyInProgress();
+  void HandleAttributeChange(uint16_t cluster_id,
+                             uint16_t attribute_id,
+                             uint8_t size,
+                             uint8_t* value) override;
 
-  void HandleIdentifyStart(uint16_t identify_time);
-  void HandleIdentifyStop();
-
-  void SetDeviceChangeCallback(void (*cb)(void));
-  void CallDeviceChangeCallback();
-
-  virtual void HandleAttributeChange(uint16_t cluster_id,
-                                     uint16_t attribute_id,
-                                     uint8_t size,
-                                     uint8_t* value) = 0;
-
-protected:
-  char device_name[kMaxNameSize + 1];
-  uint8_t endpoint_id;
-  bool online;
-  bool identify_in_progress;
-  uint16_t identify_time;
-  void (*device_change_callback)(void);
+private:
+  bool SendAttributeReportWithCallback(uint8_t* report_data, uint8_t report_data_length);
+  uint8_t battery_percentage_remaining;
+  bool attribute_report_pending;
+  bool attribute_report_completed;
+  uint32_t attribute_report_status;
 };
 
-#endif // ZIGBEE_DEVICE_H
+#endif // DEVICE_POWER_SOURCE_H

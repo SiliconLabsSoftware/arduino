@@ -60,7 +60,8 @@ enum ZigbeeEndpointType {
   ZIGBEE_COLOR_LIGHT = 6,
   ZIGBEE_ON_OFF_PLUGIN_UNIT = 7,
   ZIGBEE_CONTACT_SENSOR = 8,
-  ZIGBEE_ENDPOINT_TYPE_COUNT = 9
+  ZIGBEE_POWER_SOURCE = 9,
+  ZIGBEE_ENDPOINT_TYPE_COUNT = 10
 };
 
 enum ZigbeeDeviceType {
@@ -68,10 +69,15 @@ enum ZigbeeDeviceType {
   ZIGBEE_DEVICE_TYPE_END_DEVICE = 1
 };
 
+enum ZigbeePowerSourceType {
+  ZIGBEE_POWER_SOURCE_TYPE_MAINS = 0,
+  ZIGBEE_POWER_SOURCE_TYPE_BATTERY = 1
+};
+
 class ZigbeeClass {
 public:
   static const uint8_t kEndpointsPerType = 3u;
-  static const uint8_t kApplicationEndpointCount = 27u;
+  static const uint8_t kApplicationEndpointCount = 30u;
   static const uint8_t kTimeClientEndpointId = 240u;
   static constexpr uint8_t kMinPairingChannel = 11u;
   static constexpr uint8_t kMaxPairingChannel = 26u;
@@ -88,6 +94,8 @@ public:
   bool setPairingChannel(uint8_t channel);
   bool setDeviceType(ZigbeeDeviceType device_type);
   ZigbeeDeviceType getDeviceType();
+  bool setPowerSource(ZigbeePowerSourceType power_source);
+  ZigbeePowerSourceType getPowerSource();
 
   bool isPaired();
   bool isConnectedToNetwork();
@@ -107,12 +115,14 @@ private:
   static bool isValidPairingChannelMask(uint32_t channel_mask);
   static uint32_t sanitizePairingChannelMask(uint32_t channel_mask);
   static bool parseFirmwareVersion(const char* version, uint32_t* file_version);
+  static uint16_t getPowerDescriptor(ZigbeePowerSourceType power_source);
   bool setPairingChannelMask(uint32_t primary_channel_mask, uint32_t secondary_channel_mask = 0);
 
   bool started;
   bool endpoint_allocated[kApplicationEndpointCount];
   bool time_client_endpoint_allocated;
   ZigbeeDeviceType device_type;
+  ZigbeePowerSourceType power_source;
 };
 
 extern ZigbeeClass Zigbee;
