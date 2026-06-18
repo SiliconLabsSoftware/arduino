@@ -51,14 +51,22 @@ void setup()
   Zigbee.begin();
   zigbee_temp_sensor.begin();
 
-  Serial.println("Waiting for Zigbee network...");
-  while (!Zigbee.isJoinedToNetwork()) {
+  if (!Zigbee.isPaired()) {
+    Serial.println("Device is not commissioned");
+    Serial.println("Waiting to join a Zigbee network...");
+  }
+  while (!Zigbee.isPaired ()) {
     delay(200);
   }
-  Serial.println("Joined Zigbee network!");
+
+  Serial.println("Connecting to Zigbee network...");
+  while (!Zigbee.isConnectedToNetwork()) {
+    delay(200);
+  }
+  Serial.print("Connected to Zigbee network; ");
   Serial.print("Channel: ");
-  Serial.println(Zigbee.getChannel());
-  Serial.print("PAN ID: 0x");
+  Serial.print(Zigbee.getChannel());
+  Serial.print(" | PAN ID: 0x");
   Serial.println(Zigbee.getPanId(), HEX);
 }
 

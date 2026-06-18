@@ -89,7 +89,8 @@ public:
   bool setDeviceType(ZigbeeDeviceType device_type);
   ZigbeeDeviceType getDeviceType();
 
-  bool isJoinedToNetwork();
+  bool isPaired();
+  bool isConnectedToNetwork();
   uint8_t getChannel();
   uint16_t getPanId();
   uint16_t getNodeId();

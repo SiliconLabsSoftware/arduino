@@ -885,7 +885,7 @@ void setup()
 
 void loop()
 {
-  if (Zigbee.isJoinedToNetwork()) {
+  if (Zigbee.isConnectedToNetwork()) {
     zigbee_time.requestTime();
   }
 }
@@ -912,7 +912,8 @@ bool setPairingChannel(uint8_t channel);
 bool setDeviceType(ZigbeeDeviceType device_type);
 ZigbeeDeviceType getDeviceType();
 
-bool isJoinedToNetwork();
+bool isPaired();
+bool isConnectedToNetwork();
 uint8_t getChannel();
 uint16_t getPanId();
 uint16_t getNodeId();
@@ -923,7 +924,8 @@ void factoryReset();
 
 Network status helpers:
 
-- `isJoinedToNetwork()` returns whether the stack is joined to a Zigbee network.
+- `isPaired()` returns whether the device has Zigbee network information stored.
+- `isConnectedToNetwork()` returns whether the stack is joined to a Zigbee network.
 - `getChannel()` returns the current radio channel.
 - `getPanId()` returns the current PAN ID.
 - `getNodeId()` returns the current Zigbee node ID.

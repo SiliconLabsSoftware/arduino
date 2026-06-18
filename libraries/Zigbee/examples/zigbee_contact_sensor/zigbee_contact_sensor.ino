@@ -53,18 +53,21 @@ void setup()
   zigbee_contact_sensor.begin();
   zigbee_contact_sensor.set_closed();
 
-  Serial.println("Waiting for Zigbee network...");
+  if (!Zigbee.isPaired()) {
+    Serial.println("Device is not commissioned");
+    Serial.println("Please pair it to your Zigbee Coordinator");
+  }
 }
 
 void loop()
 {
   static bool joined = false;
-  if (!joined && Zigbee.isJoinedToNetwork()) {
+  if (!joined && Zigbee.isConnectedToNetwork()) {
     joined = true;
-    Serial.println("Joined Zigbee network!");
+    Serial.print("Connected to Zigbee network; ");
     Serial.print("Channel: ");
-    Serial.println(Zigbee.getChannel());
-    Serial.print("PAN ID: 0x");
+    Serial.print(Zigbee.getChannel());
+    Serial.print(" | PAN ID: 0x");
     Serial.println(Zigbee.getPanId(), HEX);
   }
 

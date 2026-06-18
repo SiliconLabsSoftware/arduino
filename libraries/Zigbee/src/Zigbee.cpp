@@ -56,7 +56,7 @@ static sl_zigbee_node_type_t zigbeeDeviceTypeToStackNodeType(ZigbeeDeviceType de
 static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
 {
   (void)event;
-  if (!Zigbee.isJoinedToNetwork()) {
+  if (!Zigbee.isConnectedToNetwork()) {
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -282,7 +282,7 @@ void ZigbeeClass::begin()
   }
   sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, false);
 
-  if (!this->isJoinedToNetwork()) {
+  if (!this->isConnectedToNetwork()) {
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -344,16 +344,21 @@ bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t 
   sli_zigbee_af_network_steering_set_channel_mask(primary_channel_mask, false);
   sli_zigbee_af_network_steering_set_channel_mask(secondary_channel_mask, true);
 
-  if (this->started && !this->isJoinedToNetwork()) {
+  if (this->started && !this->isConnectedToNetwork()) {
     sl_zigbee_af_network_steering_stop();
     scheduleNetworkSteeringRetry();
   }
   return true;
 }
 
-bool ZigbeeClass::isJoinedToNetwork()
+bool ZigbeeClass::isConnectedToNetwork()
 {
   return (sl_zigbee_af_network_state() == SL_ZIGBEE_JOINED_NETWORK);
+}
+
+bool ZigbeeClass::isPaired()
+{
+  return (sl_zigbee_af_network_state() != SL_ZIGBEE_NO_NETWORK);
 }
 
 uint8_t ZigbeeClass::getChannel()
