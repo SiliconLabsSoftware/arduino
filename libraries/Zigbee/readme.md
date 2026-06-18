@@ -662,7 +662,10 @@ the conversion for you.
 transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
 callback reports that the attribute report was sent successfully. This is
 useful for end-device workflows that wake up, take a reading, report it, and go
-back to sleep.
+back to sleep. `set_reporting_interval(min_interval_s, max_interval_s)` updates
+the Zigbee reporting configuration for the temperature Measured Value attribute
+on this endpoint. Call it after `begin()` and after the device has joined the
+network.
 
 API:
 
@@ -673,6 +676,7 @@ void end();
 
 void set_measured_value(int16_t value);
 void set_measured_value_celsius(float celsius);
+bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
 bool send_attribute_report();
 bool get_attribute_report_sent();
 int16_t get_measured_value();
@@ -721,6 +725,9 @@ for you.
 `send_attribute_report()` queues the current Measured Value attribute for
 transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
 callback reports that the attribute report was sent successfully.
+`set_reporting_interval(min_interval_s, max_interval_s)` updates the Zigbee
+reporting configuration for the humidity Measured Value attribute on this
+endpoint. Call it after `begin()` and after the device has joined the network.
 
 API:
 
@@ -731,6 +738,7 @@ void end();
 
 void set_measured_value(uint16_t value);
 void set_measured_value_percent(float percent);
+bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
 bool send_attribute_report();
 bool get_attribute_report_sent();
 uint16_t get_measured_value();
@@ -779,6 +787,9 @@ Measurement formula.
 `send_attribute_report()` queues the current Measured Value attribute for
 transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
 callback reports that the attribute report was sent successfully.
+`set_reporting_interval(min_interval_s, max_interval_s)` updates the Zigbee
+reporting configuration for the illuminance Measured Value attribute on this
+endpoint. Call it after `begin()` and after the device has joined the network.
 
 API:
 
@@ -789,6 +800,7 @@ void end();
 
 void set_measured_value(uint16_t value);
 void set_measured_value_lux(float lux);
+bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
 bool send_attribute_report();
 bool get_attribute_report_sent();
 uint16_t get_measured_value();

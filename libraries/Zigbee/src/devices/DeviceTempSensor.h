@@ -37,6 +37,7 @@ public:
   void SetMeasuredValue(int16_t value);
   bool SendAttributeReport();
   bool GetAttributeReportSent();
+  bool SetReportingInterval(uint16_t min_interval_s, uint16_t max_interval_s);
   void HandleAttributeReportSent(uint32_t status);
   void SetMinMeasuredValue(int16_t value);
   void SetMaxMeasuredValue(int16_t value);
