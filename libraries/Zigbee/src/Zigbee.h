@@ -86,7 +86,6 @@ public:
   ZigbeeClass();
 
   void begin();
-
   void setVendorName(const char* name);
   void setProductName(const char* name);
   void setFirmwareVersion(const char* version);

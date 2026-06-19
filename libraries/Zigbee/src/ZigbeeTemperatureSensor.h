@@ -38,15 +38,16 @@ public:
   bool begin(uint8_t endpoint_id);
   void end() override;
 
-  void set_measured_value(int16_t value);
+  void set_measured_value_raw(int16_t value);
   void set_measured_value_celsius(float celsius);
+  int16_t get_measured_value_raw();
+  float get_measured_value_celsius();
+  void set_min_value_raw(int16_t value);
+  void set_max_value_raw(int16_t value);
+
   bool send_attribute_report();
   bool get_attribute_report_sent();
   bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
-  int16_t get_measured_value();
-  float get_measured_value_celsius();
-  void set_min_value(int16_t value);
-  void set_max_value(int16_t value);
 
   operator float();
   void operator=(float celsius);
