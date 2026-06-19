@@ -96,6 +96,14 @@ void ZigbeePowerSource::set_battery_percent(uint8_t value)
   this->power_source_device->SetBatteryPercentageRemaining(static_cast<uint8_t>(value * 2u));
 }
 
+uint8_t ZigbeePowerSource::get_battery_percent()
+{
+  if (!this->power_source_device) {
+    return 0;
+  }
+  return static_cast<uint8_t>(this->power_source_device->GetBatteryPercentageRemaining() / 2u);
+}
+
 bool ZigbeePowerSource::send_attribute_report()
 {
   if (!this->power_source_device) {
@@ -118,14 +126,6 @@ bool ZigbeePowerSource::set_reporting_interval(uint16_t min_interval_s, uint16_t
     return false;
   }
   return this->power_source_device->SetReportingInterval(min_interval_s, max_interval_s);
-}
-
-uint8_t ZigbeePowerSource::get_battery_percent()
-{
-  if (!this->power_source_device) {
-    return 0;
-  }
-  return static_cast<uint8_t>(this->power_source_device->GetBatteryPercentageRemaining() / 2u);
 }
 
 ZigbeePowerSource::operator uint8_t()

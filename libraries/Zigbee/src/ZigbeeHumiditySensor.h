@@ -38,15 +38,16 @@ public:
   bool begin(uint8_t endpoint_id);
   void end() override;
 
-  void set_measured_value(uint16_t value);
+  void set_measured_value_raw(uint16_t value);
   void set_measured_value_percent(float percent);
+  uint16_t get_measured_value_raw();
+  float get_measured_value_percent();
+  void set_min_value_raw(uint16_t value);
+  void set_max_value_raw(uint16_t value);
+
   bool send_attribute_report();
   bool get_attribute_report_sent();
   bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
-  uint16_t get_measured_value();
-  float get_measured_value_percent();
-  void set_min_value(uint16_t value);
-  void set_max_value(uint16_t value);
 
   operator float();
   void operator=(float percent);

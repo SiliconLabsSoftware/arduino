@@ -38,8 +38,8 @@ public:
 
   void set_level(uint8_t level);
   uint8_t get_level();
-  void set_brightness(uint8_t percent);
-  uint8_t get_brightness();
+  void set_brightness_percent(uint8_t percent);
+  uint8_t get_brightness_percent();
 
 protected:
   DeviceOnOffLight* CreateLightDevice(const char* device_name, uint8_t endpoint_id) override;

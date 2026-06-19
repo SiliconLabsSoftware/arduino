@@ -68,7 +68,7 @@ void setup()
   Zigbee.begin();
   zigbee_bulb.begin();
   zigbee_bulb.set_onoff(true);
-  zigbee_bulb.set_brightness(100);
+  zigbee_bulb.set_brightness_percent(100);
   zigbee_bulb.set_saturation_percent(100);
   zigbee_bulb.set_true_hue(0);
   zigbee_bulb.set_rgb(255, 255, 255);
@@ -106,10 +106,10 @@ void loop()
 
   static uint8_t hue_prev = zigbee_bulb.get_hue();
   static uint8_t saturation_prev = zigbee_bulb.get_saturation_percent();
-  static uint8_t brightness_prev = zigbee_bulb.get_brightness();
+  static uint8_t brightness_prev = zigbee_bulb.get_brightness_percent();
   uint8_t hue_current = zigbee_bulb.get_hue();
   uint8_t saturation_current = zigbee_bulb.get_saturation_percent();
-  uint8_t brightness_current = zigbee_bulb.get_brightness();
+  uint8_t brightness_current = zigbee_bulb.get_brightness_percent();
 
   if (hue_current != hue_prev || saturation_current != saturation_prev || brightness_current != brightness_prev) {
     hue_prev = hue_current;

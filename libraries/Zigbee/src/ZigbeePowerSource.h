@@ -39,10 +39,11 @@ public:
   void end() override;
 
   void set_battery_percent(uint8_t value);
+  uint8_t get_battery_percent();
+
   bool send_attribute_report();
   bool get_attribute_report_sent();
   bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
-  uint8_t get_battery_percent();
 
   operator uint8_t();
   void operator=(uint8_t value);

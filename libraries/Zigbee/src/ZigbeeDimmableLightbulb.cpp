@@ -53,7 +53,7 @@ uint8_t ZigbeeDimmableLightbulb::get_level()
   return device->GetLevel();
 }
 
-void ZigbeeDimmableLightbulb::set_brightness(uint8_t percent)
+void ZigbeeDimmableLightbulb::set_brightness_percent(uint8_t percent)
 {
   DeviceDimmableLight* device = GetDimmableDevice();
   if (device) {
@@ -61,7 +61,7 @@ void ZigbeeDimmableLightbulb::set_brightness(uint8_t percent)
   }
 }
 
-uint8_t ZigbeeDimmableLightbulb::get_brightness()
+uint8_t ZigbeeDimmableLightbulb::get_brightness_percent()
 {
   DeviceDimmableLight* device = GetDimmableDevice();
   if (!device) {

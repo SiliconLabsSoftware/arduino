@@ -86,7 +86,7 @@ void ZigbeeLightSensor::end()
   this->initialized = false;
 }
 
-void ZigbeeLightSensor::set_measured_value(uint16_t value)
+void ZigbeeLightSensor::set_measured_value_raw(uint16_t value)
 {
   if (this->sensor_device) {
     this->sensor_device->SetMeasuredValue(value);
@@ -95,7 +95,51 @@ void ZigbeeLightSensor::set_measured_value(uint16_t value)
 
 void ZigbeeLightSensor::set_measured_value_lux(float lux)
 {
-  set_measured_value(lux_to_measured_value(lux));
+  set_measured_value_raw(lux_to_measured_value(lux));
+}
+
+uint16_t ZigbeeLightSensor::get_measured_value_raw()
+{
+  if (!this->sensor_device) {
+    return 0;
+  }
+  return this->sensor_device->GetMeasuredValue();
+}
+
+float ZigbeeLightSensor::get_measured_value_lux()
+{
+  return measured_value_to_lux(get_measured_value_raw());
+}
+
+void ZigbeeLightSensor::set_min_value_raw(uint16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMinMeasuredValue(value);
+  }
+}
+
+void ZigbeeLightSensor::set_min_value_lux(float lux)
+{
+  set_min_value_raw(lux_to_measured_value(lux));
+}
+
+void ZigbeeLightSensor::set_max_value_raw(uint16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMaxMeasuredValue(value);
+  }
+}
+
+void ZigbeeLightSensor::set_max_value_lux(float lux)
+{
+  set_max_value_raw(lux_to_measured_value(lux));
+}
+
+void ZigbeeLightSensor::set_light_sensor_type(LightSensorType type)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetLightSensorType((uint8_t)type);
+  }
 }
 
 bool ZigbeeLightSensor::send_attribute_report()
@@ -120,50 +164,6 @@ bool ZigbeeLightSensor::set_reporting_interval(uint16_t min_interval_s, uint16_t
     return false;
   }
   return this->sensor_device->SetReportingInterval(min_interval_s, max_interval_s);
-}
-
-uint16_t ZigbeeLightSensor::get_measured_value()
-{
-  if (!this->sensor_device) {
-    return 0;
-  }
-  return this->sensor_device->GetMeasuredValue();
-}
-
-float ZigbeeLightSensor::get_measured_value_lux()
-{
-  return measured_value_to_lux(get_measured_value());
-}
-
-void ZigbeeLightSensor::set_min_value(uint16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMinMeasuredValue(value);
-  }
-}
-
-void ZigbeeLightSensor::set_min_value_lux(float lux)
-{
-  set_min_value(lux_to_measured_value(lux));
-}
-
-void ZigbeeLightSensor::set_max_value(uint16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMaxMeasuredValue(value);
-  }
-}
-
-void ZigbeeLightSensor::set_max_value_lux(float lux)
-{
-  set_max_value(lux_to_measured_value(lux));
-}
-
-void ZigbeeLightSensor::set_light_sensor_type(LightSensorType type)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetLightSensorType((uint8_t)type);
-  }
 }
 
 ZigbeeLightSensor::operator float()

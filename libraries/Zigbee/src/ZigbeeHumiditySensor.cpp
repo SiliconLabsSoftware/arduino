@@ -84,7 +84,7 @@ void ZigbeeHumiditySensor::end()
   this->initialized = false;
 }
 
-void ZigbeeHumiditySensor::set_measured_value(uint16_t value)
+void ZigbeeHumiditySensor::set_measured_value_raw(uint16_t value)
 {
   if (this->sensor_device) {
     this->sensor_device->SetMeasuredValue(value);
@@ -93,7 +93,34 @@ void ZigbeeHumiditySensor::set_measured_value(uint16_t value)
 
 void ZigbeeHumiditySensor::set_measured_value_percent(float percent)
 {
-  set_measured_value((uint16_t)(percent * 100.0f));
+  set_measured_value_raw((uint16_t)(percent * 100.0f));
+}
+
+uint16_t ZigbeeHumiditySensor::get_measured_value_raw()
+{
+  if (!this->sensor_device) {
+    return 0;
+  }
+  return this->sensor_device->GetMeasuredValue();
+}
+
+float ZigbeeHumiditySensor::get_measured_value_percent()
+{
+  return (float)get_measured_value_raw() / 100.0f;
+}
+
+void ZigbeeHumiditySensor::set_min_value_raw(uint16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMinMeasuredValue(value);
+  }
+}
+
+void ZigbeeHumiditySensor::set_max_value_raw(uint16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMaxMeasuredValue(value);
+  }
 }
 
 bool ZigbeeHumiditySensor::send_attribute_report()
@@ -118,33 +145,6 @@ bool ZigbeeHumiditySensor::set_reporting_interval(uint16_t min_interval_s, uint1
     return false;
   }
   return this->sensor_device->SetReportingInterval(min_interval_s, max_interval_s);
-}
-
-uint16_t ZigbeeHumiditySensor::get_measured_value()
-{
-  if (!this->sensor_device) {
-    return 0;
-  }
-  return this->sensor_device->GetMeasuredValue();
-}
-
-float ZigbeeHumiditySensor::get_measured_value_percent()
-{
-  return (float)get_measured_value() / 100.0f;
-}
-
-void ZigbeeHumiditySensor::set_min_value(uint16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMinMeasuredValue(value);
-  }
-}
-
-void ZigbeeHumiditySensor::set_max_value(uint16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMaxMeasuredValue(value);
-  }
 }
 
 ZigbeeHumiditySensor::operator float()

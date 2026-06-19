@@ -61,7 +61,7 @@ void setup()
   Zigbee.setFirmwareVersion(0x00000071);
   Zigbee.begin();
   zigbee_bulb.begin();
-  zigbee_bulb.set_brightness(100);
+  zigbee_bulb.set_brightness_percent(100);
 
   if (!Zigbee.isPaired()) {
     Serial.println("Device is not commissioned");
@@ -87,9 +87,9 @@ void loop()
   if (bulb_current_state && !bulb_prev_state) {
     bulb_prev_state = bulb_current_state;
     Serial.print("Bulb ON, brightness: ");
-    Serial.print(zigbee_bulb.get_brightness());
+    Serial.print(zigbee_bulb.get_brightness_percent());
     Serial.println("%");
-    updateOnboardLed(zigbee_bulb.get_brightness());
+    updateOnboardLed(zigbee_bulb.get_brightness_percent());
   }
   if (!bulb_current_state && bulb_prev_state) {
     bulb_prev_state = bulb_current_state;
@@ -98,8 +98,8 @@ void loop()
   }
 
   // Handle brightness changes from the network
-  static uint8_t brightness_prev = zigbee_bulb.get_brightness();
-  uint8_t brightness_current = zigbee_bulb.get_brightness();
+  static uint8_t brightness_prev = zigbee_bulb.get_brightness_percent();
+  uint8_t brightness_current = zigbee_bulb.get_brightness_percent();
   if (brightness_current != brightness_prev) {
     brightness_prev = brightness_current;
     if (bulb_current_state) {

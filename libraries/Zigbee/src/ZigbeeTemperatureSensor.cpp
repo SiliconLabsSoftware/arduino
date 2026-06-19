@@ -84,7 +84,7 @@ void ZigbeeTemperatureSensor::end()
   this->initialized = false;
 }
 
-void ZigbeeTemperatureSensor::set_measured_value(int16_t value)
+void ZigbeeTemperatureSensor::set_measured_value_raw(int16_t value)
 {
   if (this->sensor_device) {
     this->sensor_device->SetMeasuredValue(value);
@@ -93,7 +93,34 @@ void ZigbeeTemperatureSensor::set_measured_value(int16_t value)
 
 void ZigbeeTemperatureSensor::set_measured_value_celsius(float celsius)
 {
-  set_measured_value((int16_t)(celsius * 100.0f));
+  set_measured_value_raw((int16_t)(celsius * 100.0f));
+}
+
+int16_t ZigbeeTemperatureSensor::get_measured_value_raw()
+{
+  if (!this->sensor_device) {
+    return 0;
+  }
+  return this->sensor_device->GetMeasuredValue();
+}
+
+float ZigbeeTemperatureSensor::get_measured_value_celsius()
+{
+  return (float)get_measured_value_raw() / 100.0f;
+}
+
+void ZigbeeTemperatureSensor::set_min_value_raw(int16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMinMeasuredValue(value);
+  }
+}
+
+void ZigbeeTemperatureSensor::set_max_value_raw(int16_t value)
+{
+  if (this->sensor_device) {
+    this->sensor_device->SetMaxMeasuredValue(value);
+  }
 }
 
 bool ZigbeeTemperatureSensor::send_attribute_report()
@@ -118,33 +145,6 @@ bool ZigbeeTemperatureSensor::set_reporting_interval(uint16_t min_interval_s, ui
     return false;
   }
   return this->sensor_device->SetReportingInterval(min_interval_s, max_interval_s);
-}
-
-int16_t ZigbeeTemperatureSensor::get_measured_value()
-{
-  if (!this->sensor_device) {
-    return 0;
-  }
-  return this->sensor_device->GetMeasuredValue();
-}
-
-float ZigbeeTemperatureSensor::get_measured_value_celsius()
-{
-  return (float)get_measured_value() / 100.0f;
-}
-
-void ZigbeeTemperatureSensor::set_min_value(int16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMinMeasuredValue(value);
-  }
-}
-
-void ZigbeeTemperatureSensor::set_max_value(int16_t value)
-{
-  if (this->sensor_device) {
-    this->sensor_device->SetMaxMeasuredValue(value);
-  }
 }
 
 ZigbeeTemperatureSensor::operator float()
