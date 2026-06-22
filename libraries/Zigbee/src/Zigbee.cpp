@@ -282,11 +282,6 @@ bool ArduinoZigbeeAppliance::is_online()
   return this->base_zigbee_device->IsOnline();
 }
 
-void ArduinoZigbeeAppliance::set_device_name(const char* device_name)
-{
-  (void)device_name;
-}
-
 void ArduinoZigbeeAppliance::set_device_change_callback(void (*cb)(void))
 {
   if (this->base_zigbee_device) {

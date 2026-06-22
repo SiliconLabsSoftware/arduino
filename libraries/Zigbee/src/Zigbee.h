@@ -43,7 +43,6 @@ public:
   virtual void end() = 0;
   bool get_identify_in_progress();
   bool is_online();
-  void set_device_name(const char* device_name);
   void set_device_change_callback(void (*cb)(void));
 
 protected:
