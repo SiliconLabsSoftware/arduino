@@ -52,7 +52,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | --- | --- |
 | `zigbee_lightbulb` | Creates an On/Off light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
 | `zigbee_on_off_outlet` | Creates an On/Off plug-in unit controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state. |
-| `zigbee_contact_sensor` | Creates an IAS Zone contact sensor controlled by a Zigbee coordinator. The onboard button drives the reported contact state and the onboard LED follows it. |
+| `zigbee_contact_sensor` | Creates an IAS Zone contact sensor. The onboard button drives the reported contact state and the onboard LED follows it. |
 | `zigbee_power_source` | Creates a standalone Zigbee Power Configuration endpoint that publishes simulated battery percentage data. |
 | `zigbee_lightbulb_dimmable` | Creates a dimmable light controlled by a Zigbee coordinator. The onboard LED follows the Zigbee On/Off state and brightness. |
 | `zigbee_lightbulb_color` | Creates a color dimmable light controlled by a Zigbee coordinator. The Nano Matter RGB LED follows the Zigbee On/Off state, brightness, hue, and saturation. |
@@ -63,7 +63,7 @@ flasher script, firmware files, and Home Assistant ZHA setup link.
 | `zigbee_end_device` | Publishes the board CPU temperature through the Zigbee Temperature Measurement cluster and joins the Zigbee network as an end device. |
 | `zigbee_humidity_sensor` | Publishes a simulated relative humidity value through the Zigbee Relative Humidity Measurement cluster. |
 | `zigbee_light_sensor` | Publishes a simulated illuminance value through the Zigbee Illuminance Measurement cluster. |
-| `zigbee_time` | Requests the current timestamp from the Zigbee coordinator Time cluster. |
+| `zigbee_time` | Requests the current timestamp from the Zigbee coordinator and calculates the current date and time. |
 
 Open the examples from the Arduino IDE with **File > Examples > Zigbee**.
 
@@ -188,6 +188,8 @@ if (digitalRead(BTN_BUILTIN) == LOW) {
 NVM3 data, and resets the MCU. Use this when you want the board to forget its
 network and pair again from a clean state.
 
+Alternatively you can use `Tools > Burn Bootloader` in the Arduino IDE to erase your board and any saved networks.
+
 If your coordinator still shows an old device entry after factory reset, remove
 that stale entry from the coordinator before pairing again.
 
@@ -247,11 +249,6 @@ is created.
 `get_identify_in_progress()` returns true while the Zigbee Identify cluster is
 active for that endpoint.
 
-`set_device_name()` is present on the appliance base class, but the current
-Zigbee implementation does not publish a per-appliance name through this method.
-Use `Zigbee.setVendorName()` and `Zigbee.setProductName()` for coordinator-visible
-Basic cluster metadata.
-
 `set_device_change_callback()` registers a no-argument callback called when the
 device state changes, for example when an On/Off attribute changes, a sensor
 measurement is written, or Identify starts/stops. Register the callback after the
@@ -273,7 +270,7 @@ signal which device it is. The library tracks this state per endpoint:
 
 ```cpp
 if (bulb.get_identify_in_progress()) {
-  // Blink an LED, play a tone, or otherwise identify the device.
+  // Blink an LED, play a tone, or otherwise identify the device
 }
 ```
 
@@ -295,12 +292,6 @@ local state, and local calls update the Zigbee On/Off attribute.
 API:
 
 ```cpp
-enum LightSensorType : uint8_t {
-  LIGHT_SENSOR_TYPE_PHOTODIODE = 0x00,
-  LIGHT_SENSOR_TYPE_CMOS = 0x01,
-  LIGHT_SENSOR_TYPE_UNKNOWN = 0xFF
-};
-
 bool begin();
 bool begin(uint8_t endpoint_id);
 void end();
@@ -340,7 +331,7 @@ You can also use the assignment and bool operators:
 bulb = true;
 
 if (bulb) {
-  // Bulb state is on.
+  // Bulb state is on
 }
 ```
 
@@ -416,12 +407,12 @@ void toggle();
 
 void set_level(uint8_t level);
 uint8_t get_level();
-void set_brightness(uint8_t percent);
-uint8_t get_brightness();
+void set_brightness_percent(uint8_t percent);
+uint8_t get_brightness_percent();
 ```
 
 `set_level()` and `get_level()` use raw Zigbee Level Control values from 0-254.
-`set_brightness()` and `get_brightness()` use percent values from 0-100.
+`set_brightness_percent()` and `get_brightness_percent()` use percent values from 0-100.
 
 Example:
 
@@ -433,13 +424,13 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   Zigbee.begin();
   bulb.begin();
-  bulb.set_brightness(100);
+  bulb.set_brightness_percent(100);
 }
 
 void loop()
 {
   if (bulb.get_onoff()) {
-    uint8_t pwm = (static_cast<uint16_t>(bulb.get_brightness()) * 255 + 50) / 100;
+    uint8_t pwm = (static_cast<uint16_t>(bulb.get_brightness_percent()) * 255 + 50) / 100;
     analogWrite(LED_BUILTIN, pwm);
   } else {
     analogWrite(LED_BUILTIN, 0);
@@ -473,8 +464,8 @@ void toggle();
 
 void set_level(uint8_t level);
 uint8_t get_level();
-void set_brightness(uint8_t percent);
-uint8_t get_brightness();
+void set_brightness_percent(uint8_t percent);
+uint8_t get_brightness_percent();
 
 void set_hue(uint8_t hue);
 uint8_t get_hue();
@@ -515,7 +506,7 @@ void setup()
   pinMode(LED_BUILTIN_2, OUTPUT);
   Zigbee.begin();
   bulb.begin();
-  bulb.set_brightness(100);
+  bulb.set_brightness_percent(100);
   bulb.set_saturation_percent(100);
 }
 
@@ -924,8 +915,8 @@ Header:
 #include <ZigbeeTimeClient.h>
 ```
 
-Creates a dedicated Time Client endpoint. Instantiate this class only in
-sketches that need coordinator time.
+Creates a dedicated Time Client endpoint. Instantiate this class in
+sketches that need the current date and time.
 
 API:
 
@@ -1091,10 +1082,10 @@ control. The switch sends commands to configured bindings.
 Many coordinators cache Basic cluster values. Remove and re-pair the device, or
 force a reconfigure/read of the device from the coordinator.
 
-## Current Scope
+## Library scope
 
-This library is an Arduino-friendly wrapper around a generated Zigbee
-application. It is intentionally smaller than the full Silicon Labs Zigbee SDK.
-It currently exposes common smart-home device types and selected cluster
+This library is an Arduino-friendly wrapper around Silicon Labs' Zigbee
+stack. It is intentionally smaller than the full Silicon Labs Zigbee SDK.
+It exposes common smart-home device types and selected cluster
 attributes. For advanced Zigbee clusters, custom device types, or changes to the
 generated endpoint layout, you can use Simplicity Studio to build your own custom fine-tuned Zigbee applications.
