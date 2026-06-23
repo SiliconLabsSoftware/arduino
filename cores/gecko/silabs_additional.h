@@ -32,6 +32,8 @@
 #include "Arduino.h"
 #include "em_common.h"
 
+#define vsnprintf_P(str, size, format, ap) vsnprintf(str, size, format, ap)
+
 typedef enum {
   CPU_39MHZ,
   CPU_76MHZ,
