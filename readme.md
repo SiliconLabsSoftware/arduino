@@ -317,6 +317,27 @@ cd package
 
 For further details see [this page](./package/README.md).
 
+## Alternative development ecosystems
+
+In addition to Arduino, many of our supported boards can also be used with popular development ecosystems such as **Simplicity Studio** and **Zephyr**, allowing users to seamlessly transition between platforms as their projects evolve.
+
+Please refer to the table below for ecosystem compatibility:
+
+
+| Board                                         | Arduino Core  | [Simplicity Studio v6](https://www.silabs.com/software-and-tools/simplicity-studio) | [Zephyr](https://docs.zephyrproject.org/latest/index.html)    | [Arduino Zephyr Core](https://github.com/arduino/ArduinoCore-zephyr) |
+| -------------                                 |:-------------:|:-------------:|:-------------:|:-------------:|
+| Arduino Nano Matter                           |  ✅           |  ✅ ℹ️         | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/arduino/nano_matter/doc/index.html)                 | ✅ [(docs)](https://github.com/arduino/ArduinoCore-zephyr) |
+| Seeed Studio XIAO MG24                        |  ✅           |  ✅ ℹ️         | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/seeed/xiao_mg24/doc/index.html)                     | |
+| SparkFun Thing Plus Matter                    |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/sparkfun/thing_plus_matter_mgm240p/doc/index.html)  | |
+| Silicon Labs xG24 Explorer Kit                |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/dev_kits/xg24_ek2703a/doc/index.html)        | |
+| Silicon Labs xG24 Dev Kit                     |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/dev_kits/xg24_dk2601b/doc/index.html)        | |
+| Silicon Labs xG27 Dev Kit                     |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/dev_kits/xg27_dk2602a/doc/index.html)        | |
+| Silicon Labs BGM220 Explorer Kit              |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/explorer_kits/xg22/doc/bgm220_ek4314a.html)  | |
+| Ezurio Lyra 24P 20dBm Dev Kit                 |  ✅           |  ✅            |                                                                                                              | |
+
+ℹ️ To use the **Arduino Nano Matter** or **Seeed Studio XIAO MG24** with **Simplicity Studio**, install the [Silicon Labs OpenOCD Support](https://marketplace.visualstudio.com/items?itemName=silabs-bozont.silabs-openocd-flasher) VS Code extension alongside the official [Simplicity Studio for VS Code](https://marketplace.visualstudio.com/items?itemName=SiLabs.siliconLabsSupportExtension) extension.
+Together these extensions enable flashing and debugging of OpenOCD-based boards directly from Simplicity Studio projects.
+
 ##
 
 ![Silabs <3 Arduino](doc/silabs_h_arduino.gif)
