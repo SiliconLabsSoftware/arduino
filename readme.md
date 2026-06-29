@@ -333,7 +333,7 @@ Please refer to the table below for ecosystem compatibility:
 | Silicon Labs xG24 Dev Kit                     |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/dev_kits/xg24_dk2601b/doc/index.html)        | |
 | Silicon Labs xG27 Dev Kit                     |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/dev_kits/xg27_dk2602a/doc/index.html)        | |
 | Silicon Labs BGM220 Explorer Kit              |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/silabs/explorer_kits/xg22/doc/bgm220_ek4314a.html)  | |
-| Ezurio Lyra 24P 20dBm Dev Kit                 |  ✅           |  ✅            |                                                                                                              | |
+| Ezurio Lyra 24P 20dBm Dev Kit                 |  ✅           |  ✅            | ✅ [(docs)](https://docs.zephyrproject.org/latest/boards/ezurio/lyra_24_dvk/doc/lyra_24_dvk_p20.html)        | |
 
 ℹ️ To use the **Arduino Nano Matter** or **Seeed Studio XIAO MG24** with **Simplicity Studio**, install the [Silicon Labs OpenOCD Support](https://marketplace.visualstudio.com/items?itemName=silabs-bozont.silabs-openocd-flasher) VS Code extension alongside the official [Simplicity Studio for VS Code](https://marketplace.visualstudio.com/items?itemName=SiLabs.siliconLabsSupportExtension) extension.
 Together these extensions enable flashing and debugging of OpenOCD-based boards directly from Simplicity Studio projects.
