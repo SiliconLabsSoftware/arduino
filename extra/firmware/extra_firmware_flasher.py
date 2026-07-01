@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright 2025 Silicon Laboratories Inc. www.silabs.com
+# Copyright 2026 Silicon Laboratories Inc. www.silabs.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -57,6 +57,11 @@ def main():
         print("Unsupported firmware type!")
         sys.exit(1)
 
+    # Erase the flash memory of the selected board
+    erase_flash(flasher_tool_executable_path,
+                arduino_tools_dir,
+                selected_board_config['flasher_tool'])
+
     # Flash the bootloader binary file for the selected board
     flash_binary(flasher_tool_executable_path,
                  selected_board_config['bootloader_binary'],
@@ -70,6 +75,28 @@ def main():
                  selected_board_config['flasher_tool'])
 
     print("Finished successfully")
+
+
+def erase_flash(flasher_tool_executable_path, arduino_tools_dir, flasher_tool):
+    print("")
+    print("Erasing flash memory...")
+    if flasher_tool == 'openocd':
+        flasher_process = subprocess.Popen(
+            [flasher_tool_executable_path, "-d2", "-s", arduino_tools_dir + "/openocd/0.12.0-arduino1-static/share/openocd/scripts/", "-f", "interface/cmsis-dap.cfg", "-f", "target/efm32s2_g23.cfg", "-c", "init; reset_config srst_nogate; reset halt; flash erase_sector 0 1 last; exit"]
+        )
+        flasher_process.communicate(timeout=30)
+    elif flasher_tool == 'simplicitycommander':
+        flasher_process = subprocess.Popen(
+            [flasher_tool_executable_path, "device", "masserase"]
+        )
+        flasher_process.communicate(timeout=30)
+    else:
+        print("Unsupported flasher tool")
+        sys.exit(1)
+
+    if flasher_process.returncode != 0:
+        print(f"Error: Flash erase failed with return code '{flasher_process.returncode}'")
+        sys.exit(flasher_process.returncode)
 
 
 def flash_binary(flasher_tool_executable_path, binary_file, arduino_tools_dir, flasher_tool):
