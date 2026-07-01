@@ -81,44 +81,36 @@ def erase_flash(flasher_tool_executable_path, arduino_tools_dir, flasher_tool):
     print("")
     print("Erasing flash memory...")
     if flasher_tool == 'openocd':
-        flasher_process = subprocess.Popen(
-            [flasher_tool_executable_path, "-d2", "-s", arduino_tools_dir + "/openocd/0.12.0-arduino1-static/share/openocd/scripts/", "-f", "interface/cmsis-dap.cfg", "-f", "target/efm32s2_g23.cfg", "-c", "init; reset_config srst_nogate; reset halt; flash erase_sector 0 1 last; exit"]
+        run_flasher(
+            [flasher_tool_executable_path, "-d2", "-s", arduino_tools_dir + "/openocd/0.12.0-arduino1-static/share/openocd/scripts/", "-f", "interface/cmsis-dap.cfg", "-f", "target/efm32s2_g23.cfg", "-c", "init; reset_config srst_nogate; reset halt; flash erase_sector 0 1 last; exit"],
+            "Flash erase",
         )
-        flasher_process.communicate(timeout=30)
     elif flasher_tool == 'simplicitycommander':
-        flasher_process = subprocess.Popen(
-            [flasher_tool_executable_path, "device", "masserase"]
+        run_flasher(
+            [flasher_tool_executable_path, "device", "masserase"],
+            "Flash erase",
         )
-        flasher_process.communicate(timeout=30)
     else:
         print("Unsupported flasher tool")
         sys.exit(1)
-
-    if flasher_process.returncode != 0:
-        print(f"Error: Flash erase failed with return code '{flasher_process.returncode}'")
-        sys.exit(flasher_process.returncode)
 
 
 def flash_binary(flasher_tool_executable_path, binary_file, arduino_tools_dir, flasher_tool):
     print("")
     print("Flashing binary file: {}".format(binary_file))
     if flasher_tool == 'openocd':
-        flasher_process = subprocess.Popen(
-            [flasher_tool_executable_path, "-d2", "-s", arduino_tools_dir + "/openocd/0.12.0-arduino1-static/share/openocd/scripts/", "-f", "interface/cmsis-dap.cfg", "-f", "target/efm32s2_g23.cfg", "-c", "init; reset_config srst_nogate; reset halt; program {" + binary_file + "}; reset; exit"]
+        run_flasher(
+            [flasher_tool_executable_path, "-d2", "-s", arduino_tools_dir + "/openocd/0.12.0-arduino1-static/share/openocd/scripts/", "-f", "interface/cmsis-dap.cfg", "-f", "target/efm32s2_g23.cfg", "-c", "init; reset_config srst_nogate; reset halt; program {" + binary_file + "}; reset; exit"],
+            "Flashing",
         )
-        flasher_process.communicate(timeout=30)
     elif flasher_tool == 'simplicitycommander':
-        flasher_process = subprocess.Popen(
-            [flasher_tool_executable_path, "flash", binary_file, "-v"]
+        run_flasher(
+            [flasher_tool_executable_path, "flash", binary_file, "-v"],
+            "Flashing",
         )
-        flasher_process.communicate(timeout=30)
     else:
         print("Unsupported flasher tool")
         sys.exit(1)
-
-    if flasher_process.returncode != 0:
-        print(f"Error: Flashing failed with return code '{flasher_process.returncode}'")
-        sys.exit(flasher_process.returncode)
 
 
 def get_selected_board_config_from_arguments():
@@ -198,6 +190,19 @@ def get_flasher_tool_executable_path(flasher_tool, arduino_tools_dir):
             flasher_tool_executable_path = arduino_tools_dir + "/simplicitycommander/1.16.4/commander"
 
     return flasher_tool_executable_path
+
+
+def run_flasher(cmd, operation_name):
+    flasher_timeout_seconds = 60
+    try:
+        result = subprocess.run(cmd, timeout=flasher_timeout_seconds)
+    except subprocess.TimeoutExpired:
+        print(f"Error: {operation_name} timed out after {flasher_timeout_seconds} seconds")
+        sys.exit(1)
+
+    if result.returncode != 0:
+        print(f"Error: {operation_name} failed with return code '{result.returncode}'")
+        sys.exit(result.returncode)
 
 
 nanomatter_config = {
