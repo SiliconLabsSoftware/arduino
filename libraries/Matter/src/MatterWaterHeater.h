@@ -35,6 +35,10 @@
 using namespace chip;
 using namespace ::chip::DeviceLayer;
 
+class WaterHeaterModeAttributeAccess;
+class WaterHeaterModeCommandHandler;
+class WaterHeaterManagementCommandHandler;
+
 class MatterWaterHeater : public ArduinoMatterAppliance {
 public:
 
@@ -54,6 +58,13 @@ public:
   enum boost_state_t {
     INACTIVE = 0,
     ACTIVE = 1
+  };
+
+  // Water Heater Mode cluster's supported operation modes
+  enum operation_mode_t {
+    OPERATION_MODE_OFF    = 0,
+    OPERATION_MODE_MANUAL = 1,
+    OPERATION_MODE_ECO    = 2
   };
 
   MatterWaterHeater();
@@ -94,10 +105,16 @@ public:
   boost_state_t get_boost_state();
   void set_boost_state(boost_state_t boost_state);
 
+  operation_mode_t get_operation_mode();
+  void set_operation_mode(operation_mode_t operation_mode);
+
 private:
   DeviceWaterHeater* water_heater_device;
   EmberAfEndpointType* device_endpoint;
   DataVersion* endpoint_dataversion_storage;
+  WaterHeaterModeAttributeAccess* mode_attribute_access;
+  WaterHeaterModeCommandHandler* mode_command_handler;
+  WaterHeaterManagementCommandHandler* management_command_handler;
   bool initialized;
 };
 

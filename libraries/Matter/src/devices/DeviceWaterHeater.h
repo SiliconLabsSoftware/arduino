@@ -39,6 +39,7 @@ public:
     kChanged_TankVolumeValue       = kChanged_Last << 5,
     kChanged_TankPercentageValue   = kChanged_Last << 6,
     kChanged_BoostStateValue       = kChanged_Last << 7,
+    kChanged_CurrentModeValue      = kChanged_Last << 8,
   } Changed;
 
   DeviceWaterHeater(const char* device_name, int16_t local_temperature, int16_t heating_setpoint);
@@ -79,6 +80,13 @@ public:
   uint32_t GetWaterHeaterManagementClusterFeatureMap();
   uint16_t GetWaterHeaterManagementClusterRevision();
 
+  // Water Heater Mode cluster
+  uint8_t GetCurrentMode();
+  void SetCurrentMode(uint8_t mode);
+
+  uint32_t GetWaterHeaterModeClusterFeatureMap();
+  uint16_t GetWaterHeaterModeClusterRevision();
+
   CHIP_ERROR HandleReadEmberAfAttribute(ClusterId clusterId,
                                         chip::AttributeId attributeId,
                                         uint8_t* buffer,
@@ -104,6 +112,7 @@ private:
   uint16_t tank_volume;
   uint8_t tank_percentage;
   uint8_t boost_state;
+  uint8_t current_mode;
 
   static const uint8_t thermostat_control_sequence_of_operation = 2u; // Heating only
   static const uint32_t thermostat_cluster_feature_map          = 1u; // Heating capability enabled
@@ -111,4 +120,7 @@ private:
 
   static const uint32_t water_heater_management_cluster_feature_map = 0x02u; // TankPercent (TP) supported
   static const uint16_t water_heater_management_cluster_revision    = 1u;
+
+  static const uint32_t water_heater_mode_cluster_feature_map = 0u;
+  static const uint16_t water_heater_mode_cluster_revision    = 1u;
 };

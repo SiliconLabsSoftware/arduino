@@ -41,7 +41,8 @@ DeviceWaterHeater::DeviceWaterHeater(const char* device_name,
   heat_demand(0),
   tank_volume(100),
   tank_percentage(100),
-  boost_state(0)
+  boost_state(0),
+  current_mode(0)
 {
   this->SetDeviceType(device_type_t::kDeviceType_WaterHeater);
 }
@@ -105,6 +106,18 @@ void DeviceWaterHeater::SetSystemMode(uint8_t system_mode)
   bool heat_demand_changed = this->heat_demand != new_heat_demand;
   this->heat_demand = new_heat_demand;
 
+  // Keep the Water Heater Mode cluster's current mode consistent with the system mode:
+  // turning the heater off always reports "Off", turning it on falls back to "Manual"
+  // unless a more specific mode (e.g. Eco) was already selected.
+  uint8_t new_current_mode = this->current_mode;
+  if (system_mode == 0) {
+    new_current_mode = 0; // Off
+  } else if (this->current_mode == 0) {
+    new_current_mode = 1; // Manual
+  }
+  bool current_mode_changed = this->current_mode != new_current_mode;
+  this->current_mode = new_current_mode;
+
   if (changed) {
     this->HandleWaterHeaterDeviceStatusChanged(kChanged_SystemModeValue);
     CallDeviceChangeCallback();
@@ -113,6 +126,30 @@ void DeviceWaterHeater::SetSystemMode(uint8_t system_mode)
     this->HandleWaterHeaterDeviceStatusChanged(kChanged_HeatDemandValue);
     CallDeviceChangeCallback();
   }
+  if (current_mode_changed) {
+    this->HandleWaterHeaterDeviceStatusChanged(kChanged_CurrentModeValue);
+    CallDeviceChangeCallback();
+  }
+}
+
+uint8_t DeviceWaterHeater::GetCurrentMode()
+{
+  return this->current_mode;
+}
+
+void DeviceWaterHeater::SetCurrentMode(uint8_t mode)
+{
+  bool changed = this->current_mode != mode;
+  ChipLogProgress(DeviceLayer, "WaterHeaterDevice[%s]: new current mode='%u'", this->device_name, mode);
+  this->current_mode = mode;
+
+  if (changed) {
+    this->HandleWaterHeaterDeviceStatusChanged(kChanged_CurrentModeValue);
+    CallDeviceChangeCallback();
+  }
+
+  // Keep the Thermostat cluster's system mode consistent with the selected mode.
+  this->SetSystemMode((mode == 0) ? 0 : 4);
 }
 
 uint8_t DeviceWaterHeater::GetControlSequenceOfOperation()
@@ -260,6 +297,16 @@ uint16_t DeviceWaterHeater::GetWaterHeaterManagementClusterRevision()
   return this->water_heater_management_cluster_revision;
 }
 
+uint32_t DeviceWaterHeater::GetWaterHeaterModeClusterFeatureMap()
+{
+  return this->water_heater_mode_cluster_feature_map;
+}
+
+uint16_t DeviceWaterHeater::GetWaterHeaterModeClusterRevision()
+{
+  return this->water_heater_mode_cluster_revision;
+}
+
 CHIP_ERROR DeviceWaterHeater::HandleReadEmberAfAttribute(ClusterId clusterId,
                                                          chip::AttributeId attributeId,
                                                          uint8_t* buffer,
@@ -343,6 +390,23 @@ CHIP_ERROR DeviceWaterHeater::HandleReadEmberAfAttribute(ClusterId clusterId,
     return CHIP_NO_ERROR;
   }
 
+  if (clusterId == chip::app::Clusters::WaterHeaterMode::Id) {
+    using namespace ::chip::app::Clusters::WaterHeaterMode::Attributes;
+    if ((attributeId == CurrentMode::Id) && (maxReadLength == 1)) {
+      uint8_t currentMode = this->GetCurrentMode();
+      memcpy(buffer, &currentMode, sizeof(currentMode));
+    } else if ((attributeId == WaterHeaterMode::Attributes::FeatureMap::Id) && (maxReadLength == 4)) {
+      uint32_t featureMap = this->GetWaterHeaterModeClusterFeatureMap();
+      memcpy(buffer, &featureMap, sizeof(featureMap));
+    } else if ((attributeId == WaterHeaterMode::Attributes::ClusterRevision::Id) && (maxReadLength == 2)) {
+      uint16_t clusterRevision = this->GetWaterHeaterModeClusterRevision();
+      memcpy(buffer, &clusterRevision, sizeof(clusterRevision));
+    } else {
+      return CHIP_ERROR_INVALID_ARGUMENT;
+    }
+    return CHIP_NO_ERROR;
+  }
+
   return CHIP_ERROR_INVALID_ARGUMENT;
 }
 
@@ -397,5 +461,8 @@ void DeviceWaterHeater::HandleWaterHeaterDeviceStatusChanged(Changed_t itemChang
   }
   if (itemChangedMask & kChanged_BoostStateValue) {
     ScheduleMatterReportingCallback(this->endpoint_id, WaterHeaterManagement::Id, WaterHeaterManagement::Attributes::BoostState::Id);
+  }
+  if (itemChangedMask & kChanged_CurrentModeValue) {
+    ScheduleMatterReportingCallback(this->endpoint_id, WaterHeaterMode::Id, WaterHeaterMode::Attributes::CurrentMode::Id);
   }
 }
