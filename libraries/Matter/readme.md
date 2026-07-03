@@ -67,6 +67,7 @@ Read more and get the Raspberry Pi OTBR image [here](https://docs.silabs.com/mat
  - Switch
  - Temperature measurement
  - Thermostat
+ - Water heater
  - Water valve
  - Window covering
 
@@ -584,6 +585,62 @@ Sets a callback invoked when the timezone list is updated by the controller.
 ```float get_measured_value();```
 
 ```void set_measured_value(uint32_t value);```
+
+## class MatterWaterHeater
+
+```int16_t get_local_temperature_raw();```
+
+```void set_local_temperature_raw(int16_t local_temp);```
+
+```int16_t get_heating_setpoint_raw();```
+
+```void set_heating_setpoint_raw(int16_t heating_setpoint);```
+
+```float get_local_temperature();```
+
+```void set_local_temperature(float local_temp);```
+
+```float get_heating_setpoint();```
+
+```void set_heating_setpoint(float heating_setpoint);```
+
+```void set_absolute_minimum_heating_setpoint(float abs_min_heating_setpoint);```
+
+```void set_minimum_heating_setpoint(float min_heating_setpoint);```
+
+```void set_absolute_maximum_heating_setpoint(float abs_max_heating_setpoint);```
+
+```void set_maximum_heating_setpoint(float max_heating_setpoint);```
+
+```float get_absolute_minimum_heating_setpoint();```
+
+```float get_minimum_heating_setpoint();```
+
+```float get_absolute_maximum_heating_setpoint();```
+
+```float get_maximum_heating_setpoint();```
+
+```water_heater_mode_t get_system_mode();```
+
+```void set_system_mode(water_heater_mode_t system_mode);```
+
+```uint8_t get_heater_types();```
+
+```void set_heater_types(uint8_t heater_types);```
+
+```uint8_t get_heat_demand();```
+
+```uint16_t get_tank_volume();```
+
+```void set_tank_volume(uint16_t tank_volume);```
+
+```uint8_t get_tank_percentage();```
+
+```void set_tank_percentage(uint8_t tank_percentage);```
+
+```boost_state_t get_boost_state();```
+
+```void set_boost_state(boost_state_t boost_state);```
 
 ## class MatterWaterValve
 
