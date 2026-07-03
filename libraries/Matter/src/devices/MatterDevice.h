@@ -74,6 +74,7 @@ public:
     kDeviceType_COSensor          = 0x0012,
     kDeviceType_TVOCSensor        = 0x0013,
     kDeviceType_PowerSource       = 0x0014,
+    kDeviceType_WaterHeater       = 0x0015,
     kDeviceType_WaterValve        = 0x0016,
     kDeviceType_Unspecified       = 0xFFFF
   };
