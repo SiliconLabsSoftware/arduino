@@ -25,17 +25,144 @@
  */
 
 #include "MatterWaterHeater.h"
+#include <app/AttributeAccessInterface.h>
+#include <app/AttributeAccessInterfaceRegistry.h>
+#include <app/CommandHandlerInterface.h>
+#include <app/CommandHandlerInterfaceRegistry.h>
+#include <lib/support/CodeUtils.h>
 
 using namespace ::chip;
 using namespace ::chip::Platform;
 using namespace ::chip::Credentials;
 using namespace ::chip::app::Clusters;
+using namespace ::chip::app::Clusters::WaterHeaterMode;
+using namespace ::chip::app::DataModel;
 
 const EmberAfDeviceType gWaterHeaterDeviceTypes[] = { { DEVICE_TYPE_WATER_HEATER, DEVICE_VERSION_DEFAULT } };
 
 constexpr CommandId waterHeaterThermostatIncomingCommands[] = {
   app::Clusters::Thermostat::Commands::SetpointRaiseLower::Id,
   kInvalidCommandId,
+};
+
+constexpr CommandId waterHeaterModeIncomingCommands[] = {
+  app::Clusters::WaterHeaterMode::Commands::ChangeToMode::Id,
+  kInvalidCommandId,
+};
+
+constexpr CommandId waterHeaterManagementIncomingCommands[] = {
+  app::Clusters::WaterHeaterManagement::Commands::Boost::Id,
+  app::Clusters::WaterHeaterManagement::Commands::CancelBoost::Id,
+  kInvalidCommandId,
+};
+
+// Fixed list of operation modes exposed by the Water Heater Mode cluster's
+// SupportedModes attribute - matches MatterWaterHeater::operation_mode_t.
+namespace {
+const Structs::ModeTagStruct::Type kOffModeTags[]    = { { NullOptional, static_cast<uint16_t>(ModeTag::kOff) } };
+const Structs::ModeTagStruct::Type kManualModeTags[] = { { NullOptional, static_cast<uint16_t>(ModeTag::kManual) } };
+const Structs::ModeTagStruct::Type kEcoModeTags[]    = { { NullOptional, static_cast<uint16_t>(ModeTag::kTimed) } };
+
+const Structs::ModeOptionStruct::Type kWaterHeaterModeOptions[] = {
+  { CharSpan::fromCharString("Off"),    MatterWaterHeater::OPERATION_MODE_OFF,    List<const Structs::ModeTagStruct::Type>(kOffModeTags) },
+  { CharSpan::fromCharString("Manual"), MatterWaterHeater::OPERATION_MODE_MANUAL, List<const Structs::ModeTagStruct::Type>(kManualModeTags) },
+  { CharSpan::fromCharString("Eco"),    MatterWaterHeater::OPERATION_MODE_ECO,    List<const Structs::ModeTagStruct::Type>(kEcoModeTags) },
+};
+} // namespace
+
+// Serves the Water Heater Mode cluster's SupportedModes list attribute, which cannot
+// be represented through the plain ember external-attribute buffer mechanism used for
+// every other attribute in this library.
+class WaterHeaterModeAttributeAccess : public app::AttributeAccessInterface {
+public:
+  explicit WaterHeaterModeAttributeAccess(EndpointId endpoint) :
+    app::AttributeAccessInterface(MakeOptional(endpoint), WaterHeaterMode::Id)
+  {
+    ;
+  }
+
+  CHIP_ERROR Read(const app::ConcreteReadAttributePath& path, app::AttributeValueEncoder& encoder) override
+  {
+    if (path.mAttributeId != Attributes::SupportedModes::Id) {
+      return CHIP_NO_ERROR; // Let ember handle every other attribute of this cluster
+    }
+    return encoder.EncodeList([](const auto& listEncoder) -> CHIP_ERROR {
+      for (auto& option : kWaterHeaterModeOptions) {
+        ReturnErrorOnFailure(listEncoder.Encode(option));
+      }
+      return CHIP_NO_ERROR;
+    });
+  }
+};
+
+// Handles the Water Heater Mode cluster's ChangeToMode command.
+class WaterHeaterModeCommandHandler : public app::CommandHandlerInterface {
+public:
+  WaterHeaterModeCommandHandler(EndpointId endpoint, DeviceWaterHeater* device) :
+    app::CommandHandlerInterface(MakeOptional(endpoint), WaterHeaterMode::Id),
+    device(device)
+  {
+    ;
+  }
+
+  void InvokeCommand(HandlerContext& handlerContext) override
+  {
+    HandleCommand<Commands::ChangeToMode::DecodableType>(
+      handlerContext, [this](HandlerContext& ctx, const Commands::ChangeToMode::DecodableType& req) {
+      Commands::ChangeToModeResponse::Type response;
+      bool mode_supported = false;
+      for (auto& option : kWaterHeaterModeOptions) {
+        if (option.mode == req.newMode) {
+          mode_supported = true;
+          break;
+        }
+      }
+
+      if (!mode_supported) {
+        response.status = 1; // UnsupportedMode
+      } else {
+        this->device->SetCurrentMode(req.newMode);
+        response.status = 0; // Success
+      }
+
+      ctx.mCommandHandler.AddResponse(ctx.mRequestPath, response);
+    });
+  }
+
+private:
+  DeviceWaterHeater* device;
+};
+
+// Handles the Water Heater Management cluster's Boost and CancelBoost commands.
+// Home Assistant's Matter water_heater entity relies on these two commands (rather
+// than the Water Heater Mode cluster) to implement its "high demand"/"eco" modes.
+class WaterHeaterManagementCommandHandler : public app::CommandHandlerInterface {
+public:
+  WaterHeaterManagementCommandHandler(EndpointId endpoint, DeviceWaterHeater* device) :
+    app::CommandHandlerInterface(MakeOptional(endpoint), WaterHeaterManagement::Id),
+    device(device)
+  {
+    ;
+  }
+
+  void InvokeCommand(HandlerContext& handlerContext) override
+  {
+    HandleCommand<WaterHeaterManagement::Commands::Boost::DecodableType>(
+      handlerContext, [this](HandlerContext& ctx, const WaterHeaterManagement::Commands::Boost::DecodableType& req) {
+      (void)req;
+      this->device->SetBoostState(1); // Active
+      ctx.mCommandHandler.AddStatus(ctx.mRequestPath, Protocols::InteractionModel::Status::Success);
+    });
+    HandleCommand<WaterHeaterManagement::Commands::CancelBoost::DecodableType>(
+      handlerContext, [this](HandlerContext& ctx, const WaterHeaterManagement::Commands::CancelBoost::DecodableType& req) {
+      (void)req;
+      this->device->SetBoostState(0); // Inactive
+      ctx.mCommandHandler.AddStatus(ctx.mRequestPath, Protocols::InteractionModel::Status::Success);
+    });
+  }
+
+private:
+  DeviceWaterHeater* device;
 };
 
 // Thermostat cluster attributes
@@ -61,10 +188,18 @@ DECLARE_DYNAMIC_ATTRIBUTE(WaterHeaterManagement::Attributes::BoostState::Id, INT
 DECLARE_DYNAMIC_ATTRIBUTE(WaterHeaterManagement::Attributes::FeatureMap::Id, BITMAP32, 4, 0),                         /* FeatureMap */
 DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();                                                                                 /* ClusterRevision auto added by LIST_END */
 
+// Water Heater Mode cluster attributes
+DECLARE_DYNAMIC_ATTRIBUTE_LIST_BEGIN(waterHeaterModeAttrs)
+DECLARE_DYNAMIC_ATTRIBUTE(WaterHeaterMode::Attributes::SupportedModes::Id, ARRAY, 0, 0),                              /* Supported Modes - served by WaterHeaterModeAttributeAccess */
+DECLARE_DYNAMIC_ATTRIBUTE(WaterHeaterMode::Attributes::CurrentMode::Id, INT8U, 1, 0),                                 /* Current Mode */
+DECLARE_DYNAMIC_ATTRIBUTE(WaterHeaterMode::Attributes::FeatureMap::Id, BITMAP32, 4, 0),                               /* FeatureMap */
+DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();                                                                                 /* ClusterRevision auto added by LIST_END */
+
 // Water heater endpoint cluster list
 DECLARE_DYNAMIC_CLUSTER_LIST_BEGIN(waterHeaterEndpointClusters)
 DECLARE_DYNAMIC_CLUSTER(Thermostat::Id, waterHeaterThermostatAttrs, ZAP_CLUSTER_MASK(SERVER), waterHeaterThermostatIncomingCommands, nullptr),
-DECLARE_DYNAMIC_CLUSTER(WaterHeaterManagement::Id, waterHeaterManagementAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr),
+DECLARE_DYNAMIC_CLUSTER(WaterHeaterManagement::Id, waterHeaterManagementAttrs, ZAP_CLUSTER_MASK(SERVER), waterHeaterManagementIncomingCommands, nullptr),
+DECLARE_DYNAMIC_CLUSTER(WaterHeaterMode::Id, waterHeaterModeAttrs, ZAP_CLUSTER_MASK(SERVER), waterHeaterModeIncomingCommands, nullptr),
 DECLARE_DYNAMIC_CLUSTER(Descriptor::Id, descriptorAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr),
 DECLARE_DYNAMIC_CLUSTER(BridgedDeviceBasicInformation::Id, bridgedDeviceBasicAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr)
 DECLARE_DYNAMIC_CLUSTER_LIST_END;
@@ -76,6 +211,9 @@ MatterWaterHeater::MatterWaterHeater() :
   water_heater_device(nullptr),
   device_endpoint(nullptr),
   endpoint_dataversion_storage(nullptr),
+  mode_attribute_access(nullptr),
+  mode_command_handler(nullptr),
+  management_command_handler(nullptr),
   initialized(false)
 {
   ;
@@ -146,6 +284,25 @@ bool MatterWaterHeater::begin()
   this->water_heater_device = new_water_heater_device;
   this->device_endpoint = new_endpoint;
   this->endpoint_dataversion_storage = new_sensor_data_version;
+
+  // Register the Water Heater Mode cluster's list attribute and command handler -
+  // these can't be serviced through the plain ember external-attribute mechanism.
+  EndpointId assigned_endpoint_id = new_water_heater_device->GetEndpointId();
+  this->mode_attribute_access = new (std::nothrow)WaterHeaterModeAttributeAccess(assigned_endpoint_id);
+  this->mode_command_handler = new (std::nothrow)WaterHeaterModeCommandHandler(assigned_endpoint_id, new_water_heater_device);
+  if (this->mode_attribute_access != nullptr) {
+    app::AttributeAccessInterfaceRegistry::Instance().Register(this->mode_attribute_access);
+  }
+  if (this->mode_command_handler != nullptr) {
+    app::CommandHandlerInterfaceRegistry::Instance().RegisterCommandHandler(this->mode_command_handler);
+  }
+
+  // Register the Water Heater Management cluster's Boost/CancelBoost command handler.
+  this->management_command_handler = new (std::nothrow)WaterHeaterManagementCommandHandler(assigned_endpoint_id, new_water_heater_device);
+  if (this->management_command_handler != nullptr) {
+    app::CommandHandlerInterfaceRegistry::Instance().RegisterCommandHandler(this->management_command_handler);
+  }
+
   this->initialized = true;
   return true;
 }
@@ -157,6 +314,21 @@ void MatterWaterHeater::end()
 {
   if (!this->initialized) {
     return;
+  }
+  if (this->mode_attribute_access != nullptr) {
+    app::AttributeAccessInterfaceRegistry::Instance().Unregister(this->mode_attribute_access);
+    delete(this->mode_attribute_access);
+    this->mode_attribute_access = nullptr;
+  }
+  if (this->mode_command_handler != nullptr) {
+    (void)app::CommandHandlerInterfaceRegistry::Instance().UnregisterCommandHandler(this->mode_command_handler);
+    delete(this->mode_command_handler);
+    this->mode_command_handler = nullptr;
+  }
+  if (this->management_command_handler != nullptr) {
+    (void)app::CommandHandlerInterfaceRegistry::Instance().UnregisterCommandHandler(this->management_command_handler);
+    delete(this->management_command_handler);
+    this->management_command_handler = nullptr;
   }
   (void)RemoveDeviceEndpoint(this->water_heater_device);
   free(this->device_endpoint);
@@ -492,5 +664,30 @@ void MatterWaterHeater::set_boost_state(MatterWaterHeater::boost_state_t boost_s
   }
   PlatformMgr().LockChipStack();
   this->water_heater_device->SetBoostState((uint8_t)boost_state);
+  PlatformMgr().UnlockChipStack();
+}
+
+/***************************************************************************//**
+ * Gets the water heater's currently set operation mode
+ *
+ * @return the currently set operation mode
+ ******************************************************************************/
+MatterWaterHeater::operation_mode_t MatterWaterHeater::get_operation_mode()
+{
+  return (operation_mode_t)this->water_heater_device->GetCurrentMode();
+}
+
+/***************************************************************************//**
+ * Sets the water heater's operation mode
+ *
+ * @param[in] operation_mode the operation mode to be set
+ ******************************************************************************/
+void MatterWaterHeater::set_operation_mode(MatterWaterHeater::operation_mode_t operation_mode)
+{
+  if (!this->initialized) {
+    return;
+  }
+  PlatformMgr().LockChipStack();
+  this->water_heater_device->SetCurrentMode((uint8_t)operation_mode);
   PlatformMgr().UnlockChipStack();
 }
