@@ -256,6 +256,7 @@ testlist_matter = {
     "../../libraries/Matter/examples/matter_thermostat/matter_thermostat.ino":                                         all_matter,
     "../../libraries/Matter/examples/matter_tvoc_sensor/matter_tvoc_sensor.ino":                                       all_matter,
     "../../libraries/Matter/examples/matter_water_valve/matter_water_valve.ino":                                       all_matter,
+    "../../libraries/Matter/examples/matter_waterheater/matter_waterheater.ino":                                       all_matter,
     "../../libraries/Matter/examples/matter_window_covering/matter_window_covering.ino":                               all_matter,
     "../../libraries/Matter/examples/nano_matter_certified_lightbulb/nano_matter_certified_lightbulb.ino":             nano_matter_matter,
     "../../libraries/Matter/examples/nano_matter_lightbulb_color/nano_matter_lightbulb_color.ino":                     nano_matter_matter,
