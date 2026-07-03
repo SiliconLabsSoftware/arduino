@@ -21,6 +21,25 @@
 
 MatterWaterHeater matter_water_heater;
 
+const float COLD_WATER_TEMP = 20.0f; // Assumed incoming cold water temperature in Celsius
+
+// Estimates the tank's remaining hot water level from the current and target temperatures,
+// assuming incoming cold water enters the tank at COLD_WATER_TEMP.
+void update_tank_percentage()
+{
+  float current_temperature = matter_water_heater.get_local_temperature();
+  float target_temperature = matter_water_heater.get_heating_setpoint();
+
+  int tank_percentage = (int)(((current_temperature - COLD_WATER_TEMP) / (target_temperature - COLD_WATER_TEMP)) * 100.0f);
+  if (tank_percentage < 0) {
+    tank_percentage = 0;
+  }
+  if (tank_percentage > 100) {
+    tank_percentage = 100;
+  }
+  matter_water_heater.set_tank_percentage(tank_percentage);
+}
+
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -56,13 +75,14 @@ void setup()
   // Describe the physical tank - a single immersion element heating a 100 liter tank
   matter_water_heater.set_heater_types(MatterWaterHeater::heater_type_t::IMMERSION_ELEMENT_1);
   matter_water_heater.set_tank_volume(100);
-  matter_water_heater.set_tank_percentage(100);
 
   // Set the measured water temperature to a fixed value
   matter_water_heater.set_local_temperature(45.0f);
 
   // Set the initial target water temperature
   matter_water_heater.set_heating_setpoint(55.0f);
+
+  update_tank_percentage();
 }
 
 void loop()
@@ -73,6 +93,7 @@ void loop()
   if (setpoint_prev != setpoint) {
     Serial.printf("Water heater setpoint: %.01f C\n", matter_water_heater.get_heating_setpoint());
     setpoint_prev = setpoint;
+    update_tank_percentage();
   }
 
   // Print the current mode if it changes
