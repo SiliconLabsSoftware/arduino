@@ -64,9 +64,9 @@ const Structs::ModeTagStruct::Type kManualModeTags[] = { { NullOptional, static_
 const Structs::ModeTagStruct::Type kEcoModeTags[]    = { { NullOptional, static_cast<uint16_t>(ModeTag::kTimed) } };
 
 const Structs::ModeOptionStruct::Type kWaterHeaterModeOptions[] = {
-  { CharSpan::fromCharString("Off"),    MatterWaterHeater::OPERATION_MODE_OFF,    List<const Structs::ModeTagStruct::Type>(kOffModeTags) },
+  { CharSpan::fromCharString("Off"), MatterWaterHeater::OPERATION_MODE_OFF, List<const Structs::ModeTagStruct::Type>(kOffModeTags) },
   { CharSpan::fromCharString("Manual"), MatterWaterHeater::OPERATION_MODE_MANUAL, List<const Structs::ModeTagStruct::Type>(kManualModeTags) },
-  { CharSpan::fromCharString("Eco"),    MatterWaterHeater::OPERATION_MODE_ECO,    List<const Structs::ModeTagStruct::Type>(kEcoModeTags) },
+  { CharSpan::fromCharString("Eco"), MatterWaterHeater::OPERATION_MODE_ECO, List<const Structs::ModeTagStruct::Type>(kEcoModeTags) },
 };
 } // namespace
 
