@@ -22,6 +22,7 @@
 #include "MatterDevice.h"
 
 #include <cstdio>
+#include <silabs_additional.h>
 #include <platform/CHIPDeviceLayer.h>
 #include <app-common/zap-generated/callback.h>
 
@@ -45,6 +46,7 @@ Device::Device(const char* device_name) :
   chip::Platform::CopyString(this->vendor_name, "Silicon Labs");
   chip::Platform::CopyString(this->product_name, "Matter device");
   chip::Platform::CopyString(this->serial_number, "0000000042");
+  snprintf(this->unique_id, sizeof(this->unique_id), "silabs-%s", getDeviceUniqueIdStr().c_str());
 }
 
 bool Device::IsReachable()
@@ -113,6 +115,16 @@ void Device::SetSerialNumber(const char* serialnumber)
     ChipLogProgress(DeviceLayer, "Device[%s]: New SerialNumber=\"%s\"", this->device_name, serialnumber);
     chip::Platform::CopyString(this->serial_number, serialnumber);
     this->HandleDeviceStatusChanged(kChanged_SerialNumber);
+  }
+}
+
+void Device::SetUniqueID(const char* uniqueid)
+{
+  bool changed = (strncmp(this->unique_id, uniqueid, sizeof(this->unique_id)) != 0);
+  if (changed) {
+    ChipLogProgress(DeviceLayer, "Device[%s]: New UniqueID=\"%s\"", this->device_name, uniqueid);
+    chip::Platform::CopyString(this->unique_id, uniqueid);
+    this->HandleDeviceStatusChanged(kChanged_UniqueID);
   }
 }
 
@@ -193,6 +205,9 @@ CHIP_ERROR Device::HandleReadBridgedDeviceBasicAttribute(ClusterId clusterId,
   } else if ((attributeId == SerialNumber::Id) && (maxReadLength == 32)) {
     MutableByteSpan zclNameSpan(buffer, maxReadLength);
     MakeZclCharString(zclNameSpan, this->GetSerialNumber());
+  } else if ((attributeId == UniqueID::Id) && (maxReadLength == 32)) {
+    MutableByteSpan zclNameSpan(buffer, maxReadLength);
+    MakeZclCharString(zclNameSpan, this->GetUniqueID());
   } else if ((attributeId == ClusterRevision::Id) && (maxReadLength == 2)) {
     uint16_t rev = this->GetBridgedDeviceBasicInformationClusterRevision();
     memcpy(buffer, &rev, sizeof(rev));
@@ -224,6 +239,9 @@ void Device::HandleDeviceStatusChanged(Changed_t itemChangedMask)
   }
   if (itemChangedMask & kChanged_SerialNumber) {
     ScheduleMatterReportingCallback(this->endpoint_id, BridgedDeviceBasicInformation::Id, BridgedDeviceBasicInformation::Attributes::SerialNumber::Id);
+  }
+  if (itemChangedMask & kChanged_UniqueID) {
+    ScheduleMatterReportingCallback(this->endpoint_id, BridgedDeviceBasicInformation::Id, BridgedDeviceBasicInformation::Attributes::UniqueID::Id);
   }
 }
 

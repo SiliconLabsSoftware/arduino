@@ -48,7 +48,8 @@ public:
     kChanged_VendorName   = 1u << 3,
     kChanged_ProductName  = 1u << 4,
     kChanged_SerialNumber = 1u << 5,
-    kChanged_Last         = kChanged_SerialNumber,
+    kChanged_UniqueID     = 1u << 6,
+    kChanged_Last         = kChanged_UniqueID,
   } Changed;
 
   enum device_type_t {
@@ -91,6 +92,7 @@ public:
   void SetVendorName(const char* vendorname);
   void SetProductName(const char* productname);
   void SetSerialNumber(const char* serialnumber);
+  void SetUniqueID(const char* uniqueid);
   void SetLocation(std::string location);
   void SetDeviceChangeCallback(void (*matter_device_change_cb)(void));
   void CallDeviceChangeCallback();
@@ -179,6 +181,11 @@ public:
     return this->serial_number;
   }
 
+  inline char* GetUniqueID()
+  {
+    return this->unique_id;
+  }
+
   inline std::string GetLocation()
   {
     return this->location;
@@ -206,6 +213,7 @@ protected:
   char vendor_name[DeviceDescStrSize];
   char product_name[DeviceDescStrSize];
   char serial_number[DeviceDescStrSize];
+  char unique_id[DeviceDescStrSize];
   std::string location;
   chip::EndpointId endpoint_id;
   chip::EndpointId parent_endpoint_id;
