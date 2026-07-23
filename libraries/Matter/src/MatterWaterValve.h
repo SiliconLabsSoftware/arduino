@@ -76,7 +76,7 @@ public:
   void set_remaining_duration(uint32_t remaining_duration_seconds);
 
   uint16_t get_valve_fault();
-  void set_valve_fault(uint16_t valve_fault);
+  void set_valve_fault(valve_fault_t valve_fault);
 
 private:
   DeviceWaterValve* water_valve_device;
