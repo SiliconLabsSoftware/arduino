@@ -26,6 +26,11 @@
 
 #include "DeviceWaterValve.h"
 
+// The Matter spec requires OpenDuration/DefaultOpenDuration/RemainingDuration to be at least 1s when
+// set, so "no duration configured" (internal 0) must be reported/accepted as null on the wire, using
+// the ZCL convention of an all-ones value to represent null for unsigned integer attributes.
+static constexpr uint32_t kNullDurationValue = 0xFFFFFFFFu;
+
 DeviceWaterValve::DeviceWaterValve(const char* device_name) :
   Device(device_name),
   current_state(VALVE_STATE_CLOSED),
@@ -206,13 +211,16 @@ CHIP_ERROR DeviceWaterValve::HandleReadEmberAfAttribute(ClusterId clusterId,
     using namespace ::chip::app::Clusters::ValveConfigurationAndControl::Attributes;
     if ((attributeId == OpenDuration::Id) && (maxReadLength == 4)) {
       uint32_t openDuration = this->GetOpenDuration();
-      memcpy(buffer, &openDuration, sizeof(openDuration));
+      uint32_t wireOpenDuration = (openDuration == 0) ? kNullDurationValue : openDuration;
+      memcpy(buffer, &wireOpenDuration, sizeof(wireOpenDuration));
     } else if ((attributeId == DefaultOpenDuration::Id) && (maxReadLength == 4)) {
       uint32_t defaultOpenDuration = this->GetDefaultOpenDuration();
-      memcpy(buffer, &defaultOpenDuration, sizeof(defaultOpenDuration));
+      uint32_t wireDefaultOpenDuration = (defaultOpenDuration == 0) ? kNullDurationValue : defaultOpenDuration;
+      memcpy(buffer, &wireDefaultOpenDuration, sizeof(wireDefaultOpenDuration));
     } else if ((attributeId == RemainingDuration::Id) && (maxReadLength == 4)) {
       uint32_t remainingDuration = this->GetRemainingDuration();
-      memcpy(buffer, &remainingDuration, sizeof(remainingDuration));
+      uint32_t wireRemainingDuration = (remainingDuration == 0) ? kNullDurationValue : remainingDuration;
+      memcpy(buffer, &wireRemainingDuration, sizeof(wireRemainingDuration));
     } else if ((attributeId == CurrentState::Id) && (maxReadLength == 1)) {
       uint8_t currentState = this->GetCurrentState();
       memcpy(buffer, &currentState, sizeof(currentState));
@@ -254,7 +262,8 @@ CHIP_ERROR DeviceWaterValve::HandleWriteEmberAfAttribute(ClusterId clusterId,
 
   using namespace ::chip::app::Clusters::ValveConfigurationAndControl::Attributes;
   if (attributeId == DefaultOpenDuration::Id) {
-    this->SetDefaultOpenDuration(*((uint32_t*)buffer));
+    uint32_t wireDefaultOpenDuration = *((uint32_t*)buffer);
+    this->SetDefaultOpenDuration((wireDefaultOpenDuration == kNullDurationValue) ? 0 : wireDefaultOpenDuration);
   } else {
     return CHIP_ERROR_INVALID_ARGUMENT;
   }

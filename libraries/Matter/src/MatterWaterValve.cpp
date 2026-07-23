@@ -79,11 +79,11 @@ private:
 
 // Valve Configuration and Control cluster attributes
 DECLARE_DYNAMIC_ATTRIBUTE_LIST_BEGIN(waterValveConfigurationAndControlAttrs)
-DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::OpenDuration::Id, INT32U, 4, 0),          /* Open Duration */
-DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::DefaultOpenDuration::Id, INT32U, 4, ATTRIBUTE_MASK_WRITABLE), /* Default Open Duration */
-DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::RemainingDuration::Id, INT32U, 4, 0),     /* Remaining Duration */
-DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::CurrentState::Id, ENUM8, 1, 0),           /* Current State */
-DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::TargetState::Id, ENUM8, 1, 0),            /* Target State */
+DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::OpenDuration::Id, INT32U, 4, ATTRIBUTE_MASK_NULLABLE),          /* Open Duration */
+DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::DefaultOpenDuration::Id, INT32U, 4, ATTRIBUTE_MASK_WRITABLE_NULLABLE), /* Default Open Duration */
+DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::RemainingDuration::Id, INT32U, 4, ATTRIBUTE_MASK_NULLABLE),     /* Remaining Duration */
+DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::CurrentState::Id, ENUM8, 1, ATTRIBUTE_MASK_NULLABLE),           /* Current State */
+DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::TargetState::Id, ENUM8, 1, ATTRIBUTE_MASK_NULLABLE),            /* Target State */
 DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::ValveFault::Id, BITMAP16, 2, 0),          /* Valve Fault */
 DECLARE_DYNAMIC_ATTRIBUTE(ValveConfigurationAndControl::Attributes::FeatureMap::Id, BITMAP32, 4, 0),          /* FeatureMap */
 DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();                                                                          /* ClusterRevision auto added by LIST_END */
