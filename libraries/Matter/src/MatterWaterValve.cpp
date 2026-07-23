@@ -346,14 +346,14 @@ uint16_t MatterWaterValve::get_valve_fault()
 /***************************************************************************//**
  * Sets the valve's fault bitmap
  *
- * @param[in] valve_fault the valve fault bitmap to set, a combination of the valve_fault_t values
+ * @param[in] valve_fault the valve fault to set
  ******************************************************************************/
-void MatterWaterValve::set_valve_fault(uint16_t valve_fault)
+void MatterWaterValve::set_valve_fault(valve_fault_t valve_fault)
 {
   if (!this->initialized) {
     return;
   }
   PlatformMgr().LockChipStack();
-  this->water_valve_device->SetValveFault(valve_fault);
+  this->water_valve_device->SetValveFault((uint16_t)valve_fault);
   PlatformMgr().UnlockChipStack();
 }
