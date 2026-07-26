@@ -482,6 +482,105 @@ Class for creating and controlling a Matter Power Source appliance with battery 
 
 ```void set_system_mode(thermostat_mode_t system_mode);```
 
+## class MatterTimeSynchronization
+
+Receives UTC time (and optional timezone / DST offsets) from a Matter controller via the Time Synchronization cluster on the root endpoint (not a bridged appliance). Currently enabled for Arduino Nano Matter.
+
+The device does not pull time by itself. A Matter controller that supports time sync must push `SetUTCTime` (and, when the TimeZone feature is advertised, `SetTimeZone` / `SetDSTOffset`). Use `request_time()` to emit a `TimeFailure` event so a supporting controller can push time again.
+
+### Enabling time sync in Home Assistant
+
+Requires Matter Server **1.2.0+** (Home Assistant Matter Server app **9.1.0+**).
+
+#### Home Assistant OS / Supervised (Matter Server add-on)
+
+1. Open **Settings → Add-ons → Matter Server → Configuration**.
+2. Set **`time_sync`** to one of:
+   - `auto` (default) — enable only when the host clock is NTP synchronized
+   - `on` — always enable (use this if sync never starts under `auto`)
+   - `off` — disable time sync
+3. Ensure Home Assistant’s timezone is set correctly under **Settings → System → General** (the add-on uses the host timezone for `SetTimeZone` / DST).
+4. Save and **restart** the Matter Server add-on.
+
+#### Standalone Docker / Docker Compose (`ghcr.io/matter-js/matterjs-server`)
+
+Time sync is **off by default** in the container image. Enable it with environment variables:
+
+```yaml
+services:
+  matterjs-server:
+    image: ghcr.io/matter-js/matterjs-server:stable
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - "${HOME}/.matterjs-server:/data"
+    environment:
+      ENABLE_TIME_SYNC: "true"
+      TZ: "Europe/Budapest"   # IANA zone; required for correct local offsets
+```
+
+Or with `docker run`:
+
+```bash
+docker run -d \
+  --name matterjs-server \
+  --restart=unless-stopped \
+  --network=host \
+  -v ${HOME}/.matterjs-server:/data \
+  -e ENABLE_TIME_SYNC=true \
+  -e TZ=Europe/Budapest \
+  ghcr.io/matter-js/matterjs-server:stable
+```
+
+After changing `TZ` / `ENABLE_TIME_SYNC`, recreate the container so the environment is applied (`docker compose up -d --force-recreate`). Verify inside the container:
+
+```bash
+docker exec matterjs-server sh -c 'echo TZ=$TZ; date; node -e "console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)"'
+```
+
+`TZ` must be non-empty and resolve to your IANA zone (not `UTC`), or timezone/DST offsets pushed to the device will be zero.
+
+#### Notes
+
+- After a device reflash/reboot, some Matter Server versions may skip re-sync for up to 24 hours (cooldown). Restarting the Matter Server clears that state. See [matter-js/matterjs-server#938](https://github.com/matter-js/matterjs-server/issues/938).
+- In Matter Server logs, a successful push looks like `timeSynchronization.setUtcTime` (and `setTimeZone` / `setDstOffset` when timezone is supported) with `status: Success`.
+
+```bool request_time();```
+Emits a `TimeFailure` event on the root endpoint so a supporting controller can push time again. Rate-limited to once per 60 seconds. Returns `false` if skipped by the rate limit or if logging fails. Controllers may still ignore the event during their own cooldown windows.
+
+```bool has_time();```
+Returns whether a valid wall-clock time is available.
+
+```uint32_t get_unix_time();```
+Returns seconds since 1970-01-01 UTC, or 0 if time is not available.
+
+```uint64_t get_unix_time_millis();```
+Returns milliseconds since 1970-01-01 UTC, or 0 if time is not available.
+
+```bool has_timezone();```
+Returns whether the controller has set a timezone via `SetTimeZone`.
+
+```int32_t get_timezone_offset_seconds();```
+Returns the active timezone base offset in seconds east of UTC (excluding DST), or 0 if unavailable.
+
+```int32_t get_dst_offset_seconds();```
+Returns the currently applicable DST offset in seconds, or 0 if unavailable / not in DST.
+
+```int32_t get_local_offset_seconds();```
+Returns timezone + DST offset in seconds east of UTC.
+
+```uint32_t get_local_unix_time();```
+Returns local Unix time in seconds (UTC + offsets). If timezone is not set yet, returns UTC.
+
+```uint64_t get_local_unix_time_millis();```
+Returns local Unix time in milliseconds (UTC + offsets). If timezone is not set yet, returns UTC.
+
+```void set_time_update_callback(void (*cb)(void));```
+Sets a callback invoked when UTC time becomes available or is updated by the controller.
+
+```void set_timezone_update_callback(void (*cb)(void));```
+Sets a callback invoked when the timezone list is updated by the controller.
+
 ## class MatterTVOC
 
 ```void set_measured_value(float value);```
