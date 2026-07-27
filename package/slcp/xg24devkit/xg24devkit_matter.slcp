@@ -98,6 +98,8 @@ component:
     from: matter
   - id: matter_time_format_localization
     from: matter
+  - id: matter_time_synchronization
+    from: matter
   - id: matter_user_label
     from: matter
   - id: matter_switch

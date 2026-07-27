@@ -2,8 +2,7 @@
    Matter Time Synchronization example
 
    The example shows how to receive UTC time (and timezone / DST offsets) from a
-   Matter controller and read them as Unix timestamps using the Arduino Matter
-   API.
+   Matter controller and read them as Unix timestamps using the Arduino Matter API.
 
    The Time Synchronization cluster is enabled on the root endpoint. After the
    device is commissioned, a Matter hub that supports time sync (or chip-tool
@@ -12,6 +11,10 @@
 
    Compatible boards:
    - Arduino Nano Matter
+   - SparkFun Thing Plus Matter
+   - Silicon Labs xG24 Explorer Kit
+   - Silicon Labs xG24 Dev Kit
+   - Seeed Studio XIAO MG24 (Sense)
 
    Author: Tamas Jozsi (Silicon Labs)
  */
