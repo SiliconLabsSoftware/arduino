@@ -252,6 +252,7 @@ testlist_matter = {
     "../../libraries/Matter/examples/matter_sensor_multiple/matter_sensor_multiple.ino":                               all_matter,
     "../../libraries/Matter/examples/matter_switch/matter_switch.ino":                                                 all_matter,
     "../../libraries/Matter/examples/matter_temp_sensor/matter_temp_sensor.ino":                                       all_matter,
+    "../../libraries/Matter/examples/matter_time_sync/matter_time_sync.ino":                                           all_matter,
     "../../libraries/Matter/examples/matter_thermostat/matter_thermostat.ino":                                         all_matter,
     "../../libraries/Matter/examples/matter_tvoc_sensor/matter_tvoc_sensor.ino":                                       all_matter,
     "../../libraries/Matter/examples/matter_window_covering/matter_window_covering.ino":                               all_matter,

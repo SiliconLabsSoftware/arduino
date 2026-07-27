@@ -484,13 +484,13 @@ Class for creating and controlling a Matter Power Source appliance with battery 
 
 ## class MatterTimeSynchronization
 
-Receives UTC time (and optional timezone / DST offsets) from a Matter controller via the Time Synchronization cluster on the root endpoint (not a bridged appliance). Currently enabled for Arduino Nano Matter.
+Receives UTC time (and optional timezone / DST offsets) from a Matter controller via the Time Synchronization cluster on the root endpoint (not a bridged appliance).
 
 The device does not pull time by itself. A Matter controller that supports time sync must push `SetUTCTime` (and, when the TimeZone feature is advertised, `SetTimeZone` / `SetDSTOffset`). Use `request_time()` to emit a `TimeFailure` event so a supporting controller can push time again.
 
 ### Enabling time sync in Home Assistant
 
-Requires Matter Server **1.2.0+** (Home Assistant Matter Server app **9.1.0+**).
+Requires Matter Server **1.2.0** (Home Assistant Matter Server app **9.1.0**) or later versions.
 
 #### Home Assistant OS / Supervised (Matter Server add-on)
 
@@ -539,11 +539,6 @@ docker exec matterjs-server sh -c 'echo TZ=$TZ; date; node -e "console.log(Intl.
 ```
 
 `TZ` must be non-empty and resolve to your IANA zone (not `UTC`), or timezone/DST offsets pushed to the device will be zero.
-
-#### Notes
-
-- After a device reflash/reboot, some Matter Server versions may skip re-sync for up to 24 hours (cooldown). Restarting the Matter Server clears that state. See [matter-js/matterjs-server#938](https://github.com/matter-js/matterjs-server/issues/938).
-- In Matter Server logs, a successful push looks like `timeSynchronization.setUtcTime` (and `setTimeZone` / `setDstOffset` when timezone is supported) with `status: Success`.
 
 ```bool request_time();```
 Emits a `TimeFailure` event on the root endpoint so a supporting controller can push time again. Rate-limited to once per 60 seconds. Returns `false` if skipped by the rate limit or if logging fails. Controllers may still ignore the event during their own cooldown windows.
