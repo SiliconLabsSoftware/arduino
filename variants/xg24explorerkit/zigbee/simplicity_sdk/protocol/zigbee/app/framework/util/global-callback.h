@@ -849,18 +849,21 @@ sl_zigbee_af_image_verify_status_t sl_zigbee_af_ota_client_custom_verify_cb(bool
                                                                             const sl_zigbee_af_ota_image_id_t* id);
 /** @brief Ota Client Download Complete
  *
- * This callback indicates that the OTA client has completed the download of a
- * file.  If the file has been completely downloaded and cryptographic checks
- * have been turned on, then those will be performed prior to this callback and
- * that outcome included in the 'success' result.  On failure, this callback is
- * merely informative, and the return type is ignored.  On succesful download,
- * this callback allows the client to perform any additional verification of the
- * downloaded image and return that result to the OTA server.
+ * This callback is fired when the OTA client has completed the download of
+ * an image. If the download is successful, cryptographic checks (if enabled)
+ * will have been performed prior to this callback. On failure, this callback
+ * is primarily informative, and the return `true` is used to indicate that
+ * the OTA state machine should continue handling the process. If the download
+ * fails and the DELETE_FAILED_DOWNLOADS option is enabled, the temporary data
+ * associated with the failed download will be cleared. On successful download
+ * and verification, this callback allows the client to perform any additional
+ * checks or preparations for the downloaded image. The client can return `false`
+ * to abort further processing or `true` to proceed with the next steps.
  *
  * @param success This indicates the success or failure of the download and
- * cryptographic verification process (if applicable).  Ver.: always
- * @param id This is the image identifier information that corresponds to the
- * download result.  Ver.: always
+ * cryptographic verification process (if applicable). Ver.: always
+ * @param id This is the image identifier information corresponding to the
+ * download result. Ver.: always
  */
 bool sl_zigbee_af_ota_client_download_complete_cb(sl_zigbee_af_ota_download_result_t success,
                                                   const sl_zigbee_af_ota_image_id_t* id);

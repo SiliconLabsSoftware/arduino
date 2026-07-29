@@ -161,7 +161,7 @@ typedef struct {
   sl_802154_short_addr_t destination;
   sl_zigbee_aps_frame_t apsFrame;
   uint8_t messageLength;
-  uint8_t messageContents;
+  uint8_t messageContents[MAX_IPC_VEC_ARG_CAPACITY];
 } sli_zigbee_stack_send_reply_ipc_req_t;
 
 typedef struct {

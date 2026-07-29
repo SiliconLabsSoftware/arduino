@@ -68,6 +68,8 @@ uint8_t sl_zigbee_gp_proxy_table_lookup(sl_zigbee_gp_address_t *addr);
  * @param forwardingRadius forwarding radius
  *
  * @return true on success and false for failure.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# sinkIeeeAddress | length: EUI64_SIZE | max: EUI64_SIZE #}
  */
 bool sl_zigbee_gp_proxy_table_process_gp_pairing(uint32_t options,
                                                  sl_zigbee_gp_address_t* addr,

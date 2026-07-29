@@ -3,7 +3,7 @@
  * @brief defines structured format for 'raw-message' ipc messages
  *******************************************************************************
  * # License
- * <b>Copyright 2024 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2025 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * The licensor of this software is Silicon Laboratories Inc. Your use of this
@@ -52,6 +52,23 @@ typedef struct {
   sli_zigbee_stack_send_raw_message_ipc_req_t request;
   sli_zigbee_stack_send_raw_message_ipc_rsp_t response;
 } sli_zigbee_stack_send_raw_message_ipc_msg_t;
+
+typedef struct {
+  uint8_t message[MAX_IPC_VEC_ARG_CAPACITY];
+  uint8_t message_length;
+  sl_zigbee_transmit_priority_t priority;
+  bool useCca;
+  uint8_t messageTag;
+} sli_zigbee_stack_send_raw_message_with_tag_ipc_req_t;
+
+typedef struct {
+  sl_status_t result;
+} sli_zigbee_stack_send_raw_message_with_tag_ipc_rsp_t;
+
+typedef struct {
+  sli_zigbee_stack_send_raw_message_with_tag_ipc_req_t request;
+  sli_zigbee_stack_send_raw_message_with_tag_ipc_rsp_t response;
+} sli_zigbee_stack_send_raw_message_with_tag_ipc_msg_t;
 
 typedef struct {
   sl_802154_short_addr_t address;

@@ -75,13 +75,3 @@ extern sl_zigbee_af_plugin_network_steering_joining_state_t sli_zigbee_af_networ
 #define sli_zigbee_af_network_steering_state_clear_update_tclk() \
   ((sli_zigbee_af_network_steering_state)                        \
      &= ~SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_UPDATE_TCLK)
-
-#define sli_zigbee_af_network_steering_state_set_verify_tclk() \
-  ((sli_zigbee_af_network_steering_state)                      \
-     |= SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_VERIFY_TCLK)
-#define sli_zigbee_af_network_steering_state_verify_tclk() \
-  ((sli_zigbee_af_network_steering_state)                  \
-   & SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_VERIFY_TCLK)
-#define sli_zigbee_af_network_steering_state_clear_verify_tclk() \
-  ((sli_zigbee_af_network_steering_state)                        \
-     &= ~SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_VERIFY_TCLK)

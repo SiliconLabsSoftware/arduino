@@ -120,6 +120,29 @@ bool sl_802154_internal_passthrough_filter_handler(uint8_t *macHeader);
  */
 sl_status_t sl_zigbee_send_raw_message(const uint8_t *message, uint8_t message_length, sl_zigbee_transmit_priority_t priority, bool useCca);
 
+/** @brief Send the given message over the air without higher layer
+ * network headers with message tag is inputted by the user.
+ *
+ * The first two bytes are interpreted as the 802.15.4 frame control field.
+ * If the Ack Request bit is set, the packet will be retried as necessary.
+ * Completion is reported via ::sl_zigbee_raw_transmit_complete_handler().
+ * Note that the sequence number specified in this packet is not taken into
+ * account by the MAC layer. The MAC layer overwrites the sequence number field
+ * with the next available sequence number.
+ *
+ * @param message        The message to transmit.
+ * @param mesage_length  The message length to transmit.
+ * @param priority       Transmit priority
+ * @param useCca         Flag should the CCA stay on or not
+ * @param messageTag     The message tag to be used for the message.
+ *
+ * @return ::SL_STATUS_OK if the message was successfully submitted to
+ * the transmit queue, and ::SL_STATUS_FAIL otherwise.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# message | length: message_length | max: MAX_IPC_VEC_ARG_CAPACITY #}
+ */
+sl_status_t sl_zigbee_send_raw_message_with_tag(const uint8_t *message, uint8_t message_length, sl_zigbee_transmit_priority_t priority, bool useCca, uint8_t messageTag);
+
 /**@brief A callback invoked by the EmberZNet stack when the
  * MAC has finished transmitting a raw message.
  *
@@ -130,10 +153,14 @@ sl_status_t sl_zigbee_send_raw_message(const uint8_t *message, uint8_t message_l
  * @param messageContents  The raw message that was sent.
  * @param status           ::SL_STATUS_OK if the transmission was successful,
  *                         or ::SL_STATUS_ZIGBEE_DELIVERY_FAILED if not.
+ * @param messageTag       The message tag is passed from the customer.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# messageContents | length: messageLength | max: MAX_IPC_VEC_ARG_CAPACITY #}
  */
-void sl_zigbee_raw_transmit_complete_handler(uint8_t message,
+void sl_zigbee_raw_transmit_complete_handler(uint8_t messageLength,
                                              uint8_t* messageContents,
-                                             sl_status_t status);
+                                             sl_status_t status,
+                                             uint8_t messageTag);
 
 // Old APIs
 
@@ -157,6 +184,8 @@ void sl_zigbee_raw_transmit_complete_handler(uint8_t message,
  * @param packetInfo        Information about the received packet.
  * @param messageLength     Length of the MAC passthrough message that was received.
  * @param messageContents   The MAC passthrough message that was received.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# messageContents | length: messageLength | max: MAX_IPC_VEC_ARG_CAPACITY #}
  */
 void sl_802154_passthrough_message_handler(sl_zigbee_mac_passthrough_type_t messageType,
                                            sl_zigbee_rx_packet_info_t *packetInfo,

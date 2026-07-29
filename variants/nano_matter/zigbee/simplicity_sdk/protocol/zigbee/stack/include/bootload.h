@@ -42,6 +42,8 @@
  *
  * @return ::SL_STATUS_OK if the message was successfully submitted to
  * the transmit queue, and ::SL_STATUS_FAIL otherwise.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# messageContents | length: messageLength | max: MAX_IPC_VEC_ARG_CAPACITY #}
  */
 sl_status_t sl_zigbee_send_bootload_message(bool broadcast,
                                             sl_802154_long_addr_t destEui64,

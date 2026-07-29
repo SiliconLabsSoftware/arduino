@@ -3,7 +3,7 @@
  * @brief struct definitions for zigbee calllback events
  *******************************************************************************
  * # License
- * <b>Copyright 2024 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2025 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * The licensor of this software is Silicon Laboratories Inc. Your use of this
@@ -52,6 +52,9 @@
 #include "stack/internal/src/ipc/trust-center-ipc-callback-events.h"
 #ifdef SL_CATALOG_ZIGBEE_LIGHT_LINK_PRESENT
 #include "stack/internal/src/ipc/zll-api-ipc-callback-events.h"
+#endif
+#ifdef SL_CATALOG_ZIGBEE_MAC_TEST_COMMANDS_SUPPORT_PRESENT
+#include "stack/internal/src/ipc/sl_zigbee_mac_app_events_ipc_callback_events.h"
 #endif
 
 SL_ENUM_GENERIC(sl_zigbee_stack_cb_event_tag_t, uint16_t) {
@@ -103,10 +106,14 @@ SL_ENUM_GENERIC(sl_zigbee_stack_cb_event_tag_t, uint16_t) {
   SLI_ZIGBEE_STACK_ZLL_ADDRESS_ASSIGNMENT_HANDLER_IPC_EVENT_TYPE,
   SLI_ZIGBEE_STACK_ZLL_NETWORK_FOUND_HANDLER_IPC_EVENT_TYPE,
   SLI_ZIGBEE_STACK_ZLL_SCAN_COMPLETE_HANDLER_IPC_EVENT_TYPE,
-  SLI_ZIGBEE_STACK_ZLL_TOUCH_LINK_TARGET_HANDLER_IPC_EVENT_TYPE
+  SLI_ZIGBEE_STACK_ZLL_TOUCH_LINK_TARGET_HANDLER_IPC_EVENT_TYPE,
+  SLI_802154_STACKMAC_COMMUNICATION_STATUS_INDICATION_HANDLER_IPC_EVENT_TYPE
 };
 
 typedef struct {
+#ifndef SL_ZIGBEE_MULTI_NETWORK_STRIPPED
+  uint8_t network_idx;
+#endif // !SL_ZIGBEE_MULTI_NETWORK_STRIPPED
   sl_zigbee_stack_cb_event_tag_t tag;
   union {
     sli_zigbee_stack_remote_delete_binding_handler_ipc_event_t remote_delete_binding_handler;
@@ -169,6 +176,9 @@ typedef struct {
     sli_zigbee_stack_zll_scan_complete_handler_ipc_event_t zll_scan_complete_handler;
     sli_zigbee_stack_zll_touch_link_target_handler_ipc_event_t zll_touch_link_target_handler;
     #endif
+    #ifdef SL_CATALOG_ZIGBEE_MAC_TEST_COMMANDS_SUPPORT_PRESENT
+    sli_802154_stackmac_communication_status_indication_handler_ipc_event_t sl_802154mac_communication_status_indication_handler;
+    #endif
   } data;
 } sl_zigbee_stack_cb_event_t;
 
@@ -205,6 +215,8 @@ void sli_zigbee_stack_info_process_ipc_event(sl_zigbee_stack_cb_event_t *cb_even
 void sli_zigbee_trust_center_process_ipc_event(sl_zigbee_stack_cb_event_t *cb_event);
 
 void sli_zigbee_zll_api_process_ipc_event(sl_zigbee_stack_cb_event_t *cb_event);
+
+void sli_zigbee_sl_zigbee_mac_app_events_process_ipc_event(sl_zigbee_stack_cb_event_t *cb_event);
 
 extern sl_event_publisher_t sli_zigbee_ipc_publisher;
 void sli_zigbee_process_stack_callbacks_event(sl_event_t *sys_event);
