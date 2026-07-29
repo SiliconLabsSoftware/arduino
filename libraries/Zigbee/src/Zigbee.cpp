@@ -101,7 +101,7 @@ static uint8_t getConfiguredMacCapabilities(ZigbeeDeviceType device_type,
 static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
 {
   (void)event;
-  if (!Zigbee.isConnectedToNetwork()) {
+  if (!Zigbee.isPaired()) {
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -377,7 +377,7 @@ void ZigbeeClass::begin()
   }
   sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, true);
 
-  if (!this->isConnectedToNetwork()) {
+  if (!this->isPaired()) {
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -476,7 +476,7 @@ bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t 
   sli_zigbee_af_network_steering_set_channel_mask(primary_channel_mask, false);
   sli_zigbee_af_network_steering_set_channel_mask(secondary_channel_mask, true);
 
-  if (this->started && !this->isConnectedToNetwork()) {
+  if (this->started && !this->isPaired()) {
     sl_zigbee_af_network_steering_stop();
     scheduleNetworkSteeringRetry();
   }
