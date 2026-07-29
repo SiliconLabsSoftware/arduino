@@ -31,6 +31,12 @@ sl_status_t sli_zigbee_stack_send_raw_message(const uint8_t *message,
                                               sl_zigbee_transmit_priority_t priority,
                                               bool useCca);
 
+sl_status_t sli_zigbee_stack_send_raw_message_with_tag(const uint8_t *message,
+                                                       uint8_t message_length,
+                                                       sl_zigbee_transmit_priority_t priority,
+                                                       bool useCca,
+                                                       uint8_t messageTag);
+
 void sli_zigbee_stack_set_embernet_passthrough_source_address(sl_802154_short_addr_t address);
 
 sl_status_t sli_zigbee_stack_set_mac_filter_match_list(const sl_zigbee_mac_filter_match_data_t *macFilterMatchList,
@@ -51,8 +57,9 @@ void sli_802154_stack_passthrough_message_handler(sl_zigbee_mac_passthrough_type
                                                   uint8_t messageLength,
                                                   uint8_t *messageContents);
 
-void sli_zigbee_stack_raw_transmit_complete_handler(uint8_t message,
+void sli_zigbee_stack_raw_transmit_complete_handler(uint8_t messageLength,
                                                     uint8_t *messageContents,
-                                                    sl_status_t status);
+                                                    sl_status_t status,
+                                                    uint8_t messageTag);
 
 #endif // RAW_MESSAGE_INTERNAL_DEF_H

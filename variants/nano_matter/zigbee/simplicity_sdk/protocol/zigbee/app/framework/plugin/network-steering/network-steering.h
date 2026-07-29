@@ -114,7 +114,6 @@ enum
 #endif // OPTIMIZE_SCANS
 
   SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_UPDATE_TCLK                  = 0x10,
-  SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_STATE_VERIFY_TCLK                  = 0x20,
 };
 typedef uint8_t sl_zigbee_af_plugin_network_steering_joining_state_t;
 

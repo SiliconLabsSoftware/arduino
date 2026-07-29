@@ -25,7 +25,7 @@ typedef struct {
   bool broadcast;
   sl_802154_long_addr_t destEui64;
   uint8_t messageLength;
-  uint8_t messageContents;
+  uint8_t messageContents[MAX_IPC_VEC_ARG_CAPACITY];
 } sli_zigbee_stack_send_bootload_message_ipc_req_t;
 
 typedef struct {

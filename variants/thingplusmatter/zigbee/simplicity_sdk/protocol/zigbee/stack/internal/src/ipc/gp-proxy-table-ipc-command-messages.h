@@ -55,7 +55,7 @@ typedef struct {
   uint16_t sinkNwkAddress;
   uint16_t sinkGroupId;
   uint16_t assignedAlias;
-  uint8_t sinkIeeeAddress;
+  uint8_t sinkIeeeAddress[EUI64_SIZE];
   sl_zigbee_key_data_t gpdKey;
   uint32_t gpdSecurityFrameCounter;
   uint8_t forwardingRadius;

@@ -32,13 +32,14 @@ typedef struct {
   sl_zigbee_mac_passthrough_type_t messageType;
   sl_zigbee_rx_packet_info_t packetInfo;
   uint8_t messageLength;
-  uint8_t messageContents;
+  uint8_t messageContents[MAX_IPC_VEC_ARG_CAPACITY];
 } sli_802154_stack_passthrough_message_handler_ipc_event_t;
 
 typedef struct {
-  uint8_t message;
-  uint8_t messageContents;
+  uint8_t messageLength;
+  uint8_t messageContents[MAX_IPC_VEC_ARG_CAPACITY];
   sl_status_t status;
+  uint8_t messageTag;
 } sli_zigbee_stack_raw_transmit_complete_handler_ipc_event_t;
 
 #endif // RAW_MESSAGE_IPC_CALLBACK_EVENTS_H

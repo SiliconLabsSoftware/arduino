@@ -335,6 +335,7 @@ typedef struct {
     sli_zigbee_stack_get_embernet_passthrough_source_address_ipc_msg_t get_embernet_passthrough_source_address;
     sli_zigbee_stack_get_mac_passthrough_flags_ipc_msg_t get_mac_passthrough_flags;
     sli_zigbee_stack_send_raw_message_ipc_msg_t send_raw_message;
+    sli_zigbee_stack_send_raw_message_with_tag_ipc_msg_t send_raw_message_with_tag;
     sli_zigbee_stack_set_embernet_passthrough_source_address_ipc_msg_t set_embernet_passthrough_source_address;
     sli_zigbee_stack_set_mac_filter_match_list_ipc_msg_t set_mac_filter_match_list;
     sli_zigbee_stack_set_mac_passthrough_flags_ipc_msg_t set_mac_passthrough_flags;

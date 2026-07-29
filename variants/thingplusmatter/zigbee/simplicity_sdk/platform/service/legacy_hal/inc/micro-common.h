@@ -28,10 +28,6 @@
 #ifndef __MICRO_COMMON_H__
 #define __MICRO_COMMON_H__
 
-#ifdef SL_COMPONENT_CATALOG_PRESENT
-#include "sl_component_catalog.h"
-#endif
-
 /** @brief Initializes microcontroller-specific peripherals.
  */
 void halInit(void);
@@ -45,8 +41,6 @@ void halReboot(void);
  *  timer.
  */
 #define MICRO_DISABLE_WATCH_DOG_KEY 0xA5U
-
-#ifdef SL_CATALOG_LEGACY_HAL_WDOG_PRESENT
 
 /** @brief Enables the watchdog timer.
  */
@@ -69,12 +63,6 @@ bool halInternalWatchDogEnabled(void);
 
 void halResetWatchdog(void);                       ///< hal Reset Watchdog
 
-#else // SL_CATALOG_LEGACY_HAL_WDOG_PRESENT
-#define halInternalEnableWatchDog()
-#define halInternalDisableWatchDog(...)
-#define halInternalWatchDogEnabled(...) false
-#define halResetWatchdog()
-#endif // SL_CATALOG_LEGACY_HAL_WDOG_PRESENT
 /**
  * @brief Change the CTUNE value. Involves switching to HFRCO and turning off
  * the HFXO temporarily.

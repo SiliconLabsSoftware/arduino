@@ -542,6 +542,8 @@ void sl_zigbee_incoming_message_handler(sl_zigbee_incoming_message_type_t type,
  *   -# No route available.
  *   -# Insufficient resources available in Network or MAC layers to send
  *      message.
+ * @internal SL_ZIGBEE_IPC_ARGS
+ * {# messageContents | length: messageLength | max: MAX_IPC_VEC_ARG_CAPACITY #}
  */
 sl_status_t sl_zigbee_send_reply(sl_802154_short_addr_t destination,
                                  sl_zigbee_aps_frame_t* apsFrame,

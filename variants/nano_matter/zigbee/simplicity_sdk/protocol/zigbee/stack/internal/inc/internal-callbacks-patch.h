@@ -61,7 +61,8 @@ void sli_zigbee_stack_bootload_transmit_complete_handler(sl_status_t status,
 
 void sli_zigbee_stack_raw_transmit_complete_handler(uint8_t messageLength,
                                                     uint8_t* messageContents,
-                                                    sl_status_t status);
+                                                    sl_status_t status,
+                                                    uint8_t messageTag);
 
 void sli_zigbee_stack_energy_scan_result_handler(uint8_t channel, int8_t maxRssiValue);
 void sl_zigbee_debug_handler(uint8_t messageLength, uint8_t *messageContents);
