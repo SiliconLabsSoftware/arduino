@@ -3827,7 +3827,12 @@ RAIL_Status_t RAIL_ScheduleRx(RAIL_Handle_t railHandle,
  * If automatic PRS LNA bypass is enabled on chip that supports the feature
  * (\ref RAIL_SUPPORTS_PRS_LNA_BYPASS), a level is generated on a PRS channel
  * when the received power exceed a threshold. It is turned off after frame
- * reception or after timeout if no frame has been detected.
+ * reception or after timeout if no frame has been detected and power is
+ * below the threshold.
+ *
+ * @warning Calling this function before \ref RAIL_Init() won't enable the
+ *   the feature now. It will return \ref RAIL_STATUS_NO_ERROR but the
+ *   feature will be enabled by \ref RAIL_Init().
  *
  * @warning As this function relies on PRS access and RAIL is meant to run in
  *   TrustZone non-secure world, it is not supported if PRS is configured as

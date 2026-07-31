@@ -38,6 +38,7 @@ extern "C" {
 #include <stdbool.h>
 #include "sl_status.h"
 #include "sl_device_gpio.h"
+#include "sl_code_classification.h"
 
 #ifndef EM_GPIO_H
 #define     gpioPortA  0
@@ -190,6 +191,7 @@ sl_status_t sl_gpio_clear_pin(const sl_gpio_t *gpio);
  * @return SL_STATUS_OK if there's no error.
  *         SL_STATUS_INVALID_PARAMATER if any of the port, pin parameters are invalid.
  ******************************************************************************/
+SL_CODE_CLASSIFY(SL_CODE_COMPONENT_GPIO, SL_CODE_CLASS_TIME_CRITICAL)
 sl_status_t sl_gpio_toggle_pin(const sl_gpio_t *gpio);
 
 /***************************************************************************//**

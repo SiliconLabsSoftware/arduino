@@ -310,6 +310,7 @@ uint8_t app_log_filter_mask_get(void);
     _app_log_counter();                        \
     _app_log_print_trace();                    \
     app_log_append(__VA_ARGS__);               \
+    _app_log_reset_color();                    \
   } while (0)
 
 #define app_log_level(level, ...)     \
@@ -322,6 +323,7 @@ uint8_t app_log_filter_mask_get(void);
       _app_log_counter();             \
       _app_log_print_trace();         \
       app_log_append(__VA_ARGS__);    \
+      _app_log_reset_color();         \
     }                                 \
   } while (0)
 
@@ -336,6 +338,7 @@ uint8_t app_log_filter_mask_get(void);
       _app_log_print_trace();                                  \
       _app_log_print_status(sc);                               \
       app_log_append(__VA_ARGS__);                             \
+      _app_log_reset_color();                                  \
     }                                                          \
   } while (0)
 

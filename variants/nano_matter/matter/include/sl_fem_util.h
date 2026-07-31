@@ -31,6 +31,7 @@
 #ifndef SL_FEM_UTIL_H
 #define SL_FEM_UTIL_H
 
+#include <stdbool.h>
 #include "sl_fem_util_config.h"
 
 #ifdef __cplusplus

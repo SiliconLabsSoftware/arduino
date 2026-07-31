@@ -500,6 +500,7 @@ void sli_se_mailbox_execute_command(sli_se_mailbox_command_t *command);
  *   SE_RESPONSE_OK when the command was executed successfully or a signature
  *   was successfully verified.
  ******************************************************************************/
+SL_CODE_CLASSIFY(SL_CODE_COMPONENT_SE_MANAGER, SL_CODE_CLASS_TIME_CRITICAL)
 __STATIC_INLINE sli_se_mailbox_response_t sli_se_mailbox_read_response(void)
 {
   while (!(SEMAILBOX_HOST->RX_STATUS & SEMAILBOX_RX_STATUS_RXINT)) {
@@ -526,6 +527,7 @@ __STATIC_INLINE sli_se_mailbox_response_t sli_se_mailbox_read_response(void)
  *
  * \return         Value returned by sli_se_mailbox_read_response.
  ******************************************************************************/
+SL_CODE_CLASSIFY(SL_CODE_COMPONENT_SE_MANAGER, SL_CODE_CLASS_TIME_CRITICAL)
 __STATIC_INLINE sli_se_mailbox_response_t sli_se_mailbox_handle_response(void)
 {
   // Read command response

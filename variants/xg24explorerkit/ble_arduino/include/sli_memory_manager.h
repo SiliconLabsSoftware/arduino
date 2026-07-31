@@ -141,6 +141,8 @@ typedef struct {
 
 extern sli_block_metadata_t *sli_free_st_list_head;
 extern sli_block_metadata_t *sli_free_lt_list_head;
+extern size_t heap_used_size;
+extern size_t heap_high_watermark;
 extern uint32_t sli_free_blocks_number;
 #if defined(DEBUG_EFM) || defined(DEBUG_EFM_USER)
 extern bool reserve_no_retention_first;

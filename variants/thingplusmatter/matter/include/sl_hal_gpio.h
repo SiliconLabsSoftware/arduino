@@ -608,6 +608,7 @@ __INLINE uint32_t sl_hal_gpio_get_port_output(sl_gpio_port_t port)
  *
  * @param[in] gpio Pointer to GPIO structure with port and pin.
  ******************************************************************************/
+SL_CODE_CLASSIFY(SL_CODE_COMPONENT_HAL_GPIO, SL_CODE_CLASS_TIME_CRITICAL)
 __INLINE void sl_hal_gpio_toggle_pin(const sl_gpio_t *gpio)
 {
   EFM_ASSERT(gpio != NULL);

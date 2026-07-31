@@ -4,14 +4,14 @@
 // clang-format off
 
 // If activate should be declared and included first.
-#if defined(FLATBUFFERS_MEMORY_LEAK_TRACKING) \
-  && defined(_MSC_VER) && defined(_DEBUG)
-// The _CRTDBG_MAP_ALLOC inside <crtdbg.h> will replace
-// calloc/free (etc) to its debug version using #define directives.
+#if defined(FLATBUFFERS_MEMORY_LEAK_TRACKING) && \
+    defined(_MSC_VER) && defined(_DEBUG)
+  // The _CRTDBG_MAP_ALLOC inside <crtdbg.h> will replace
+  // calloc/free (etc) to its debug version using #define directives.
   #define _CRTDBG_MAP_ALLOC
   #include <stdlib.h>
   #include <crtdbg.h>
-// Replace operator new by trace-enabled version.
+  // Replace operator new by trace-enabled version.
   #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
   #define new DEBUG_NEW
 #endif
@@ -86,31 +86,28 @@
 #endif
 
 /// @cond FLATBUFFERS_INTERNAL
-#if __cplusplus <= 199711L                   \
-  && (!defined(_MSC_VER) || _MSC_VER < 1600) \
-  && (!defined(__GNUC__)                     \
-  || (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ < 40400))
+#if __cplusplus <= 199711L && \
+    (!defined(_MSC_VER) || _MSC_VER < 1600) && \
+    (!defined(__GNUC__) || \
+      (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ < 40400))
   #error A C++11 compatible compiler with support for the auto typing is \
-  required for FlatBuffers.
+         required for FlatBuffers.
   #error __cplusplus _MSC_VER __GNUC__  __GNUC_MINOR__  __GNUC_PATCHLEVEL__
 #endif
 
-#if !defined(__clang__) \
-  && defined(__GNUC__)  \
-  && (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ < 40600)
-// Backwards compatibility for g++ 4.4, and 4.5 which don't have the nullptr
-// and constexpr keywords. Note the __clang__ check is needed, because clang
-// presents itself as an older GNUC compiler.
+#if !defined(__clang__) && \
+    defined(__GNUC__) && \
+    (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ < 40600)
+  // Backwards compatibility for g++ 4.4, and 4.5 which don't have the nullptr
+  // and constexpr keywords. Note the __clang__ check is needed, because clang
+  // presents itself as an older GNUC compiler.
   #ifndef nullptr_t
-const class nullptr_t {
-public:
-  template<class T> inline operator T*() const
-  {
-    return 0;
-  }
-private:
-  void operator&() const;
-} nullptr = {};
+    const class nullptr_t {
+    public:
+      template<class T> inline operator T*() const { return 0; }
+    private:
+      void operator&() const;
+    } nullptr = {};
   #endif
   #ifndef constexpr
     #define constexpr const
@@ -124,8 +121,8 @@ private:
 #endif // __s390x__
 #if !defined(FLATBUFFERS_LITTLEENDIAN)
   #if defined(__GNUC__) || defined(__clang__) || defined(__ICCARM__)
-    #if (defined(__BIG_ENDIAN__) \
-  || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+    #if (defined(__BIG_ENDIAN__) || \
+         (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
       #define FLATBUFFERS_LITTLEENDIAN 0
     #else
       #define FLATBUFFERS_LITTLEENDIAN 1
@@ -147,13 +144,13 @@ private:
 #define FLATBUFFERS_STRING_EXPAND(X) #X
 #define FLATBUFFERS_STRING(X) FLATBUFFERS_STRING_EXPAND(X)
 namespace flatbuffers {
-// Returns version as string  "MAJOR.MINOR.REVISION".
-const char* FLATBUFFERS_VERSION();
+  // Returns version as string  "MAJOR.MINOR.REVISION".
+  const char* FLATBUFFERS_VERSION();
 }
 
-#if (!defined(_MSC_VER) || _MSC_VER > 1600)                           \
-  && (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 407)) \
-  || defined(__clang__)
+#if (!defined(_MSC_VER) || _MSC_VER > 1600) && \
+    (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 407)) || \
+    defined(__clang__)
   #define FLATBUFFERS_FINAL_CLASS final
   #define FLATBUFFERS_OVERRIDE override
   #define FLATBUFFERS_EXPLICIT_CPP11 explicit
@@ -165,9 +162,9 @@ const char* FLATBUFFERS_VERSION();
   #define FLATBUFFERS_VTABLE_UNDERLYING_TYPE
 #endif
 
-#if (!defined(_MSC_VER) || _MSC_VER >= 1900)                          \
-  && (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)) \
-  || (defined(__cpp_constexpr) && __cpp_constexpr >= 200704)
+#if (!defined(_MSC_VER) || _MSC_VER >= 1900) && \
+    (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)) || \
+    (defined(__cpp_constexpr) && __cpp_constexpr >= 200704)
   #define FLATBUFFERS_CONSTEXPR constexpr
   #define FLATBUFFERS_CONSTEXPR_CPP11 constexpr
   #define FLATBUFFERS_CONSTEXPR_DEFINED
@@ -176,16 +173,16 @@ const char* FLATBUFFERS_VERSION();
   #define FLATBUFFERS_CONSTEXPR_CPP11
 #endif
 
-#if (defined(__cplusplus) && __cplusplus >= 201402L) \
-  || (defined(__cpp_constexpr) && __cpp_constexpr >= 201304)
+#if (defined(__cplusplus) && __cplusplus >= 201402L) || \
+    (defined(__cpp_constexpr) && __cpp_constexpr >= 201304)
   #define FLATBUFFERS_CONSTEXPR_CPP14 FLATBUFFERS_CONSTEXPR_CPP11
 #else
   #define FLATBUFFERS_CONSTEXPR_CPP14
 #endif
 
-#if (defined(__GXX_EXPERIMENTAL_CXX0X__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)) \
-  || (defined(_MSC_FULL_VER) && (_MSC_FULL_VER >= 190023026))                         \
-  || defined(__clang__)
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)) || \
+    (defined(_MSC_FULL_VER) && (_MSC_FULL_VER >= 190023026)) || \
+    defined(__clang__)
   #define FLATBUFFERS_NOEXCEPT noexcept
 #else
   #define FLATBUFFERS_NOEXCEPT
@@ -193,17 +190,17 @@ const char* FLATBUFFERS_VERSION();
 
 // NOTE: the FLATBUFFERS_DELETE_FUNC macro may change the access mode to
 // private, so be sure to put it at the end or reset access mode explicitly.
-#if (!defined(_MSC_VER) || _MSC_FULL_VER >= 180020827)                \
-  && (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 404)) \
-  || defined(__clang__)
+#if (!defined(_MSC_VER) || _MSC_FULL_VER >= 180020827) && \
+    (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 404)) || \
+    defined(__clang__)
   #define FLATBUFFERS_DELETE_FUNC(func) func = delete
 #else
   #define FLATBUFFERS_DELETE_FUNC(func) private: func
 #endif
 
-#if (!defined(_MSC_VER) || _MSC_VER >= 1900)                          \
-  && (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 409)) \
-  || defined(__clang__)
+#if (!defined(_MSC_VER) || _MSC_VER >= 1900) && \
+    (!defined(__GNUC__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 409)) || \
+    defined(__clang__)
   #define FLATBUFFERS_DEFAULT_DECLARATION
 #endif
 
@@ -211,64 +208,64 @@ const char* FLATBUFFERS_VERSION();
 // Not possible if Microsoft Compiler before 2012
 // Possible is the language feature __cpp_alias_templates is defined well
 // Or possible if the C++ std is C+11 or newer
-#if (defined(_MSC_VER) && _MSC_VER > 1700 /* MSVC2012 */)                \
-  || (defined(__cpp_alias_templates) && __cpp_alias_templates >= 200704) \
-  || (defined(__cplusplus) && __cplusplus >= 201103L)
+#if (defined(_MSC_VER) && _MSC_VER > 1700 /* MSVC2012 */) \
+    || (defined(__cpp_alias_templates) && __cpp_alias_templates >= 200704) \
+    || (defined(__cplusplus) && __cplusplus >= 201103L)
   #define FLATBUFFERS_TEMPLATES_ALIASES
 #endif
 
 #ifndef FLATBUFFERS_HAS_STRING_VIEW
-// Only provide flatbuffers::string_view if __has_include can be used
-// to detect a header that provides an implementation
+  // Only provide flatbuffers::string_view if __has_include can be used
+  // to detect a header that provides an implementation
   #if defined(__has_include)
-// Check for std::string_view (in c++17)
-    #if __has_include(< string_view >) && (__cplusplus >= 201606 || (defined(_HAS_CXX17) && _HAS_CXX17))
+    // Check for std::string_view (in c++17)
+    #if __has_include(<string_view>) && (__cplusplus >= 201606 || (defined(_HAS_CXX17) && _HAS_CXX17))
       #include <string_view>
-namespace flatbuffers {
-typedef std::string_view string_view;
-}
+      namespace flatbuffers {
+        typedef std::string_view string_view;
+      }
       #define FLATBUFFERS_HAS_STRING_VIEW 1
-// Check for std::experimental::string_view (in c++14, compiler-dependent)
-    #elif __has_include(< experimental / string_view >) && (__cplusplus >= 201411)
+    // Check for std::experimental::string_view (in c++14, compiler-dependent)
+    #elif __has_include(<experimental/string_view>) && (__cplusplus >= 201411)
       #include <experimental/string_view>
-namespace flatbuffers {
-typedef std::experimental::string_view string_view;
-}
+      namespace flatbuffers {
+        typedef std::experimental::string_view string_view;
+      }
       #define FLATBUFFERS_HAS_STRING_VIEW 1
-// Check for absl::string_view
+    // Check for absl::string_view
     #elif __has_include("absl/strings/string_view.h")
       #include "absl/strings/string_view.h"
-namespace flatbuffers {
-typedef absl::string_view string_view;
-}
+      namespace flatbuffers {
+        typedef absl::string_view string_view;
+      }
       #define FLATBUFFERS_HAS_STRING_VIEW 1
     #endif
   #endif // __has_include
 #endif // !FLATBUFFERS_HAS_STRING_VIEW
 
 #ifndef FLATBUFFERS_GENERAL_HEAP_ALLOC_OK
-// Allow heap allocations to be used
+  // Allow heap allocations to be used
   #define FLATBUFFERS_GENERAL_HEAP_ALLOC_OK 1
 #endif // !FLATBUFFERS_GENERAL_HEAP_ALLOC_OK
 
 #ifndef FLATBUFFERS_HAS_NEW_STRTOD
-// Modern (C++11) strtod and strtof functions are available for use.
-// 1) nan/inf strings as argument of strtod;
-// 2) hex-float  as argument of  strtod/strtof.
-  #if (defined(_MSC_VER) && _MSC_VER >= 1900)                        \
-  || (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 409)) \
-  || (defined(__clang__))
+  // Modern (C++11) strtod and strtof functions are available for use.
+  // 1) nan/inf strings as argument of strtod;
+  // 2) hex-float  as argument of  strtod/strtof.
+  #if (defined(_MSC_VER) && _MSC_VER >= 1900) || \
+      (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 409)) || \
+      (defined(__clang__))
     #define FLATBUFFERS_HAS_NEW_STRTOD 1
   #endif
 #endif // !FLATBUFFERS_HAS_NEW_STRTOD
 
 #ifndef FLATBUFFERS_LOCALE_INDEPENDENT
-// Enable locale independent functions {strtof_l, strtod_l,strtoll_l,
-// strtoull_l}.
-  #if (defined(_MSC_VER) && _MSC_VER >= 1800)             \
-  || (defined(__ANDROID_API__) && __ANDROID_API__ >= 21)  \
-  || (defined(_XOPEN_VERSION) && (_XOPEN_VERSION >= 700)) \
-  && (!defined(__Fuchsia__) && !defined(__ANDROID_API__))
+  // Enable locale independent functions {strtof_l, strtod_l,strtoll_l,
+  // strtoull_l}.
+  #if (defined(_MSC_VER) && _MSC_VER >= 1800) || \
+      (defined(__ANDROID_API__) && __ANDROID_API__>= 21) || \
+      (defined(_XOPEN_VERSION) && (_XOPEN_VERSION >= 700)) && \
+        (!defined(__Fuchsia__) && !defined(__ANDROID_API__))
     #define FLATBUFFERS_LOCALE_INDEPENDENT 1
   #else
     #define FLATBUFFERS_LOCALE_INDEPENDENT 0
@@ -278,7 +275,7 @@ typedef absl::string_view string_view;
 // Suppress Undefined Behavior Sanitizer (recoverable only). Usage:
 // - __supress_ubsan__("undefined")
 // - __supress_ubsan__("signed-integer-overflow")
-#if defined(__clang__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 7))
+#if defined(__clang__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >=7))
   #define __supress_ubsan__(type) __attribute__((no_sanitize(type)))
 #elif defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 409)
   #define __supress_ubsan__(type) __attribute__((no_sanitize_undefined))
@@ -288,15 +285,14 @@ typedef absl::string_view string_view;
 
 // This is constexpr function used for checking compile-time constants.
 // Avoid `#pragma warning(disable: 4127) // C4127: expression is constant`.
-template<typename T> FLATBUFFERS_CONSTEXPR inline bool IsConstTrue(T t)
-{
+template<typename T> FLATBUFFERS_CONSTEXPR inline bool IsConstTrue(T t) {
   return !!t;
 }
 
 // Enable C++ attribute [[]] if std:c++17 or higher.
 #if ((__cplusplus >= 201703L) \
-  || (defined(_MSVC_LANG) &&  (_MSVC_LANG >= 201703L)))
-// All attributes unknown to an implementation are ignored without causing an error.
+    || (defined(_MSVC_LANG) &&  (_MSVC_LANG >= 201703L)))
+  // All attributes unknown to an implementation are ignored without causing an error.
   #define FLATBUFFERS_ATTRIBUTE(attr) attr
 
   #define FLATBUFFERS_FALLTHROUGH() [[fallthrough]]
@@ -316,6 +312,7 @@ template<typename T> FLATBUFFERS_CONSTEXPR inline bool IsConstTrue(T t)
 
 /// @file
 namespace flatbuffers {
+
 /// @cond FLATBUFFERS_INTERNAL
 // Our default offset / size type, 32bit on purpose on 64bit systems.
 // Also, using a consistent offset type maintains compatibility of serialized
@@ -338,8 +335,8 @@ typedef uintmax_t largest_scalar_t;
 // Includes the offset to the root table (uoffset_t), the offset to the vtable
 // of the root table (soffset_t), the size of the vtable (uint16_t), and the
 // size of the referring table (uint16_t).
-#define FLATBUFFERS_MIN_BUFFER_SIZE sizeof(uoffset_t) + sizeof(soffset_t) \
-  + sizeof(uint16_t) + sizeof(uint16_t)
+#define FLATBUFFERS_MIN_BUFFER_SIZE sizeof(uoffset_t) + sizeof(soffset_t) + \
+   sizeof(uint16_t) + sizeof(uint16_t)
 
 // We support aligning the contents of buffers up to this size.
 #ifndef FLATBUFFERS_MAX_ALIGNMENT
@@ -349,10 +346,9 @@ typedef uintmax_t largest_scalar_t;
 /// @brief The length of a FlatBuffer file header.
 static const size_t kFileIdentifierLength = 4;
 
-inline bool VerifyAlignmentRequirements(size_t align, size_t min_align = 1)
-{
-  return (min_align <= align) && (align <= (FLATBUFFERS_MAX_ALIGNMENT))
-         && (align & (align - 1)) == 0; // must be power of 2
+inline bool VerifyAlignmentRequirements(size_t align, size_t min_align = 1) {
+  return (min_align <= align) && (align <= (FLATBUFFERS_MAX_ALIGNMENT)) &&
+         (align & (align - 1)) == 0;  // must be power of 2
 }
 
 #if defined(_MSC_VER)
@@ -361,8 +357,7 @@ inline bool VerifyAlignmentRequirements(size_t align, size_t min_align = 1)
   #pragma warning(disable: 4127) // C4127: conditional expression is constant
 #endif
 
-template<typename T> T EndianSwap(T t)
-{
+template<typename T> T EndianSwap(T t) {
   #if defined(_MSC_VER)
     #define FLATBUFFERS_BYTESWAP16 _byteswap_ushort
     #define FLATBUFFERS_BYTESWAP32 _byteswap_ulong
@@ -371,12 +366,12 @@ template<typename T> T EndianSwap(T t)
     #define FLATBUFFERS_BYTESWAP16 __REV16
     #define FLATBUFFERS_BYTESWAP32 __REV
     #define FLATBUFFERS_BYTESWAP64(x) \
-  ((__REV(static_cast<uint32_t>(x >> 32U))) | (static_cast<uint64_t>(__REV(static_cast<uint32_t>(x)))) << 32U)
+       ((__REV(static_cast<uint32_t>(x >> 32U))) | (static_cast<uint64_t>(__REV(static_cast<uint32_t>(x)))) << 32U)
   #else
     #if defined(__GNUC__) && __GNUC__ * 100 + __GNUC_MINOR__ < 408 && !defined(__clang__)
-  // __builtin_bswap16 was missing prior to GCC 4.8.
+      // __builtin_bswap16 was missing prior to GCC 4.8.
       #define FLATBUFFERS_BYTESWAP16(x) \
-  static_cast<uint16_t>(__builtin_bswap32(static_cast<uint32_t>(x) << 16))
+        static_cast<uint16_t>(__builtin_bswap32(static_cast<uint32_t>(x) << 16))
     #else
       #define FLATBUFFERS_BYTESWAP16 __builtin_bswap16
     #endif
@@ -407,20 +402,19 @@ template<typename T> T EndianSwap(T t)
   #pragma warning(pop)
 #endif
 
-template<typename T> T EndianScalar(T t)
-{
+
+template<typename T> T EndianScalar(T t) {
   #if FLATBUFFERS_LITTLEENDIAN
-  return t;
+    return t;
   #else
-  return EndianSwap(t);
+    return EndianSwap(t);
   #endif
 }
 
 template<typename T>
 // UBSAN: C++ aliasing type rules, see std::bit_cast<> for details.
 __supress_ubsan__("alignment")
-T ReadScalar(const void *p)
-{
+T ReadScalar(const void *p) {
   return EndianScalar(*reinterpret_cast<const T *>(p));
 }
 
@@ -434,14 +428,12 @@ T ReadScalar(const void *p)
 template<typename T>
 // UBSAN: C++ aliasing type rules, see std::bit_cast<> for details.
 __supress_ubsan__("alignment")
-void WriteScalar(void *p, T t)
-{
+void WriteScalar(void *p, T t) {
   *reinterpret_cast<T *>(p) = EndianScalar(t);
 }
 
 template<typename T> struct Offset;
-template<typename T> __supress_ubsan__("alignment") void WriteScalar(void *p, Offset<T> t)
-{
+template<typename T> __supress_ubsan__("alignment") void WriteScalar(void *p, Offset<T> t) {
   *reinterpret_cast<uoffset_t *>(p) = EndianScalar(t.o);
 }
 
@@ -453,32 +445,25 @@ template<typename T> __supress_ubsan__("alignment") void WriteScalar(void *p, Of
 // "scalar_size" scalar if the buffer had grown to "buf_size" (downwards in
 // memory).
 __supress_ubsan__("unsigned-integer-overflow")
-inline size_t PaddingBytes(size_t buf_size, size_t scalar_size)
-{
+inline size_t PaddingBytes(size_t buf_size, size_t scalar_size) {
   return ((~buf_size) + 1) & (scalar_size - 1);
 }
 
 // Generic 'operator==' with conditional specialisations.
 // T e - new value of a scalar field.
 // T def - default of scalar (is known at compile-time).
-template<typename T> inline bool IsTheSameAs(T e, T def)
-{
-  return e == def;
-}
+template<typename T> inline bool IsTheSameAs(T e, T def) { return e == def; }
 
-#if defined(FLATBUFFERS_NAN_DEFAULTS) \
-  && defined(FLATBUFFERS_HAS_NEW_STRTOD) && (FLATBUFFERS_HAS_NEW_STRTOD > 0)
+#if defined(FLATBUFFERS_NAN_DEFAULTS) && \
+    defined(FLATBUFFERS_HAS_NEW_STRTOD) && (FLATBUFFERS_HAS_NEW_STRTOD > 0)
 // Like `operator==(e, def)` with weak NaN if T=(float|double).
-template<typename T> inline bool IsFloatTheSameAs(T e, T def)
-{
+template<typename T> inline bool IsFloatTheSameAs(T e, T def) {
   return (e == def) || ((def != def) && (e != e));
 }
-template<> inline bool IsTheSameAs<float>(float e, float def)
-{
+template<> inline bool IsTheSameAs<float>(float e, float def) {
   return IsFloatTheSameAs(e, def);
 }
-template<> inline bool IsTheSameAs<double>(double e, double def)
-{
+template<> inline bool IsTheSameAs<double>(double e, double def) {
   return IsFloatTheSameAs(e, def);
 }
 #endif
@@ -487,16 +472,15 @@ template<> inline bool IsTheSameAs<double>(double e, double def)
 // Workaround for GCC warning [-Werror=type-limits]:
 // comparison is always true due to limited range of data type.
 template<typename T>
-inline bool IsOutRange(const T &v, const T &low, const T &high)
-{
+inline bool IsOutRange(const T &v, const T &low, const T &high) {
   return (v < low) || (high < v);
 }
 
 // Check 'v' is in closed range [low; high].
 template<typename T>
-inline bool IsInRange(const T &v, const T &low, const T &high)
-{
+inline bool IsInRange(const T &v, const T &low, const T &high) {
   return !IsOutRange(v, low, high);
 }
+
 }  // namespace flatbuffers
 #endif  // FLATBUFFERS_BASE_H_
