@@ -16,19 +16,23 @@ from testcases.testcase_hil_si7021_wire import testcase_hil_si7021_wire
 from testcases.testcase_hil_ble_silabs_advertise import testcase_hil_ble_silabs_advertise
 from testcases.testcase_hil_ble_arduino_advertise import testcase_hil_ble_arduino_advertise
 from testcases.testcase_hil_matter_smoke import testcase_hil_matter_smoke
+from testcases.testcase_hil_zigbee_smoke import testcase_hil_zigbee_smoke
 
 all_variants = [
     ["nano_matter", "none"],
     ["nano_matter", "ble_arduino"],
     ["nano_matter", "ble_silabs"],
+    ["nano_matter", "zigbee"],
     ["nano_matter", "matter"],
     ["thingplusmatter", "none"],
     ["thingplusmatter", "ble_arduino"],
     ["thingplusmatter", "ble_silabs"],
+    ["thingplusmatter", "zigbee"],
     ["thingplusmatter", "matter"],
     ["xg24explorerkit", "none"],
     ["xg24explorerkit", "ble_arduino"],
     ["xg24explorerkit", "ble_silabs"],
+    ["xg24explorerkit", "zigbee"],
     ["xg24explorerkit", "matter"],
     ["xg24devkit", "none"],
     ["xg24devkit", "ble_arduino"],
@@ -45,6 +49,7 @@ all_variants = [
     ["xiao_mg24", "none"],
     ["xiao_mg24", "ble_arduino"],
     ["xiao_mg24", "ble_silabs"],
+    ["xiao_mg24", "zigbee"],
     ["xiao_mg24", "matter"],
 ]
 
@@ -61,6 +66,7 @@ testcase_list = {
     "ble_silabs_advertise": testcase_hil_ble_silabs_advertise,
     "ble_arduino_advertise": testcase_hil_ble_arduino_advertise,
     "matter_smoke": testcase_hil_matter_smoke,
+    "zigbee_smoke": testcase_hil_zigbee_smoke,
 }
 
 
