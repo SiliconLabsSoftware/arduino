@@ -146,6 +146,7 @@ extern "C" {
  *****************************   PROTOTYPES   **********************************
  ******************************************************************************/
 
+SL_CODE_CLASSIFY(SL_CODE_COMPONENT_SE_MANAGER, SL_CODE_CLASS_TIME_CRITICAL)
 sl_status_t sli_se_to_sl_status(sli_se_mailbox_response_t res);
 
 /***************************************************************************//**

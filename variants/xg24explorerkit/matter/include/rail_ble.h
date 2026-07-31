@@ -1263,8 +1263,6 @@ typedef struct RAIL_BLE_CsMode0DebugResults {
   uint16_t ucStartIndex;
   /** End index IQ sample index of unmodulated carrier. */
   uint16_t ucEndIndex;
-  /** Reserved. */
-  uint32_t reserved[2];
   /**
    * FFO of the Mode 0 step with the highest recorded RSSI
    * up to and including the current Mode 0 step.
@@ -1272,10 +1270,12 @@ typedef struct RAIL_BLE_CsMode0DebugResults {
   int16_t csFfoPp100m;
   /** Highest recorded RSSI up to and including the current mode 0 step, in dBm. */
   int8_t highestRssiDbm;
+  /** Tx timestamp. */
+  uint8_t txTimeStampPre;
+  /** Tx timestamp. */
+  uint32_t txTimeStamp;
   /** Reserved. */
-  uint8_t reserved1;
-  /** Reserved. */
-  uint32_t reserved2[3];
+  uint32_t reserved[4];
 } RAIL_BLE_CsMode0DebugResults_t;
 
 /**
@@ -1299,8 +1299,16 @@ typedef struct RAIL_BLE_CsMode1DebugResults {
   uint32_t csstatus4;
   /** Internal CS status register. */
   uint32_t csstatus5;
+  /** Tx timestamp. */
+  uint32_t txTimeStamp;
+  /** Tx timestamp. */
+  uint8_t txTimeStampPre;
   /** Reserved. */
-  uint32_t reserved[3];
+  uint8_t reserved;
+  /** Reserved. */
+  uint16_t reserved1;
+  /** Reserved. */
+  uint32_t reserved2;
 } RAIL_BLE_CsMode1DebugResults_t;
 
 /**
@@ -1349,25 +1357,7 @@ typedef struct RAIL_BLE_CsMode2DebugResults {
  */
 typedef struct RAIL_BLE_CsStepDebugResults {
   /** Reserved. */
-  uint32_t reserved;
-  /** Reserved. */
-  uint32_t reserved1;
-  /** Reserved. */
-  uint32_t reserved2;
-  /** Reserved. */
-  uint32_t reserved3;
-  /** Reserved. */
-  uint32_t reserved4;
-  /** Reserved. */
-  uint32_t reserved5;
-  /** Reserved. */
-  uint32_t reserved6;
-  /** Reserved. */
-  uint32_t reserved7;
-  /** Reserved. */
-  uint32_t reserved8;
-  /** Reserved. */
-  uint32_t reserved9;
+  uint32_t reserved[10];
 } RAIL_BLE_CsStepDebugResults_t;
 
 /**
@@ -1535,12 +1525,16 @@ RAIL_Status_t RAIL_BLE_SetNextCsStep(RAIL_Handle_t railHandle,
 /**
  * Configure antennas for CS event.
  *
+ * @note The \ref RAIL_BLE_CsAntennaConfig_t::antennaCount of the
+ *   \ref pAntennaConfig parameter must be a value greater than 0
+ *   and less than or equal to \ref RAIL_BLE_CS_MAX_ANTENNAS.
+ *
  * @param[in] railHandle A RAIL instance handle.
  * @param[in] pAntennaConfig A pointer to the antenna config
  * @return Status code indicating success of the function call.
  */
 RAIL_Status_t RAIL_BLE_ConfigCsAntenna(RAIL_Handle_t railHandle,
-                                       RAIL_BLE_CsAntennaConfig_t *pAntennaConfig);
+                                       const RAIL_BLE_CsAntennaConfig_t *pAntennaConfig);
 
 /**
  * Returns the number of antennas configured for a CS event.

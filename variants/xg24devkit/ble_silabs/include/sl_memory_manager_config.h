@@ -42,6 +42,11 @@
 // <i> Default: 32
 #define SL_MEMORY_MANAGER_BLOCK_ALLOCATION_MIN_SIZE   (32)
 
+// <q SL_MEMORY_MANAGER_STATISTICS_API_ENABLE> Enables the statistics API.
+// <i> Setting this configuration to 0 will make all the statistics API return 0.
+// <i> Default: 1
+#define SL_MEMORY_MANAGER_STATISTICS_API_ENABLE  1
+
 // </h>
 
 // <<< end of configuration section >>>

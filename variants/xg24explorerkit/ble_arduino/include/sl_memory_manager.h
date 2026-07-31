@@ -79,6 +79,17 @@ extern "C" {
  *  If the SL System component (@ref system) is used by your application, the
  *  sl_memory_init() call will be added automatically to your initialization
  *  sequence.
+ * \a sl_memory_manager_config.h allows users to configure the minimum block allocation
+ * size for the application. The default value is 32 bytes, it can be any 8-byte increment
+ * between 32 and 128 bytes inclusively, depending on the application's requirements.
+ * This configuration is bound to SL_MEMORY_MANAGER_BLOCK_ALLOCATION_MIN_SIZE.
+ * This configuration file also allows the user to enable or disable the
+ * memory manager statistics API. This is a feature that provides runtime
+ * information about memory usage, helping to optimize memory allocation
+ * strategies and detect potential memory leaks. By default the statistics API is
+ * enabled. It can be disabled by setting the appropriate configuration in
+ * \a sl_memory_manager_config.h. Disabling this API saves a significant amount of
+ * memory, which can be crucial for resource-constrained applications.
  *
  * \a sl_memory_manager_region_config.h allows to configure the stack size for
  * the application. The default value of 4096 bytes for SL_STACK_SIZE will
@@ -538,7 +549,7 @@ typedef enum {
 typedef struct {
   uint32_t base_addr;               ///< Heap base address.
   size_t used_size;                 ///< Used size (in bytes), independently of alignment.
-  size_t free_size;                 ///< Free size (in bytes), independently of alignment.
+  size_t free_size;                 ///< Free size (in bytes), independently of alignment. Excludes free block metadata.
   size_t total_size;                ///< Total heap size (in bytes).
   size_t free_block_count;          ///< Number of free blocks.
   size_t free_block_largest_size;   ///< Largest free block size (in bytes).

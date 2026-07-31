@@ -34,36 +34,42 @@ def main():
     current_platform_config = get_platform_config_from_arguments()
     if current_platform_config["name"] == "all":
         # Get all the platform configurations and remove the first three (which are the "all" configs)
-        all_platform_configs = platform_configurations[6:]
+        all_platform_configs = platform_configurations[7:]
         for config in all_platform_configs:
             generate_gsdk(config)
+    elif current_platform_config["name"] == "precomp_all":
+        # Generate all the precomp platform configurations
+        all_platform_configs = platform_configurations[7:]
+        for config in all_platform_configs:
+            if config["prebuild"]:
+                generate_gsdk(config)
     elif current_platform_config["name"] == "noradio_precomp_all":
         # Generate all the noradio platform configurations
-        noradio_all_platform_configs = platform_configurations[6:]
+        noradio_all_platform_configs = platform_configurations[7:]
         for config in noradio_all_platform_configs:
             if config["protocol_stack"] == 'noradio' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "ble_arduino_precomp_all":
         # Generate all the ble (controller) platform configurations
-        ble_all_platform_configs = platform_configurations[6:]
+        ble_all_platform_configs = platform_configurations[7:]
         for config in ble_all_platform_configs:
             if config["protocol_stack"] == 'ble_arduino' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "ble_silabs_precomp_all":
         # Generate all the ble (silabs host) platform configurations
-        ble_silabs_all_platform_configs = platform_configurations[6:]
+        ble_silabs_all_platform_configs = platform_configurations[7:]
         for config in ble_silabs_all_platform_configs:
             if config["protocol_stack"] == 'ble_silabs' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "matter_precomp_all":
         # Generate all the matter platform configurations
-        matter_all_platform_configs = platform_configurations[6:]
+        matter_all_platform_configs = platform_configurations[7:]
         for config in matter_all_platform_configs:
             if config["protocol_stack"] == 'matter' and config["prebuild"]:
                 generate_gsdk(config)
     elif current_platform_config["name"] == "zigbee_precomp_all":
         # Generate all the zigbee platform configurations
-        zigbee_all_platform_configs = platform_configurations[6:]
+        zigbee_all_platform_configs = platform_configurations[7:]
         for config in zigbee_all_platform_configs:
             if config["protocol_stack"] == 'zigbee' and config["prebuild"]:
                 generate_gsdk(config)
@@ -407,7 +413,7 @@ def build_project():
     build_process = subprocess.Popen(
         ["make", "-f", makefile, "-j", "20"], cwd=slc_output_dir
     )
-    build_process.communicate(timeout=180)
+    build_process.communicate(timeout=360)
     print("Build finished")
 
 
@@ -825,6 +831,10 @@ all_platform_config = {
     "name": "all"
 }
 
+all_precomp_platform_config = {
+    "name": "precomp_all"
+}
+
 noradio_precomp_all_platform_config = {
     "name": "noradio_precomp_all",
 }
@@ -849,7 +859,7 @@ thingplusmatter_noradio_platform_config = {
     "name": "thingplusmatter_noradio",
     "arduino_variant_name": "thingplusmatter",
     "board_opn": "brd2704a",
-    "ai_capable": False, # TODO: True
+    "ai_capable": False,
     "prebuild": False,
     "protocol_stack": 'noradio',
     "slcp_file": "slcp/thingplusmatter/thingplusmatter_noradio.slcp",
@@ -861,7 +871,7 @@ thingplusmatter_noradio_prebuilt_platform_config = {
     "name": "thingplusmatter_noradio_precomp",
     "arduino_variant_name": "thingplusmatter",
     "board_opn": "brd2704a",
-    "ai_capable": False, # TODO: True
+    "ai_capable": False,
     "prebuild": True,
     "protocol_stack": 'noradio',
     "slcp_file": "slcp/thingplusmatter/thingplusmatter_noradio.slcp",
@@ -1862,6 +1872,7 @@ xiao_mg24_zigbee_prebuilt_platform_config = {
 }
 
 platform_configurations = [all_platform_config,
+                           all_precomp_platform_config,
                            noradio_precomp_all_platform_config,
                            ble_arduino_precomp_all_platform_config,
                            ble_silabs_precomp_all_platform_config,

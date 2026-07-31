@@ -33,6 +33,10 @@
 
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum sl_ot_rtos_event_t
 {
     SL_OT_RTOS_EVENT_STACK  = 1 << 0,
@@ -110,5 +114,9 @@ bool sl_ot_rtos_try_acquire_stack_mutex(void);
  *
  */
 bool sl_ot_rtos_task_can_access_pal(void);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
