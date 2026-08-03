@@ -549,16 +549,16 @@ void end();
 void on();
 void off();
 void toggle();
-void dimUp(uint8_t rate_percent = 50);
-void dimDown(uint8_t rate_percent = 50);
-void stopDimming();
-void moveToLevel(uint8_t level, uint32_t transition_time_ms = 0);
-void moveToPercent(uint8_t percent, uint32_t transition_time_ms = 0);
+void dim_up(uint8_t rate_percent = 50);
+void dim_down(uint8_t rate_percent = 50);
+void stop_dimming();
+void move_to_level(uint8_t level, uint32_t transition_time_ms = 0);
+void move_to_percent(uint8_t percent, uint32_t transition_time_ms = 0);
 ```
 
-`dimUp()` and `dimDown()` use percent-per-second rates converted to raw Level
-Control rates. `moveToPercent()` converts 0-100 brightness percent values to
-raw Level Control levels. `moveToLevel()` is the raw Level Control command for
+`dim_up()` and `dim_down()` use percent-per-second rates converted to raw Level
+Control rates. `move_to_percent()` converts 0-100 brightness percent values to
+raw Level Control levels. `move_to_level()` is the raw Level Control command for
 devices that need direct Zigbee level values.
 Transition time arguments are specified in milliseconds.
 
@@ -924,23 +924,23 @@ API:
 bool begin();
 void end();
 
-bool requestTime(uint8_t coordinator_endpoint_id = 1);
-bool hasTime();
-uint32_t getZigbeeTime();
-uint32_t getUnixTime();
-uint32_t getLocalUnixTime();
-bool hasTimeZone();
-int32_t getTimeZone();
-uint8_t getTimeStatus();
-void setTimeUpdateCallback(void (*cb)(void));
+bool request_time(uint8_t coordinator_endpoint_id = 1);
+bool has_time();
+uint32_t get_zigbee_time();
+uint32_t get_unix_time();
+uint32_t get_local_unix_time();
+bool has_timezone();
+int32_t get_timezone();
+uint8_t get_time_status();
+void set_time_update_callback(void (*cb)(void));
 ```
 
-`requestTime()` reads the Time cluster from the coordinator endpoint. The
+`request_time()` reads the Time cluster from the coordinator endpoint. The
 default coordinator endpoint is `1`.
 
-`getZigbeeTime()` returns ZCL time in seconds since 2000-01-01 00:00:00 UTC.
-`getUnixTime()` returns UTC Unix time in seconds since 1970-01-01 00:00:00 UTC.
-`getLocalUnixTime()` returns the coordinator's local Unix time if local time or
+`get_zigbee_time()` returns ZCL time in seconds since 2000-01-01 00:00:00 UTC.
+`get_unix_time()` returns UTC Unix time in seconds since 1970-01-01 00:00:00 UTC.
+`get_local_unix_time()` returns the coordinator's local Unix time if local time or
 timezone data was provided, otherwise it returns UTC Unix time.
 
 Example:
@@ -950,7 +950,7 @@ ZigbeeTimeClient zigbee_time;
 
 void setup()
 {
-  zigbee_time.setTimeUpdateCallback(onZigbeeTimeUpdated);
+  zigbee_time.set_time_update_callback(onZigbeeTimeUpdated);
   Zigbee.begin();
   zigbee_time.begin();
 }
@@ -958,7 +958,7 @@ void setup()
 void loop()
 {
   if (Zigbee.isConnectedToNetwork()) {
-    zigbee_time.requestTime();
+    zigbee_time.request_time();
   }
 }
 ```

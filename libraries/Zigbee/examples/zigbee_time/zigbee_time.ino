@@ -30,10 +30,10 @@ const uint8_t button_pin = BTN_BUILTIN;
 
 volatile bool zigbee_time_updated = false;
 
-void printDateTime(const char* label, uint32_t unix_time);
-void printZigbeeTime();
+void print_date_time(const char* label, uint32_t unix_time);
+void print_zigbee_time();
 
-void onZigbeeTimeUpdated()
+void on_zigbee_time_updated()
 {
   zigbee_time_updated = true;
 }
@@ -60,7 +60,7 @@ void setup()
   Zigbee.setVendorName("Silicon Labs");
   Zigbee.setProductName("Zigbee time client");
   Zigbee.setFirmwareVersion(0x00000001);
-  zigbee_time.setTimeUpdateCallback(onZigbeeTimeUpdated);
+  zigbee_time.set_time_update_callback(on_zigbee_time_updated);
   Zigbee.begin();
   zigbee_time.begin();
 
@@ -82,26 +82,26 @@ void setup()
   Serial.print(" | PAN ID: 0x");
   Serial.println(Zigbee.getPanId(), HEX);
 
-  zigbee_time.requestTime();
+  zigbee_time.request_time();
 }
 
 void loop()
 {
   static uint32_t last_time_request_ms = 0;
   if ((millis() - last_time_request_ms) > 10000) {
-    zigbee_time.requestTime();
+    zigbee_time.request_time();
     last_time_request_ms = millis();
   }
 
   if (zigbee_time_updated) {
     zigbee_time_updated = false;
-    printZigbeeTime();
+    print_zigbee_time();
   }
 
   delay(50);
 }
 
-void printDateTime(const char* label, uint32_t unix_time)
+void print_date_time(const char* label, uint32_t unix_time)
 {
   time_t timestamp = static_cast<time_t>(unix_time);
   tm* time_info = gmtime(&timestamp);
@@ -116,22 +116,22 @@ void printDateTime(const char* label, uint32_t unix_time)
   Serial.println(formatted_time);
 }
 
-void printZigbeeTime()
+void print_zigbee_time()
 {
   Serial.println("-------------------------------");
   Serial.print("Time status: 0x");
-  Serial.println(zigbee_time.getTimeStatus(), HEX);
+  Serial.println(zigbee_time.get_time_status(), HEX);
   Serial.print("Zigbee time: ");
-  Serial.println(zigbee_time.getZigbeeTime());
+  Serial.println(zigbee_time.get_zigbee_time());
   Serial.print("Unix time: ");
-  Serial.println(zigbee_time.getUnixTime());
-  printDateTime("UTC date/time", zigbee_time.getUnixTime());
-  if (zigbee_time.hasTimeZone()) {
+  Serial.println(zigbee_time.get_unix_time());
+  print_date_time("UTC date/time", zigbee_time.get_unix_time());
+  if (zigbee_time.has_timezone()) {
     Serial.print("Time zone offset: ");
-    Serial.print(zigbee_time.getTimeZone());
+    Serial.print(zigbee_time.get_timezone());
     Serial.println(" seconds");
   }
   Serial.print("Local Unix time: ");
-  Serial.println(zigbee_time.getLocalUnixTime());
-  printDateTime("Local date/time", zigbee_time.getLocalUnixTime());
+  Serial.println(zigbee_time.get_local_unix_time());
+  print_date_time("Local date/time", zigbee_time.get_local_unix_time());
 }

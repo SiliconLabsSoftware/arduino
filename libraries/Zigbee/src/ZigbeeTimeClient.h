@@ -37,15 +37,15 @@ public:
   bool begin() override;
   void end() override;
 
-  bool requestTime(uint8_t coordinator_endpoint_id = 1);
-  bool hasTime();
-  uint32_t getZigbeeTime();
-  uint32_t getUnixTime();
-  uint32_t getLocalUnixTime();
-  bool hasTimeZone();
-  int32_t getTimeZone();
-  uint8_t getTimeStatus();
-  void setTimeUpdateCallback(void (*cb)(void));
+  bool request_time(uint8_t coordinator_endpoint_id = 1);
+  bool has_time();
+  uint32_t get_zigbee_time();
+  uint32_t get_unix_time();
+  uint32_t get_local_unix_time();
+  bool has_timezone();
+  int32_t get_timezone();
+  uint8_t get_time_status();
+  void set_time_update_callback(void (*cb)(void));
 
 private:
   DeviceTimeClient* time_client_device;

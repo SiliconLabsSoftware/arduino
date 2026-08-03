@@ -57,7 +57,7 @@ void handleSerialCommand(char command)
     Serial.print("Moving to ");
     Serial.print(percent);
     Serial.println("%...");
-    zigbee_switch.moveToPercent(percent, level_transition_time_ms);
+    zigbee_switch.move_to_percent(percent, level_transition_time_ms);
     return;
   }
 
@@ -83,19 +83,19 @@ void handleSerialCommand(char command)
     case 'u':
     case 'U':
       Serial.println("Sending dim up command...");
-      zigbee_switch.dimUp(dim_rate_percent);
+      zigbee_switch.dim_up(dim_rate_percent);
       break;
 
     case 'd':
     case 'D':
       Serial.println("Sending dim down command...");
-      zigbee_switch.dimDown(dim_rate_percent);
+      zigbee_switch.dim_down(dim_rate_percent);
       break;
 
     case 's':
     case 'S':
       Serial.println("Sending stop dimming command...");
-      zigbee_switch.stopDimming();
+      zigbee_switch.stop_dimming();
       break;
 
     case '\n':

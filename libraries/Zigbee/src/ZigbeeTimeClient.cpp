@@ -86,7 +86,7 @@ void ZigbeeTimeClient::end()
   this->initialized = false;
 }
 
-bool ZigbeeTimeClient::requestTime(uint8_t coordinator_endpoint_id)
+bool ZigbeeTimeClient::request_time(uint8_t coordinator_endpoint_id)
 {
   if (!this->time_client_device) {
     return false;
@@ -94,12 +94,12 @@ bool ZigbeeTimeClient::requestTime(uint8_t coordinator_endpoint_id)
   return this->time_client_device->RequestTime(coordinator_endpoint_id);
 }
 
-bool ZigbeeTimeClient::hasTime()
+bool ZigbeeTimeClient::has_time()
 {
   return this->time_client_device && this->time_client_device->HasTime();
 }
 
-uint32_t ZigbeeTimeClient::getZigbeeTime()
+uint32_t ZigbeeTimeClient::get_zigbee_time()
 {
   if (!this->time_client_device) {
     return 0;
@@ -107,7 +107,7 @@ uint32_t ZigbeeTimeClient::getZigbeeTime()
   return this->time_client_device->GetZigbeeTime();
 }
 
-uint32_t ZigbeeTimeClient::getUnixTime()
+uint32_t ZigbeeTimeClient::get_unix_time()
 {
   if (!this->time_client_device) {
     return 0;
@@ -115,7 +115,7 @@ uint32_t ZigbeeTimeClient::getUnixTime()
   return this->time_client_device->GetUnixTime();
 }
 
-uint32_t ZigbeeTimeClient::getLocalUnixTime()
+uint32_t ZigbeeTimeClient::get_local_unix_time()
 {
   if (!this->time_client_device) {
     return 0;
@@ -123,12 +123,12 @@ uint32_t ZigbeeTimeClient::getLocalUnixTime()
   return this->time_client_device->GetLocalUnixTime();
 }
 
-bool ZigbeeTimeClient::hasTimeZone()
+bool ZigbeeTimeClient::has_timezone()
 {
   return this->time_client_device && this->time_client_device->HasTimeZone();
 }
 
-int32_t ZigbeeTimeClient::getTimeZone()
+int32_t ZigbeeTimeClient::get_timezone()
 {
   if (!this->time_client_device) {
     return 0;
@@ -136,7 +136,7 @@ int32_t ZigbeeTimeClient::getTimeZone()
   return this->time_client_device->GetTimeZone();
 }
 
-uint8_t ZigbeeTimeClient::getTimeStatus()
+uint8_t ZigbeeTimeClient::get_time_status()
 {
   if (!this->time_client_device) {
     return 0;
@@ -144,7 +144,7 @@ uint8_t ZigbeeTimeClient::getTimeStatus()
   return this->time_client_device->GetTimeStatus();
 }
 
-void ZigbeeTimeClient::setTimeUpdateCallback(void (*cb)(void))
+void ZigbeeTimeClient::set_time_update_callback(void (*cb)(void))
 {
   this->time_update_callback = cb;
   if (this->time_client_device) {

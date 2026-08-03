@@ -105,35 +105,35 @@ void ZigbeeSwitch::toggle()
   }
 }
 
-void ZigbeeSwitch::dimUp(uint8_t rate_percent)
+void ZigbeeSwitch::dim_up(uint8_t rate_percent)
 {
   if (this->switch_device) {
     this->switch_device->SendDimUp(rate_percent);
   }
 }
 
-void ZigbeeSwitch::dimDown(uint8_t rate_percent)
+void ZigbeeSwitch::dim_down(uint8_t rate_percent)
 {
   if (this->switch_device) {
     this->switch_device->SendDimDown(rate_percent);
   }
 }
 
-void ZigbeeSwitch::stopDimming()
+void ZigbeeSwitch::stop_dimming()
 {
   if (this->switch_device) {
     this->switch_device->SendStopDimming();
   }
 }
 
-void ZigbeeSwitch::moveToLevel(uint8_t level, uint32_t transition_time_ms)
+void ZigbeeSwitch::move_to_level(uint8_t level, uint32_t transition_time_ms)
 {
   if (this->switch_device) {
     this->switch_device->SendMoveToLevel(level, transition_time_ms);
   }
 }
 
-void ZigbeeSwitch::moveToPercent(uint8_t percent, uint32_t transition_time_ms)
+void ZigbeeSwitch::move_to_percent(uint8_t percent, uint32_t transition_time_ms)
 {
   if (this->switch_device) {
     this->switch_device->SendMoveToPercent(percent, transition_time_ms);
