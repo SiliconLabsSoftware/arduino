@@ -120,6 +120,7 @@ static void scheduleNetworkSteeringRetry()
   static constexpr uint32_t kNetworkSteeringRetryDelayMs = 250;
   initNetworkSteeringRetryEvent();
   sl_zigbee_af_event_set_delay_ms(&network_steering_retry_event, kNetworkSteeringRetryDelayMs);
+  sl_zigbee_wakeup_common_task();
 }
 
 static void writeServerAttributeToEndpoint(uint8_t endpoint_id,
@@ -379,6 +380,7 @@ void ZigbeeClass::begin()
 
   if (!this->isPaired()) {
     sl_zigbee_af_network_steering_start();
+    sl_zigbee_wakeup_common_task();
   }
 }
 
