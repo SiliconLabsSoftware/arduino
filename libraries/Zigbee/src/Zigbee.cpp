@@ -101,7 +101,7 @@ static uint8_t getConfiguredMacCapabilities(ZigbeeDeviceType device_type,
 static void networkSteeringRetryEventHandler(sl_zigbee_af_event_t* event)
 {
   (void)event;
-  if (!Zigbee.isPaired()) {
+  if (!Zigbee.isConnectedToNetwork()) {
     sl_zigbee_af_network_steering_start();
   }
 }
@@ -245,9 +245,20 @@ extern "C" void sl_zigbee_af_network_steering_complete_cb(sl_status_t status,
   (void)join_attempts;
   (void)final_state;
 
-  if (status != SL_STATUS_OK) {
-    scheduleNetworkSteeringRetry();
+  if (status == SL_STATUS_OK) {
+    return;
   }
+
+  // Half-paired state - network credentials were stored but the device is not fully joined (e.g. TCLK failure)
+  // Clear credentials and reboot to pair again
+  if (Zigbee.isPaired() && !Zigbee.isConnectedToNetwork()) {
+    Serial.println("Zigbee pairing failed with stored credentials; clearing network data and rebooting");
+    Zigbee.leaveNetwork();
+    sl_zigbee_token_factory_reset(false, false);
+    NVIC_SystemReset();
+  }
+
+  scheduleNetworkSteeringRetry();
 }
 
 extern "C" sl_zigbee_node_type_t sl_zigbee_af_network_steering_get_node_type_cb(sl_zigbee_af_plugin_network_steering_joining_state_t state)
@@ -513,7 +524,7 @@ uint16_t ZigbeeClass::getNodeId()
 void ZigbeeClass::leaveNetwork()
 {
   sl_zigbee_network_status_t state = sl_zigbee_af_network_state();
-  if (state == SL_ZIGBEE_JOINED_NETWORK) {
+  if (state != SL_ZIGBEE_NO_NETWORK) {
     sl_zigbee_leave_network(SL_ZIGBEE_LEAVE_NWK_WITH_NO_OPTION);
   }
 }

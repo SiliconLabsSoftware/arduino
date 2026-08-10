@@ -1066,6 +1066,15 @@ Zigbee channel.
 
 Be patient during pairing - sometimes it can take up to several minutes depending on your network setup.
 
+### The device reboots repeatedly while trying to pair
+
+If joining gets far enough to store a network key but trust-center link-key
+setup fails (for example against a polluted or stale coordinator network), the
+library clears Zigbee network credentials and reboots so steering can start
+cleanly again. A reboot loop usually means the coordinator side still has bad
+state for this device - form a fresh Zigbee network, or remove the old device
+entry and call `Zigbee.factoryReset()` after fixing the host.
+
 ### The device rejoins an old network after reflash
 
 This is expected. Zigbee network credentials are stored in non-volatile memory
