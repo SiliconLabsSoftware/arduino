@@ -33,6 +33,16 @@ bool zigbee_endpoint_register(ZigbeeDevice* device)
   if (!device) {
     return false;
   }
+
+  // Reject if this endpoint ID is already registered
+  const uint8_t endpoint_id = device->GetEndpointId();
+  for (uint8_t i = 0; i < ZigbeeDevice::kMaxEndpoints; i++) {
+    if (registered_devices[i] != nullptr && registered_devices[i]->GetEndpointId() == endpoint_id) {
+      return false;
+    }
+  }
+
+  // Insert into the first free table slot
   for (uint8_t i = 0; i < ZigbeeDevice::kMaxEndpoints; i++) {
     if (registered_devices[i] == nullptr) {
       registered_devices[i] = device;

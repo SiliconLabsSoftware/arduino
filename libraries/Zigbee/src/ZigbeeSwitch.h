@@ -35,7 +35,6 @@ public:
   ZigbeeSwitch();
   ~ZigbeeSwitch();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void on();
@@ -48,6 +47,8 @@ public:
   void move_to_percent(uint8_t percent, uint32_t transition_time_ms = 0);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
+
   DeviceSwitch* switch_device;
   bool initialized;
 };

@@ -35,7 +35,6 @@ public:
   ZigbeeLightbulb();
   ~ZigbeeLightbulb() override;
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_onoff(bool value);
@@ -52,6 +51,9 @@ protected:
 
   DeviceOnOffLight* light_device;
   bool initialized;
+
+private:
+  bool start_on_endpoint(uint8_t endpoint_id);
 };
 
 #endif // ZIGBEE_LIGHTBULB_H

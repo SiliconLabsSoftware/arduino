@@ -43,10 +43,14 @@ bool ZigbeeHumiditySensor::begin()
   if (ep == 0) {
     return false;
   }
-  return begin(ep);
+  if (!start_on_endpoint(ep)) {
+    Zigbee.freeEndpoint(ep);
+    return false;
+  }
+  return true;
 }
 
-bool ZigbeeHumiditySensor::begin(uint8_t endpoint_id)
+bool ZigbeeHumiditySensor::start_on_endpoint(uint8_t endpoint_id)
 {
   if (this->initialized) {
     return false;

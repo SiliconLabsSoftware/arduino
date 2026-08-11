@@ -43,10 +43,14 @@ bool ZigbeeContact::begin()
   if (ep == 0) {
     return false;
   }
-  return begin(ep);
+  if (!start_on_endpoint(ep)) {
+    Zigbee.freeEndpoint(ep);
+    return false;
+  }
+  return true;
 }
 
-bool ZigbeeContact::begin(uint8_t endpoint_id)
+bool ZigbeeContact::start_on_endpoint(uint8_t endpoint_id)
 {
   if (this->initialized) {
     return false;

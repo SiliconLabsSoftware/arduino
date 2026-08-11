@@ -41,7 +41,6 @@ public:
   ZigbeeLightSensor();
   ~ZigbeeLightSensor();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_measured_value_raw(uint16_t value);
@@ -62,6 +61,7 @@ public:
   void operator=(float lux);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
   static uint16_t lux_to_measured_value(float lux);
   static float measured_value_to_lux(uint16_t value);
 

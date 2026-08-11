@@ -43,10 +43,14 @@ bool ZigbeeTemperatureSensor::begin()
   if (ep == 0) {
     return false;
   }
-  return begin(ep);
+  if (!start_on_endpoint(ep)) {
+    Zigbee.freeEndpoint(ep);
+    return false;
+  }
+  return true;
 }
 
-bool ZigbeeTemperatureSensor::begin(uint8_t endpoint_id)
+bool ZigbeeTemperatureSensor::start_on_endpoint(uint8_t endpoint_id)
 {
   if (this->initialized) {
     return false;
