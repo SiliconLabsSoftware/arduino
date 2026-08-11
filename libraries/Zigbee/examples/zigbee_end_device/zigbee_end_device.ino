@@ -38,7 +38,7 @@ void setup()
   digitalWrite(LED_BUILTIN, LED_BUILTIN_INACTIVE);
   pinMode(button_pin, INPUT_PULLUP);
 
-  // Hold the button during boot to factory reset (clear stored network credentials)
+  // Hold the button during boot to factory reset (clear stored Zigbee network data)
   if (digitalRead(button_pin) == LOW) {
     Serial.println("Factory resetting...");
     Serial.println("Release the button to reboot");

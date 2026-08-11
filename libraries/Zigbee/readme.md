@@ -184,9 +184,10 @@ if (digitalRead(BTN_BUILTIN) == LOW) {
 }
 ```
 
-`factoryReset()` leaves the current network when joined, clears stored Zigbee and
-NVM3 data, and resets the MCU. Use this when you want the board to forget its
-network and pair again from a clean state.
+`factoryReset()` leaves the current network when joined, clears stored Zigbee
+network and token data from NVM3, and resets the MCU. Arduino `EEPROM` data in
+the NVM3 user key range is preserved. Use this when you want the board to forget
+its network and pair again from a clean state.
 
 Alternatively you can use `Tools > Burn Bootloader` in the Arduino IDE to erase your board and any saved networks.
 
@@ -207,7 +208,7 @@ the restored state. Color hue and saturation are not persisted; only On/Off and
 Current Level survive reboot.
 
 `Zigbee.factoryReset()` clears this stored light state along with network
-credentials.
+credentials. Arduino `EEPROM` contents are not erased.
 
 ## Device Metadata
 
@@ -1019,7 +1020,7 @@ Network status helpers:
 Network management helpers:
 
 - `leaveNetwork()` requests a Zigbee network leave when currently joined.
-- `factoryReset()` leaves the network, erases stored network data, and resets.
+- `factoryReset()` leaves the network, clears stored Zigbee network/token data, and resets.
 
 Device type helpers:
 

@@ -114,6 +114,8 @@ void setup()
   Serial.println("Zigbee dimmer switch");
 
   pinMode(BTN_BUILTIN, INPUT_PULLUP);
+
+  // Hold the button during boot to factory reset (clear stored Zigbee network data)
   if (digitalRead(BTN_BUILTIN) == LOW) {
     Serial.println("Factory resetting...");
     Serial.println("Release the button to reboot");
