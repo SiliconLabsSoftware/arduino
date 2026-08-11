@@ -1,10 +1,10 @@
 /*
-   Zigbee color lightbulb example for the Nano Matter
+   Zigbee color lightbulb example
 
    The example shows how to create a color lightbulb with the Arduino Zigbee API.
 
-   The example lets users control the onboard RGB LED through Zigbee.
-   The LED can be switched on/off, dimmed, and recolored from a Zigbee coordinator.
+   The example lets users control the onboard LED(s) through Zigbee.
+   The LED can be switched on/off, dimmed, and recolored on boards with an RGB LED from a Zigbee coordinator.
    The device has to be commissioned to a Zigbee network first.
    Open your Zigbee coordinator (e.g. Home Assistant with ZHA) and put it in pairing mode.
 
@@ -23,22 +23,11 @@
 #define BTN_BUILTIN D0
 #endif
 
-#ifndef LED_BUILTIN_1
-#define LED_BUILTIN_1 D1
-#endif
-
-#ifndef LED_BUILTIN_2
-#define LED_BUILTIN_2 D2
-#endif
-
-#define LED_R LED_BUILTIN
-#define LED_G LED_BUILTIN_1
-#define LED_B LED_BUILTIN_2
-
 ZigbeeColorLightbulb zigbee_bulb;
 const uint8_t button_pin = BTN_BUILTIN;
 
 void led_off();
+void init_rgb_led();
 void update_rgb_led();
 
 void setup()
@@ -46,9 +35,7 @@ void setup()
   Serial.begin(115200);
   Serial.println("Zigbee color lightbulb");
 
-  pinMode(LED_R, OUTPUT);
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
+  init_rgb_led();
   led_off();
   pinMode(button_pin, INPUT_PULLUP);
 
@@ -135,14 +122,34 @@ void loop()
 void led_off()
 {
   if (LED_BUILTIN_ACTIVE == LOW) {
-    analogWrite(LED_R, 255);
-    analogWrite(LED_G, 255);
-    analogWrite(LED_B, 255);
+    analogWrite(LED_BUILTIN, 255);
+    #ifdef LED_BUILTIN_1
+    analogWrite(LED_BUILTIN_1, 255);
+    #endif
+    #ifdef LED_BUILTIN_2
+    analogWrite(LED_BUILTIN_2, 255);
+    #endif
   } else {
-    analogWrite(LED_R, 0);
-    analogWrite(LED_G, 0);
-    analogWrite(LED_B, 0);
+    analogWrite(LED_BUILTIN, 0);
+    #ifdef LED_BUILTIN_1
+    analogWrite(LED_BUILTIN_1, 0);
+    #endif
+    #ifdef LED_BUILTIN_2
+    analogWrite(LED_BUILTIN_2, 0);
+    #endif
   }
+}
+
+void init_rgb_led()
+{
+  pinMode(LED_BUILTIN, OUTPUT); // Red channel
+  // Some boards don't have an RGB LED - we skip the remaining channels in that case
+  #ifdef LED_BUILTIN_1
+  pinMode(LED_BUILTIN_1, OUTPUT); // Green channel
+  #endif
+  #ifdef LED_BUILTIN_2
+  pinMode(LED_BUILTIN_2, OUTPUT); // Blue channel
+  #endif
 }
 
 void update_rgb_led()
@@ -159,12 +166,20 @@ void update_rgb_led()
   Serial.printf("Setting bulb color to > r: %u  g: %u  b: %u\n", r, g, b);
 
   if (LED_BUILTIN_ACTIVE == LOW) {
-    analogWrite(LED_R, 255 - r);
-    analogWrite(LED_G, 255 - g);
-    analogWrite(LED_B, 255 - b);
+    analogWrite(LED_BUILTIN, 255 - r);
+    #ifdef LED_BUILTIN_1
+    analogWrite(LED_BUILTIN_1, 255 - g);
+    #endif
+    #ifdef LED_BUILTIN_2
+    analogWrite(LED_BUILTIN_2, 255 - b);
+    #endif
   } else {
-    analogWrite(LED_R, r);
-    analogWrite(LED_G, g);
-    analogWrite(LED_B, b);
+    analogWrite(LED_BUILTIN, r);
+    #ifdef LED_BUILTIN_1
+    analogWrite(LED_BUILTIN_1, g);
+    #endif
+    #ifdef LED_BUILTIN_2
+    analogWrite(LED_BUILTIN_2, b);
+    #endif
   }
 }
