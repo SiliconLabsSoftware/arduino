@@ -111,7 +111,7 @@
 // <o SL_ZIGBEE_BINDING_TABLE_SIZE> Binding Table Size <1-127>
 // <i> Default: 3
 // <i> The number of entries that the binding table can hold.
-#define SL_ZIGBEE_BINDING_TABLE_SIZE   10
+#define SL_ZIGBEE_BINDING_TABLE_SIZE   32
 
 // </h>
 
