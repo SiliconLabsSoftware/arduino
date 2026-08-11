@@ -25,6 +25,7 @@
  */
 
 #include "DeviceTimeClient.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -47,6 +48,8 @@ DeviceTimeClient::DeviceTimeClient(const char* device_name, uint8_t endpoint_id)
 
 bool DeviceTimeClient::RequestTime(uint8_t coordinator_endpoint_id)
 {
+  ZigbeeAfLock lock;
+
   if (sl_zigbee_af_network_state() != SL_ZIGBEE_JOINED_NETWORK) {
     return false;
   }

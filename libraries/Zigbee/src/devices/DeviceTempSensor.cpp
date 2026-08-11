@@ -26,6 +26,7 @@
 
 #include "DeviceTempSensor.h"
 #include "ZigbeeEndpoint.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -79,16 +80,20 @@ int16_t DeviceTempSensor::GetMeasuredValue()
 void DeviceTempSensor::SetMeasuredValue(int16_t value)
 {
   this->measured_value = value;
-  sl_zigbee_af_write_server_attribute(this->endpoint_id,
-                                      ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
-                                      ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID,
-                                      (uint8_t*)&value,
-                                      ZCL_INT16S_ATTRIBUTE_TYPE);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_af_write_server_attribute(this->endpoint_id,
+                                        ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
+                                        ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID,
+                                        (uint8_t*)&value,
+                                        ZCL_INT16S_ATTRIBUTE_TYPE);
+  }
   CallDeviceChangeCallback();
 }
 
 void DeviceTempSensor::SetMinMeasuredValue(int16_t value)
 {
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
                                       ZCL_TEMP_MIN_MEASURED_VALUE_ATTRIBUTE_ID,
@@ -98,6 +103,7 @@ void DeviceTempSensor::SetMinMeasuredValue(int16_t value)
 
 void DeviceTempSensor::SetMaxMeasuredValue(int16_t value)
 {
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_TEMP_MEASUREMENT_CLUSTER_ID,
                                       ZCL_TEMP_MAX_MEASURED_VALUE_ATTRIBUTE_ID,
@@ -151,6 +157,7 @@ bool DeviceTempSensor::SetReportingInterval(uint16_t min_interval_s, uint16_t ma
   entry.data.reported.maxInterval = max_interval_s;
   entry.data.reported.reportableChange = 0;
 
+  ZigbeeAfLock lock;
   return sl_zigbee_af_reporting_configure_reported_attribute(&entry) == SL_ZIGBEE_ZCL_STATUS_SUCCESS;
 }
 
@@ -170,6 +177,8 @@ bool DeviceTempSensor::SendAttributeReportWithCallback(uint8_t* report_data, uin
   this->attribute_report_pending = true;
   this->attribute_report_completed = false;
   this->attribute_report_status = SL_STATUS_FAIL;
+
+  ZigbeeAfLock lock;
 
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
   sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_TEMP_MEASUREMENT_CLUSTER_ID,

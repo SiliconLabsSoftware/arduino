@@ -26,6 +26,7 @@
 
 #include "DeviceLightSensor.h"
 #include "ZigbeeEndpoint.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -79,16 +80,20 @@ uint16_t DeviceLightSensor::GetMeasuredValue()
 void DeviceLightSensor::SetMeasuredValue(uint16_t value)
 {
   this->measured_value = value;
-  sl_zigbee_af_write_server_attribute(this->endpoint_id,
-                                      ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
-                                      ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID,
-                                      (uint8_t*)&value,
-                                      ZCL_INT16U_ATTRIBUTE_TYPE);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_af_write_server_attribute(this->endpoint_id,
+                                        ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
+                                        ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID,
+                                        (uint8_t*)&value,
+                                        ZCL_INT16U_ATTRIBUTE_TYPE);
+  }
   CallDeviceChangeCallback();
 }
 
 void DeviceLightSensor::SetMinMeasuredValue(uint16_t value)
 {
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
                                       ZCL_ILLUM_MIN_MEASURED_VALUE_ATTRIBUTE_ID,
@@ -98,6 +103,7 @@ void DeviceLightSensor::SetMinMeasuredValue(uint16_t value)
 
 void DeviceLightSensor::SetMaxMeasuredValue(uint16_t value)
 {
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
                                       ZCL_ILLUM_MAX_MEASURED_VALUE_ATTRIBUTE_ID,
@@ -107,6 +113,7 @@ void DeviceLightSensor::SetMaxMeasuredValue(uint16_t value)
 
 void DeviceLightSensor::SetLightSensorType(uint8_t type)
 {
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,
                                       ZCL_MEASUREMENT_LIGHT_SENSOR_TYPE_ATTRIBUTE_ID,
@@ -160,6 +167,7 @@ bool DeviceLightSensor::SetReportingInterval(uint16_t min_interval_s, uint16_t m
   entry.data.reported.maxInterval = max_interval_s;
   entry.data.reported.reportableChange = 0;
 
+  ZigbeeAfLock lock;
   return sl_zigbee_af_reporting_configure_reported_attribute(&entry) == SL_ZIGBEE_ZCL_STATUS_SUCCESS;
 }
 
@@ -179,6 +187,8 @@ bool DeviceLightSensor::SendAttributeReportWithCallback(uint8_t* report_data, ui
   this->attribute_report_pending = true;
   this->attribute_report_completed = false;
   this->attribute_report_status = SL_STATUS_FAIL;
+
+  ZigbeeAfLock lock;
 
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
   sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_ILLUM_MEASUREMENT_CLUSTER_ID,

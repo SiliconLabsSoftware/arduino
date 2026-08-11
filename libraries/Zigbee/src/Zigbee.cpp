@@ -25,6 +25,7 @@
  */
 
 #include "Zigbee.h"
+#include "ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -118,9 +119,9 @@ static void initNetworkSteeringRetryEvent()
 static void scheduleNetworkSteeringRetry()
 {
   static constexpr uint32_t kNetworkSteeringRetryDelayMs = 250;
+  ZigbeeAfLock lock;
   initNetworkSteeringRetryEvent();
   sl_zigbee_af_event_set_delay_ms(&network_steering_retry_event, kNetworkSteeringRetryDelayMs);
-  sl_zigbee_wakeup_common_task();
 }
 
 static void writeServerAttributeToEndpoint(uint8_t endpoint_id,
@@ -319,6 +320,7 @@ void ZigbeeClass::setVendorName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
+  ZigbeeAfLock lock;
   writeServerAttributeToApplicationAndMetadataEndpoints(ZCL_BASIC_CLUSTER_ID,
                                                         ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,
                                                         zcl_string,
@@ -332,6 +334,7 @@ void ZigbeeClass::setProductName(const char* name)
   if (len > 32) len = 32;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
+  ZigbeeAfLock lock;
   writeServerAttributeToApplicationAndMetadataEndpoints(ZCL_BASIC_CLUSTER_ID,
                                                         ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,
                                                         zcl_string,
@@ -349,6 +352,7 @@ void ZigbeeClass::setFirmwareVersion(const char* version)
   if (len > 16) len = 16;
   zcl_string[0] = len;
   memcpy(&zcl_string[1], version, len);
+  ZigbeeAfLock lock;
   writeServerAttributeToMetadataEndpoint(ZCL_BASIC_CLUSTER_ID,
                                          ZCL_SW_BUILD_ID_ATTRIBUTE_ID,
                                          zcl_string,
@@ -358,6 +362,7 @@ void ZigbeeClass::setFirmwareVersion(const char* version)
 void ZigbeeClass::setFirmwareVersion(uint32_t file_version)
 {
   uint8_t application_version = (file_version <= 0xFF) ? file_version : (file_version >> 24);
+  ZigbeeAfLock lock;
   writeServerAttributeToMetadataEndpoint(ZCL_BASIC_CLUSTER_ID,
                                          ZCL_APPLICATION_VERSION_ATTRIBUTE_ID,
                                          &application_version,
@@ -377,6 +382,8 @@ void ZigbeeClass::begin()
   }
   this->started = true;
   initNetworkSteeringRetryEvent();
+
+  ZigbeeAfLock lock;
   applyStackPowerSource(this->power_source);
   uint8_t basic_power_source = getBasicClusterPowerSourceValue(this->power_source);
   writeServerAttributeToApplicationAndMetadataEndpoints(ZCL_BASIC_CLUSTER_ID,
@@ -389,9 +396,8 @@ void ZigbeeClass::begin()
   }
   sl_zigbee_af_endpoint_enable_disable(kTimeClientEndpointId, true);
 
-  if (!this->isPaired()) {
+  if (sl_zigbee_af_network_state() == SL_ZIGBEE_NO_NETWORK) {
     sl_zigbee_af_network_steering_start();
-    sl_zigbee_wakeup_common_task();
   }
 }
 
@@ -450,13 +456,13 @@ bool ZigbeeClass::setPowerSource(ZigbeePowerSourceType power_source)
 
   this->power_source = power_source;
   uint8_t basic_power_source = getBasicClusterPowerSourceValue(power_source);
+  ZigbeeAfLock lock;
   writeServerAttributeToApplicationAndMetadataEndpoints(ZCL_BASIC_CLUSTER_ID,
                                                         ZCL_POWER_SOURCE_ATTRIBUTE_ID,
                                                         &basic_power_source,
                                                         ZCL_ENUM8_ATTRIBUTE_TYPE);
   if (this->started) {
     applyStackPowerSource(power_source);
-    return true;
   }
   return true;
 }
@@ -486,10 +492,11 @@ bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t 
     return false;
   }
 
+  ZigbeeAfLock lock;
   sli_zigbee_af_network_steering_set_channel_mask(primary_channel_mask, false);
   sli_zigbee_af_network_steering_set_channel_mask(secondary_channel_mask, true);
 
-  if (this->started && !this->isPaired()) {
+  if (this->started && (sl_zigbee_af_network_state() == SL_ZIGBEE_NO_NETWORK)) {
     sl_zigbee_af_network_steering_stop();
     scheduleNetworkSteeringRetry();
   }
@@ -498,31 +505,37 @@ bool ZigbeeClass::setPairingChannelMask(uint32_t primary_channel_mask, uint32_t 
 
 bool ZigbeeClass::isConnectedToNetwork()
 {
+  ZigbeeAfLock lock;
   return (sl_zigbee_af_network_state() == SL_ZIGBEE_JOINED_NETWORK);
 }
 
 bool ZigbeeClass::isPaired()
 {
+  ZigbeeAfLock lock;
   return (sl_zigbee_af_network_state() != SL_ZIGBEE_NO_NETWORK);
 }
 
 uint8_t ZigbeeClass::getChannel()
 {
+  ZigbeeAfLock lock;
   return sl_zigbee_af_get_radio_channel();
 }
 
 uint16_t ZigbeeClass::getPanId()
 {
+  ZigbeeAfLock lock;
   return sl_zigbee_af_get_pan_id();
 }
 
 uint16_t ZigbeeClass::getNodeId()
 {
+  ZigbeeAfLock lock;
   return sl_zigbee_af_get_node_id();
 }
 
 void ZigbeeClass::leaveNetwork()
 {
+  ZigbeeAfLock lock;
   sl_zigbee_network_status_t state = sl_zigbee_af_network_state();
   if (state != SL_ZIGBEE_NO_NETWORK) {
     sl_zigbee_leave_network(SL_ZIGBEE_LEAVE_NWK_WITH_NO_OPTION);
@@ -531,8 +544,14 @@ void ZigbeeClass::leaveNetwork()
 
 void ZigbeeClass::factoryReset()
 {
-  this->leaveNetwork();
-  sl_zigbee_token_factory_reset(false, false);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_network_status_t state = sl_zigbee_af_network_state();
+    if (state != SL_ZIGBEE_NO_NETWORK) {
+      sl_zigbee_leave_network(SL_ZIGBEE_LEAVE_NWK_WITH_NO_OPTION);
+    }
+    sl_zigbee_token_factory_reset(false, false);
+  }
   nvm3_eraseAll(nvm3_defaultHandle);
   NVIC_SystemReset();
 }
@@ -552,6 +571,7 @@ uint8_t ZigbeeClass::allocateEndpoint(ZigbeeEndpointType type)
     if (!this->endpoint_allocated[i]) {
       this->endpoint_allocated[i] = true;
       uint8_t ep_id = i + 1;
+      ZigbeeAfLock lock;
       sl_zigbee_af_endpoint_enable_disable(ep_id, true);
       return ep_id;
     }
@@ -578,6 +598,7 @@ void ZigbeeClass::freeEndpoint(uint8_t endpoint_id)
   uint8_t index = endpoint_id - 1;
   if (index < kApplicationEndpointCount && this->endpoint_allocated[index]) {
     this->endpoint_allocated[index] = false;
+    ZigbeeAfLock lock;
     sl_zigbee_af_endpoint_enable_disable(endpoint_id, false);
   }
 }

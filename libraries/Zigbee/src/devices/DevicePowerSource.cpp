@@ -26,6 +26,7 @@
 
 #include "DevicePowerSource.h"
 #include "ZigbeeEndpoint.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -70,6 +71,7 @@ DevicePowerSource::DevicePowerSource(const char* device_name, uint8_t endpoint_i
   attribute_report_status(SL_STATUS_FAIL)
 {
   uint8_t power_source = SL_ZIGBEE_ZCL_POWER_SOURCE_BATTERY;
+  ZigbeeAfLock lock;
   sl_zigbee_af_write_server_attribute(this->endpoint_id,
                                       ZCL_BASIC_CLUSTER_ID,
                                       ZCL_POWER_SOURCE_ATTRIBUTE_ID,
@@ -111,6 +113,7 @@ bool DevicePowerSource::SetReportingInterval(uint16_t min_interval_s, uint16_t m
   entry.data.reported.maxInterval = max_interval_s;
   entry.data.reported.reportableChange = 0;
 
+  ZigbeeAfLock lock;
   return sl_zigbee_af_reporting_configure_reported_attribute(&entry) == SL_ZIGBEE_ZCL_STATUS_SUCCESS;
 }
 
@@ -124,11 +127,14 @@ void DevicePowerSource::HandleAttributeReportSent(uint32_t status)
 void DevicePowerSource::SetBatteryPercentageRemaining(uint8_t value)
 {
   this->battery_percentage_remaining = value;
-  sl_zigbee_af_write_server_attribute(this->endpoint_id,
-                                      ZCL_POWER_CONFIG_CLUSTER_ID,
-                                      ZCL_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE_ID,
-                                      &value,
-                                      ZCL_INT8U_ATTRIBUTE_TYPE);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_af_write_server_attribute(this->endpoint_id,
+                                        ZCL_POWER_CONFIG_CLUSTER_ID,
+                                        ZCL_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE_ID,
+                                        &value,
+                                        ZCL_INT8U_ATTRIBUTE_TYPE);
+  }
   CallDeviceChangeCallback();
 }
 
@@ -156,6 +162,8 @@ bool DevicePowerSource::SendAttributeReportWithCallback(uint8_t* report_data, ui
   this->attribute_report_pending = true;
   this->attribute_report_completed = false;
   this->attribute_report_status = SL_STATUS_FAIL;
+
+  ZigbeeAfLock lock;
 
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
   sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_POWER_CONFIG_CLUSTER_ID,

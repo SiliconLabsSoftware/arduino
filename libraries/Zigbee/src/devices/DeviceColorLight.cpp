@@ -25,6 +25,7 @@
  */
 
 #include "DeviceColorLight.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -39,6 +40,7 @@ DeviceColorLight::DeviceColorLight(const char* device_name, uint8_t endpoint_id)
   color_mode(COLOR_MODE_HUE_SATURATION)
 {
   HsvToXy(this->hue, this->saturation, &this->current_x, &this->current_y);
+  ZigbeeAfLock lock;
   WriteColorModeAttributes();
   WriteHueAttributes();
   WriteSaturationAttribute();
@@ -85,10 +87,13 @@ void DeviceColorLight::SetColor(uint8_t hue, uint8_t saturation)
   this->current_x = x;
   this->current_y = y;
   this->color_mode = COLOR_MODE_HUE_SATURATION;
-  WriteColorModeAttributes();
-  WriteHueAttributes();
-  WriteSaturationAttribute();
-  WriteXyAttributes();
+  {
+    ZigbeeAfLock lock;
+    WriteColorModeAttributes();
+    WriteHueAttributes();
+    WriteSaturationAttribute();
+    WriteXyAttributes();
+  }
   CallDeviceChangeCallback();
 }
 
@@ -143,10 +148,13 @@ void DeviceColorLight::SetXy(uint16_t x, uint16_t y)
   this->hue = new_hue;
   this->saturation = new_saturation;
   this->color_mode = COLOR_MODE_CURRENT_X_Y;
-  WriteColorModeAttributes();
-  WriteHueAttributes();
-  WriteSaturationAttribute();
-  WriteXyAttributes();
+  {
+    ZigbeeAfLock lock;
+    WriteColorModeAttributes();
+    WriteHueAttributes();
+    WriteSaturationAttribute();
+    WriteXyAttributes();
+  }
   CallDeviceChangeCallback();
 }
 
