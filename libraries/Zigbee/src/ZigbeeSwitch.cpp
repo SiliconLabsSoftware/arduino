@@ -39,6 +39,10 @@ ZigbeeSwitch::~ZigbeeSwitch()
 
 bool ZigbeeSwitch::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_ON_OFF_SWITCH);
   if (ep == 0) {
     return false;

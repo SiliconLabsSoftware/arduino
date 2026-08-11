@@ -44,6 +44,10 @@ bool ZigbeeLightbulb::begin()
 
 bool ZigbeeLightbulb::beginEndpointType(ZigbeeEndpointType type)
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(type);
   if (ep == 0) {
     return false;
