@@ -25,6 +25,7 @@
  */
 
 #include "DeviceContactSensor.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "sl_status.h"
@@ -48,6 +49,8 @@ bool DeviceContactSensor::GetStateValue()
 
 void DeviceContactSensor::RestoreEnrollmentState()
 {
+  ZigbeeAfLock lock;
+
   uint8_t cie_address[EUI64_SIZE];
   uint8_t zone_id = 0xFF;
   uint8_t zone_state = SL_ZIGBEE_ZCL_IAS_ZONE_STATE_NOT_ENROLLED;
@@ -87,10 +90,13 @@ void DeviceContactSensor::SetStateValue(bool state_value)
 {
   if (this->state_value != state_value) {
     this->state_value = state_value;
-    RestoreEnrollmentState();
-    // For IAS Zone contact switches, Alarm1 represents an open contact
-    uint16_t zone_status = state_value ? SL_ZIGBEE_AF_IAS_ZONE_STATUS_ALARM1 : 0;
-    (void)sl_zigbee_af_ias_zone_server_update_zone_status(this->endpoint_id, zone_status, 0);
+    {
+      ZigbeeAfLock lock;
+      RestoreEnrollmentState();
+      // For IAS Zone contact switches, Alarm1 represents an open contact
+      uint16_t zone_status = state_value ? SL_ZIGBEE_AF_IAS_ZONE_STATUS_ALARM1 : 0;
+      (void)sl_zigbee_af_ias_zone_server_update_zone_status(this->endpoint_id, zone_status, 0);
+    }
     CallDeviceChangeCallback();
   }
 }

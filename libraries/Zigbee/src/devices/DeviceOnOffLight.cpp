@@ -25,6 +25,7 @@
  */
 
 #include "DeviceOnOffLight.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -48,11 +49,14 @@ void DeviceOnOffLight::SetOnOff(bool onoff)
   }
   this->onoff = onoff;
   uint8_t val = onoff ? 1 : 0;
-  sl_zigbee_af_write_server_attribute(this->endpoint_id,
-                                      ZCL_ON_OFF_CLUSTER_ID,
-                                      ZCL_ON_OFF_ATTRIBUTE_ID,
-                                      &val,
-                                      ZCL_BOOLEAN_ATTRIBUTE_TYPE);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_af_write_server_attribute(this->endpoint_id,
+                                        ZCL_ON_OFF_CLUSTER_ID,
+                                        ZCL_ON_OFF_ATTRIBUTE_ID,
+                                        &val,
+                                        ZCL_BOOLEAN_ATTRIBUTE_TYPE);
+  }
   CallDeviceChangeCallback();
 }
 

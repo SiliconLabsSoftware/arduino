@@ -25,6 +25,7 @@
  */
 
 #include "DeviceSwitch.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -67,6 +68,8 @@ void DeviceSwitch::FillMoveToLevelBuffer(uint8_t level, uint16_t transition_time
 
 void DeviceSwitch::SendOnOffCommand(OnOffCmd cmd)
 {
+  ZigbeeAfLock lock;
+
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
   FillOnOffBuffer(cmd);
@@ -81,6 +84,8 @@ void DeviceSwitch::SendOnOffCommand(OnOffCmd cmd)
 
 void DeviceSwitch::SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t rate)
 {
+  ZigbeeAfLock lock;
+
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
   FillLevelMoveBuffer(move_mode, rate);
@@ -95,6 +100,8 @@ void DeviceSwitch::SendLevelMoveCommand(LevelMoveMode move_mode, uint8_t rate)
 
 void DeviceSwitch::SendLevelStopCommand()
 {
+  ZigbeeAfLock lock;
+
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
   FillLevelStopBuffer();
@@ -109,6 +116,8 @@ void DeviceSwitch::SendLevelStopCommand()
 
 void DeviceSwitch::SendMoveToLevelCommand(uint8_t level, uint16_t transition_time_tenths)
 {
+  ZigbeeAfLock lock;
+
   sl_zigbee_af_set_command_endpoints(this->endpoint_id, 1);
 
   FillMoveToLevelBuffer(level, transition_time_tenths);

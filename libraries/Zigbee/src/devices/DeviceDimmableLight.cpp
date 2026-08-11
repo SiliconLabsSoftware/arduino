@@ -25,6 +25,7 @@
  */
 
 #include "DeviceDimmableLight.h"
+#include "../ZigbeeAfLock.h"
 
 extern "C" {
 #include "af.h"
@@ -49,11 +50,14 @@ void DeviceDimmableLight::SetLevel(uint8_t level)
   }
 
   this->level = normalized_level;
-  sl_zigbee_af_write_server_attribute(this->endpoint_id,
-                                      ZCL_LEVEL_CONTROL_CLUSTER_ID,
-                                      ZCL_CURRENT_LEVEL_ATTRIBUTE_ID,
-                                      &normalized_level,
-                                      ZCL_INT8U_ATTRIBUTE_TYPE);
+  {
+    ZigbeeAfLock lock;
+    sl_zigbee_af_write_server_attribute(this->endpoint_id,
+                                        ZCL_LEVEL_CONTROL_CLUSTER_ID,
+                                        ZCL_CURRENT_LEVEL_ATTRIBUTE_ID,
+                                        &normalized_level,
+                                        ZCL_INT8U_ATTRIBUTE_TYPE);
+  }
   CallDeviceChangeCallback();
 }
 
