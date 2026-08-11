@@ -39,6 +39,10 @@ ZigbeeTemperatureSensor::~ZigbeeTemperatureSensor()
 
 bool ZigbeeTemperatureSensor::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_TEMPERATURE_SENSOR);
   if (ep == 0) {
     return false;

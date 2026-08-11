@@ -39,6 +39,10 @@ ZigbeeContact::~ZigbeeContact()
 
 bool ZigbeeContact::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_CONTACT_SENSOR);
   if (ep == 0) {
     return false;

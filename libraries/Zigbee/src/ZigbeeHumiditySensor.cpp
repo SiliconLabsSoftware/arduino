@@ -39,6 +39,10 @@ ZigbeeHumiditySensor::~ZigbeeHumiditySensor()
 
 bool ZigbeeHumiditySensor::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_HUMIDITY_SENSOR);
   if (ep == 0) {
     return false;

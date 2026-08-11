@@ -39,6 +39,10 @@ ZigbeePowerSource::~ZigbeePowerSource()
 
 bool ZigbeePowerSource::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_POWER_SOURCE);
   if (ep == 0) {
     return false;

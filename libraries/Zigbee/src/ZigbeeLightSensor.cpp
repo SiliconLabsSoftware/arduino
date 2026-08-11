@@ -41,6 +41,10 @@ ZigbeeLightSensor::~ZigbeeLightSensor()
 
 bool ZigbeeLightSensor::begin()
 {
+  if (this->initialized) {
+    return false;
+  }
+
   uint8_t ep = Zigbee.allocateEndpoint(ZIGBEE_LIGHT_SENSOR);
   if (ep == 0) {
     return false;
