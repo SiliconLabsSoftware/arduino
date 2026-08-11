@@ -71,6 +71,7 @@ bool ZigbeeLightbulb::begin(uint8_t endpoint_id)
     return false;
   }
 
+  this->light_device->RestorePersistedState();
   this->light_device->SetOnline(true);
   this->initialized = true;
   return true;

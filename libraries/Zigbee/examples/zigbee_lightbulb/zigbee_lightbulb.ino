@@ -54,6 +54,7 @@ void setup()
   if (!Zigbee.isPaired()) {
     Serial.println("Device is not commissioned");
     Serial.println("Please pair it to your Zigbee Coordinator");
+    zigbee_bulb.set_onoff(true);
   }
 }
 

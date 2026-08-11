@@ -65,6 +65,20 @@ void DeviceOnOffLight::Toggle()
   SetOnOff(!this->onoff);
 }
 
+void DeviceOnOffLight::RestorePersistedState()
+{
+  uint8_t value = 0;
+  ZigbeeAfLock lock;
+  sl_zigbee_af_status_t status = sl_zigbee_af_read_server_attribute(this->endpoint_id,
+                                                                    ZCL_ON_OFF_CLUSTER_ID,
+                                                                    ZCL_ON_OFF_ATTRIBUTE_ID,
+                                                                    &value,
+                                                                    sizeof(value));
+  if (status == SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
+    this->onoff = (value != 0);
+  }
+}
+
 void DeviceOnOffLight::HandleAttributeChange(uint16_t cluster_id,
                                              uint16_t attribute_id,
                                              uint8_t size,

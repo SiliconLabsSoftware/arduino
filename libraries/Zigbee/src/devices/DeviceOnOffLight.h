@@ -37,6 +37,7 @@ public:
   void SetOnOff(bool onoff);
   void Toggle();
 
+  virtual void RestorePersistedState();
   void HandleAttributeChange(uint16_t cluster_id,
                              uint16_t attribute_id,
                              uint8_t size,

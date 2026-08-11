@@ -38,6 +38,7 @@ public:
   uint8_t GetBrightness();
   void SetBrightness(uint8_t percent);
 
+  void RestorePersistedState() override;
   void HandleAttributeChange(uint16_t cluster_id,
                              uint16_t attribute_id,
                              uint8_t size,
