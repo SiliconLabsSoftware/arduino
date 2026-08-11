@@ -35,7 +35,6 @@ public:
   ZigbeeTemperatureSensor();
   ~ZigbeeTemperatureSensor();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_measured_value_raw(int16_t value);
@@ -53,6 +52,8 @@ public:
   void operator=(float celsius);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
+
   DeviceTempSensor* sensor_device;
   bool initialized;
 };

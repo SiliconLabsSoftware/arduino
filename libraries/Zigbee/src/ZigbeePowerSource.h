@@ -35,7 +35,6 @@ public:
   ZigbeePowerSource();
   ~ZigbeePowerSource();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_battery_percent(uint8_t value);
@@ -49,6 +48,8 @@ public:
   void operator=(uint8_t value);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
+
   DevicePowerSource* power_source_device;
   bool initialized;
 };

@@ -245,7 +245,6 @@ All Zigbee appliance classes inherit from a common base and provide:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 bool is_online();
 bool get_identify_in_progress();
@@ -253,8 +252,9 @@ void set_device_name(const char* device_name);
 void set_device_change_callback(void (*cb)(void));
 ```
 
-`begin()` allocates, registers, and enables an endpoint. It returns `true` when
-the appliance was created successfully.
+`begin()` allocates, registers, and enables an endpoint of the correct device
+type. Endpoint IDs are assigned automatically (up to three instances of each
+appliance type). It returns `true` when the appliance was created successfully.
 
 `end()` unregisters the endpoint and frees the object resources.
 
@@ -276,8 +276,6 @@ endpoints: three On/Off lights, three temperature sensors, three humidity
 sensors, three On/Off switches, three dimmable lights, three light sensors,
 three color dimmable lights, three On/Off plug-in units, and three contact
 sensors. It also provides one opt-in Time Client endpoint.
-Use the default `begin()` overload unless you specifically need to bind to a
-known generated endpoint ID.
 
 ## Identifying a Device
 
@@ -309,7 +307,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_onoff(bool value);
@@ -370,7 +367,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_onoff(bool value);
@@ -418,7 +414,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_onoff(bool value);
@@ -476,7 +471,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_onoff(bool value);
@@ -562,7 +556,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void on();
@@ -627,7 +620,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_state(bool state);
@@ -698,7 +690,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_measured_value(int16_t value);
@@ -760,7 +751,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_battery_percent(uint8_t value);
@@ -824,7 +814,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_measured_value(uint16_t value);
@@ -886,7 +875,6 @@ API:
 
 ```cpp
 bool begin();
-bool begin(uint8_t endpoint_id);
 void end();
 
 void set_measured_value(uint16_t value);

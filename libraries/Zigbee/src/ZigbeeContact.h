@@ -35,7 +35,6 @@ public:
   ZigbeeContact();
   ~ZigbeeContact();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_state(bool state);
@@ -50,6 +49,8 @@ public:
   void operator=(bool state);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
+
   DeviceContactSensor* sensor_device;
   bool initialized;
 };

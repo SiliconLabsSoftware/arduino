@@ -35,7 +35,6 @@ public:
   ZigbeeHumiditySensor();
   ~ZigbeeHumiditySensor();
   bool begin() override;
-  bool begin(uint8_t endpoint_id);
   void end() override;
 
   void set_measured_value_raw(uint16_t value);
@@ -53,6 +52,8 @@ public:
   void operator=(float percent);
 
 private:
+  bool start_on_endpoint(uint8_t endpoint_id);
+
   DeviceHumiditySensor* sensor_device;
   bool initialized;
 };
