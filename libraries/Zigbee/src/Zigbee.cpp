@@ -542,6 +542,36 @@ void ZigbeeClass::leaveNetwork()
   }
 }
 
+static void erase_nvm3_domain(nvm3_ObjectKey_t domain_base)
+{
+  static constexpr nvm3_ObjectKey_t kNvm3DomainKeyMask = 0xFFFFU;
+  nvm3_ObjectKey_t keys[32];
+  const nvm3_ObjectKey_t key_min = domain_base;
+  const nvm3_ObjectKey_t key_max = domain_base | kNvm3DomainKeyMask;
+
+  while (true) {
+    size_t count = nvm3_enumObjects(nvm3_defaultHandle,
+                                    keys,
+                                    sizeof(keys) / sizeof(keys[0]),
+                                    key_min,
+                                    key_max);
+    if (count == 0) {
+      break;
+    }
+    for (size_t i = 0; i < count; i++) {
+      (void)nvm3_deleteObject(nvm3_defaultHandle, keys[i]);
+    }
+  }
+}
+
+static void erase_zigbee_nvm3_objects()
+{
+  static constexpr nvm3_ObjectKey_t kNvm3DomainZigbee = 0x10000U;
+  static constexpr nvm3_ObjectKey_t kNvm3DomainCommon = 0x80000U;
+  erase_nvm3_domain(kNvm3DomainZigbee);
+  erase_nvm3_domain(kNvm3DomainCommon);
+}
+
 void ZigbeeClass::factoryReset()
 {
   {
@@ -552,7 +582,7 @@ void ZigbeeClass::factoryReset()
     }
     sl_zigbee_token_factory_reset(false, false);
   }
-  nvm3_eraseAll(nvm3_defaultHandle);
+  erase_zigbee_nvm3_objects();
   NVIC_SystemReset();
 }
 
