@@ -71,6 +71,22 @@ void DeviceDimmableLight::SetBrightness(uint8_t percent)
   SetLevel(PercentToLevel(percent));
 }
 
+void DeviceDimmableLight::RestorePersistedState()
+{
+  DeviceOnOffLight::RestorePersistedState();
+
+  uint8_t value = 0;
+  ZigbeeAfLock lock;
+  sl_zigbee_af_status_t status = sl_zigbee_af_read_server_attribute(this->endpoint_id,
+                                                                    ZCL_LEVEL_CONTROL_CLUSTER_ID,
+                                                                    ZCL_CURRENT_LEVEL_ATTRIBUTE_ID,
+                                                                    &value,
+                                                                    sizeof(value));
+  if (status == SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
+    this->level = NormalizeLevel(value);
+  }
+}
+
 void DeviceDimmableLight::HandleAttributeChange(uint16_t cluster_id,
                                                 uint16_t attribute_id,
                                                 uint8_t size,

@@ -67,15 +67,15 @@ void setup()
   Zigbee.setFirmwareVersion(0x00000072);
   Zigbee.begin();
   zigbee_bulb.begin();
-  zigbee_bulb.set_onoff(true);
-  zigbee_bulb.set_brightness_percent(100);
-  zigbee_bulb.set_saturation_percent(100);
-  zigbee_bulb.set_true_hue(0);
-  zigbee_bulb.set_rgb(255, 255, 255);
 
   if (!Zigbee.isPaired()) {
     Serial.println("Device is not commissioned");
     Serial.println("Please pair it to your Zigbee Coordinator");
+    zigbee_bulb.set_onoff(true);
+    zigbee_bulb.set_brightness_percent(100);
+    zigbee_bulb.set_saturation_percent(100);
+    zigbee_bulb.set_true_hue(0);
+    zigbee_bulb.set_rgb(255, 255, 255);
   }
 }
 

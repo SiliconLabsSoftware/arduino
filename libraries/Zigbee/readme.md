@@ -193,6 +193,22 @@ Alternatively you can use `Tools > Burn Bootloader` in the Arduino IDE to erase 
 If your coordinator still shows an old device entry after factory reset, remove
 that stale entry from the coordinator before pairing again.
 
+## Light state persistence
+
+On/Off Light, Dimmable Light, Color Light, and On/Off Plug-in Unit endpoints
+persist the Zigbee **On/Off** attribute across reboot. Dimmable and color lights
+also persist **Current Level** (brightness). After `begin()`, `get_onoff()` and
+`get_level()` / `get_brightness_percent()` reflect those restored values, so your
+sketch can drive the LED to match the last state.
+
+Avoid calling `set_onoff()` or `set_brightness_percent()` / `set_level()`
+unconditionally right after `begin()` unless you intentionally want to override
+the restored state. Color hue and saturation are not persisted; only On/Off and
+Current Level survive reboot.
+
+`Zigbee.factoryReset()` clears this stored light state along with network
+credentials.
+
 ## Device Metadata
 
 Set metadata before starting the device:
@@ -347,6 +363,8 @@ Creates an On/Off plug-in unit endpoint for outlets and smart plugs. It
 inherits the `ZigbeeLightbulb` On/Off API and behaves like an outlet from the
 coordinator side. Remote On, Off, and Toggle commands update the local state,
 and local calls update the Zigbee On/Off attribute.
+On/Off attribute is restored after reboot;
+See [Light state persistence](#light-state-persistence).
 
 API:
 
@@ -393,6 +411,8 @@ Header:
 Creates a Dimmable Light endpoint. It inherits the `ZigbeeLightbulb` On/Off API
 and adds Level Control server support. Remote level changes update the local
 brightness, and local calls update the Zigbee Current Level attribute.
+On/Off and Current Level are restored after reboot;
+See [Light state persistence](#light-state-persistence).
 
 API:
 
@@ -424,7 +444,6 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   Zigbee.begin();
   bulb.begin();
-  bulb.set_brightness_percent(100);
 }
 
 void loop()
@@ -450,6 +469,8 @@ Creates a color dimmable light endpoint. It inherits the
 `ZigbeeDimmableLightbulb` On/Off and brightness API and adds Color Control
 server support for hue and saturation. Remote color changes update the local
 color state, and local calls update the Zigbee Color Control attributes.
+On/Off and Current Level are restored after reboot; hue and saturation are not.
+See [Light state persistence](#light-state-persistence).
 
 API:
 
@@ -506,8 +527,6 @@ void setup()
   pinMode(LED_BUILTIN_2, OUTPUT);
   Zigbee.begin();
   bulb.begin();
-  bulb.set_brightness_percent(100);
-  bulb.set_saturation_percent(100);
 }
 
 void loop()
