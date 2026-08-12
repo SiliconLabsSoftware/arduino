@@ -227,8 +227,8 @@ void Zigbee.setVendorName(const char* name);
 void Zigbee.setProductName(const char* name);
 void Zigbee.setFirmwareVersion(const char* version);
 void Zigbee.setFirmwareVersion(uint32_t file_version);
-bool Zigbee.setNodeType(ZigbeeNodeType node_type);
-ZigbeeNodeType Zigbee.getNodeType();
+bool Zigbee.setDeviceType(ZigbeeDeviceType node_type);
+ZigbeeDeviceType Zigbee.getDeviceType();
 ```
 
 `setVendorName()` writes the Basic cluster Manufacturer Name attribute.
@@ -249,7 +249,6 @@ bool begin();
 void end();
 bool is_online();
 bool get_identify_in_progress();
-void set_device_name(const char* device_name);
 void set_device_change_callback(void (*cb)(void));
 ```
 
@@ -272,11 +271,11 @@ measurement is written, or Identify starts/stops. Register the callback after th
 appliance `begin()` call, because the underlying endpoint object is created
 during `begin()`.
 
-The generated endpoint configuration currently supports 27 application
+The generated endpoint configuration currently supports 30 application
 endpoints: three On/Off lights, three temperature sensors, three humidity
 sensors, three On/Off switches, three dimmable lights, three light sensors,
-three color dimmable lights, three On/Off plug-in units, and three contact
-sensors. It also provides one opt-in Time Client endpoint.
+three color dimmable lights, three On/Off plug-in units, three contact
+sensors, and three power sources. It also provides one opt-in Time Client endpoint.
 
 ## Identifying a Device
 
@@ -321,6 +320,7 @@ void operator=(bool state);
 Example:
 
 ```cpp
+#include <ZigbeeLightbulb.h>
 ZigbeeLightbulb bulb;
 
 void setup()
@@ -381,6 +381,7 @@ void operator=(bool state);
 Example:
 
 ```cpp
+#include <ZigbeeOnOffPluginUnit.h>
 ZigbeeOnOffPluginUnit outlet;
 
 void setup()
@@ -433,6 +434,7 @@ uint8_t get_brightness_percent();
 Example:
 
 ```cpp
+#include <ZigbeeDimmableLightbulb.h>
 ZigbeeDimmableLightbulb bulb;
 
 void setup()
@@ -513,6 +515,7 @@ converts the supplied RGB value to hue, saturation, and brightness.
 Example:
 
 ```cpp
+#include <ZigbeeColorLightbulb.h>
 ZigbeeColorLightbulb bulb;
 
 void setup()
@@ -578,6 +581,7 @@ Transition time arguments are specified in milliseconds.
 Example:
 
 ```cpp
+#include <ZigbeeSwitch.h>
 ZigbeeSwitch zigbee_switch;
 
 void setup()
@@ -638,6 +642,7 @@ void operator=(bool state);
 Example:
 
 ```cpp
+#include <ZigbeeContact.h>
 ZigbeeContact contact;
 
 void setup()
@@ -710,6 +715,7 @@ void operator=(float celsius);
 Example:
 
 ```cpp
+#include <ZigbeeTemperatureSensor.h>
 ZigbeeTemperatureSensor temperature;
 
 void setup()
@@ -767,6 +773,7 @@ void operator=(uint8_t value);
 Example:
 
 ```cpp
+#include <ZigbeePowerSource.h>
 ZigbeePowerSource power_source;
 
 void setup()
@@ -817,15 +824,15 @@ API:
 bool begin();
 void end();
 
-void set_measured_value(uint16_t value);
+void set_measured_value_raw(uint16_t value);
 void set_measured_value_percent(float percent);
 bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
 bool send_attribute_report();
 bool get_attribute_report_sent();
-uint16_t get_measured_value();
+uint16_t get_measured_value_raw();
 float get_measured_value_percent();
-void set_min_value(uint16_t value);
-void set_max_value(uint16_t value);
+void set_min_value_raw(uint16_t value);
+void set_max_value_raw(uint16_t value);
 
 operator float();
 void operator=(float percent);
@@ -834,14 +841,15 @@ void operator=(float percent);
 Example:
 
 ```cpp
+#include <ZigbeeHumiditySensor.h>
 ZigbeeHumiditySensor humidity;
 
 void setup()
 {
   Zigbee.begin();
   humidity.begin();
-  humidity.set_min_value(0);      // 0.00%
-  humidity.set_max_value(10000);  // 100.00%
+  humidity.set_min_value_raw(0);      // 0.00%
+  humidity.set_max_value_raw(10000);  // 100.00%
 }
 
 void loop()
@@ -878,16 +886,16 @@ API:
 bool begin();
 void end();
 
-void set_measured_value(uint16_t value);
+void set_measured_value_raw(uint16_t value);
 void set_measured_value_lux(float lux);
 bool set_reporting_interval(uint16_t min_interval_s, uint16_t max_interval_s);
 bool send_attribute_report();
 bool get_attribute_report_sent();
-uint16_t get_measured_value();
+uint16_t get_measured_value_raw();
 float get_measured_value_lux();
-void set_min_value(uint16_t value);
+void set_min_value_raw(uint16_t value);
 void set_min_value_lux(float lux);
-void set_max_value(uint16_t value);
+void set_max_value_raw(uint16_t value);
 void set_max_value_lux(float lux);
 void set_light_sensor_type(LightSensorType type);
 
@@ -898,6 +906,7 @@ void operator=(float lux);
 Example:
 
 ```cpp
+#include <ZigbeeLightSensor.h>
 ZigbeeLightSensor light;
 
 void setup()
@@ -954,6 +963,7 @@ timezone data was provided, otherwise it returns UTC Unix time.
 Example:
 
 ```cpp
+#include <ZigbeeTimeClient.h>
 ZigbeeTimeClient zigbee_time;
 
 void setup()
@@ -968,6 +978,7 @@ void loop()
   if (Zigbee.isConnectedToNetwork()) {
     zigbee_time.request_time();
   }
+  delay(10000);
 }
 ```
 
