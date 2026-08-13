@@ -25,7 +25,6 @@
  */
 
 #include "ZigbeeLightSensor.h"
-
 #include <math.h>
 
 ZigbeeLightSensor::ZigbeeLightSensor() :
