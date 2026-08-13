@@ -138,6 +138,8 @@ configuration:
     value: 1
   - name: SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ZONE_TYPE
     value: SL_ZIGBEE_ZCL_IAS_ZONE_TYPE_CONTACT_SWITCH
+  - name: SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ENABLE_QUEUE
+    value: 1
   - name: SL_PSA_KEY_USER_SLOT_COUNT
     value: "0"
     condition:

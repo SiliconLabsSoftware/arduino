@@ -616,6 +616,11 @@ Header:
 Creates an IAS Zone contact sensor endpoint. The contact state is reported to
 the coordinator using the IAS Zone cluster.
 
+If a Zone Status Change Notification fails to reach the CIE (for example during
+a brief radio outage), the stack queues it and retries with backoff until the
+CIE is reachable again. The local Zone Status attribute stays up to date either
+way, so a coordinator attribute read can still recover the current state.
+
 The raw state API follows IAS semantics: `false` means contact detected
 (closed), and `true` means contact lost (open). The convenience `set_open()`,
 `set_closed()`, `is_open()`, and `is_closed()` helpers are usually easier to
