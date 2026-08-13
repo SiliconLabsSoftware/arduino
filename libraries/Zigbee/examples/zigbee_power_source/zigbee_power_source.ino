@@ -6,7 +6,7 @@
 
    The example publishes simulated battery percentage data through the Zigbee
    Power Configuration cluster. This lets battery-powered sketches opt in to a
-   battery entity without baking battery support into every sensor type.
+   battery entity.
 
    The device has to be commissioned to a Zigbee network first.
    Open your Zigbee coordinator (e.g. Home Assistant with ZHA) and put it in pairing mode.
@@ -72,8 +72,8 @@ void setup()
   Serial.print(" | PAN ID: 0x");
   Serial.println(Zigbee.getPanId(), HEX);
 
-  // Report the battery percent as fast as possible or at max 2 seconds
-  zigbee_power_source.set_reporting_interval(0, 2);
+  // Report the battery percent with a minimum 2 second and maximum 3 second interval
+  zigbee_power_source.set_reporting_interval(2, 3);
 }
 
 void loop()
