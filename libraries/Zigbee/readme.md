@@ -681,7 +681,9 @@ Creates a Temperature Measurement endpoint.
 
 Zigbee temperature values are represented as signed hundredths of a degree
 Celsius. For example, `2350` means `23.50 C`. The convenience Celsius APIs do
-the conversion for you.
+the conversion for you. Non-finite values (`NaN` / `Inf`) are dropped (the
+previous Measured Value is kept). Finite out-of-range values are clamped to
+`-273.15 C` … `327.67 C` before writing.
 
 `send_attribute_report()` queues the current Measured Value attribute for
 transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send
@@ -809,7 +811,9 @@ Creates a Relative Humidity Measurement endpoint.
 
 Zigbee humidity values are represented as unsigned hundredths of a percent. For
 example, `5030` means `50.30%`. The convenience percent APIs do the conversion
-for you.
+for you. Non-finite values (`NaN` / `Inf`) are dropped (the previous Measured
+Value is kept). Finite out-of-range values are clamped to `0%` … `100.00%`
+before writing.
 
 `send_attribute_report()` queues the current Measured Value attribute for
 transmission. `get_attribute_report_sent()` returns `true` once the Zigbee send

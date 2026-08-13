@@ -25,6 +25,7 @@
  */
 
 #include "ZigbeeHumiditySensor.h"
+#include <math.h>
 
 ZigbeeHumiditySensor::ZigbeeHumiditySensor() :
   sensor_device(nullptr),
@@ -101,7 +102,16 @@ void ZigbeeHumiditySensor::set_measured_value_raw(uint16_t value)
 
 void ZigbeeHumiditySensor::set_measured_value_percent(float percent)
 {
-  set_measured_value_raw((uint16_t)(percent * 100.0f));
+  if (!isfinite(percent)) {
+    return;
+  }
+  float scaled = percent * 100.0f;
+  if (scaled < 0.0f) {
+    scaled = 0.0f;
+  } else if (scaled > 10000.0f) {
+    scaled = 10000.0f;
+  }
+  set_measured_value_raw(static_cast<uint16_t>(scaled));
 }
 
 uint16_t ZigbeeHumiditySensor::get_measured_value_raw()

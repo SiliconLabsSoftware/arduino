@@ -25,6 +25,7 @@
  */
 
 #include "ZigbeeTemperatureSensor.h"
+#include <math.h>
 
 ZigbeeTemperatureSensor::ZigbeeTemperatureSensor() :
   sensor_device(nullptr),
@@ -101,7 +102,16 @@ void ZigbeeTemperatureSensor::set_measured_value_raw(int16_t value)
 
 void ZigbeeTemperatureSensor::set_measured_value_celsius(float celsius)
 {
-  set_measured_value_raw((int16_t)(celsius * 100.0f));
+  if (!isfinite(celsius)) {
+    return;
+  }
+  float scaled = celsius * 100.0f;
+  if (scaled < -27315.0f) {
+    scaled = -27315.0f;
+  } else if (scaled > 32767.0f) {
+    scaled = 32767.0f;
+  }
+  set_measured_value_raw(static_cast<int16_t>(scaled));
 }
 
 int16_t ZigbeeTemperatureSensor::get_measured_value_raw()
