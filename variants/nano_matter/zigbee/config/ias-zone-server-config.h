@@ -42,7 +42,7 @@
 // <q SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ENABLE_QUEUE> Queue Failed Transactions
 // <i> Default: FALSE
 // <i> Enabling this option will cause IAS events to be queued whenever the device is on the network and unable to communicate with the IAS Zone Client.  It will empty the contents of its queue by transmitting a zone status change command for each entry in the queue when it reestablishes communication with the IAS Client.
-#define SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ENABLE_QUEUE   0
+#define SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_ENABLE_QUEUE   1
 
 // <o SL_ZIGBEE_AF_PLUGIN_IAS_ZONE_SERVER_QUEUE_DEPTH> State Change Queue Depth <1-128>
 // <i> Default: 10
