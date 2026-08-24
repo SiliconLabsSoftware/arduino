@@ -49,7 +49,7 @@ void analogReference(uint8_t reference)
 
 void analogReadDMA(PinName pin, uint32_t *buffer, uint32_t size, void (*user_onsampling_finished_callback)())
 {
-  if(user_onsampling_finished_callback) {
+  if (user_onsampling_finished_callback) {
     ADC.scan_start(pin, buffer, size, user_onsampling_finished_callback);
   } else {
     ADC.scan_stop();

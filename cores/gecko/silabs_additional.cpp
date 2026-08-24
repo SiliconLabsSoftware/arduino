@@ -70,16 +70,16 @@ String getCoreVersion()
 
 // DPLL config for 78 MHz CPU clock - Matter variants default to this
 #define DPLL_HFXO_TO_78MHZ                                                \
-  {                                                                       \
-    78000000,                     /* Target frequency                  */ \
-    3839,                         /* Factor N                          */ \
-    1919,                         /* Factor M                          */ \
-    cmuSelect_HFXO,               /* Select HFXO as reference clock    */ \
-    cmuDPLLEdgeSel_Fall,          /* Select falling edge of ref clock  */ \
-    cmuDPLLLockMode_Phase,        /* Use frequency lock mode           */ \
-    true,                         /* Enable automatic lock recovery    */ \
-    false                         /* Don't enable dither function      */ \
-  }
+        {                                                                 \
+          78000000,               /* Target frequency                  */ \
+          3839,                   /* Factor N                          */ \
+          1919,                   /* Factor M                          */ \
+          cmuSelect_HFXO,         /* Select HFXO as reference clock    */ \
+          cmuDPLLEdgeSel_Fall,    /* Select falling edge of ref clock  */ \
+          cmuDPLLLockMode_Phase,  /* Use frequency lock mode           */ \
+          true,                   /* Enable automatic lock recovery    */ \
+          false                   /* Don't enable dither function      */ \
+        }
 
 void setCPUClock(cpu_clock_t clock)
 {
@@ -151,7 +151,8 @@ silabs_radio_stack_t getCurrentRadioStackType()
   #endif
 }
 
-bool isBoardAiMlCapable() {
+bool isBoardAiMlCapable()
+{
   #ifdef ARDUINO_SILABS_AIML_CAPABLE
   return true;
   #else

@@ -323,7 +323,8 @@ void AdcClass::set_read_resolution(uint8_t resolution)
   this->current_read_resolution = resolution;
 }
 
-void AdcClass::set_gain(analog_gain_t gain) {
+void AdcClass::set_gain(analog_gain_t gain)
+{
   if (gain >= ANALOG_GAIN_MAX) {
     return;
   }
