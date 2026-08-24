@@ -248,7 +248,8 @@ void MatterWindowCovering::set_requested_lift_position_raw(uint16_t lift_positio
  *
  * @param lift_position_percent The desired lift position as a percentage
  ******************************************************************************/
-void MatterWindowCovering::set_requested_lift_position_percent(uint8_t lift_position_percent) {
+void MatterWindowCovering::set_requested_lift_position_percent(uint8_t lift_position_percent)
+{
   if (lift_position_percent > 100u) {
     lift_position_percent = 100u;
   }
