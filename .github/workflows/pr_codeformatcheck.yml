@@ -35,10 +35,15 @@ jobs:
         id: changed
         shell: bash
         run: |
+          # Get the list of changed C/C++ source files in the PR.
+          # Skip generated SDK sources under variants/<board>/<radio_stack>/...
+          # (like ble_silabs, matter, noradio) but include board-owned files
+          # directly under variants/<board>/ (like pins_arduino.h).
           mapfile -t files < <(
             git diff --name-only --diff-filter=ACMR \
               "origin/${{ github.base_ref }}...HEAD" |
-            grep -E '\.(c|h|cpp|hpp)$' || true
+            grep -E '\.(c|h|cpp|hpp)$' |
+            grep -vE '^variants/[^/]+/[^/]+/' || true
           )
 
           if [ ${#files[@]} -eq 0 ]; then
