@@ -67,6 +67,7 @@ Read more and get the Raspberry Pi OTBR image [here](https://docs.silabs.com/mat
  - Switch
  - Temperature measurement
  - Thermostat
+ - Water valve
  - Window covering
 
 ## Setting up your Arduino device
@@ -583,6 +584,32 @@ Sets a callback invoked when the timezone list is updated by the controller.
 ```float get_measured_value();```
 
 ```void set_measured_value(uint32_t value);```
+
+## class MatterWaterValve
+
+```void open();```
+
+```void open(uint32_t duration_seconds);```
+
+```void close();```
+
+```valve_state_t get_current_state();```
+
+```valve_state_t get_target_state();```
+
+```uint32_t get_open_duration();```
+
+```uint32_t get_default_open_duration();```
+
+```void set_default_open_duration(uint32_t duration_seconds);```
+
+```uint32_t get_remaining_duration();```
+
+```void set_remaining_duration(uint32_t remaining_duration_seconds);```
+
+```uint16_t get_valve_fault();```
+
+```void set_valve_fault(valve_fault_t valve_fault);```
 
 ## class MatterWindowCovering
 
