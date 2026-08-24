@@ -642,6 +642,10 @@ Sets a callback invoked when the timezone list is updated by the controller.
 
 ```void set_boost_state(boost_state_t boost_state);```
 
+```operation_mode_t get_operation_mode();```
+
+```void set_operation_mode(operation_mode_t operation_mode);```
+
 ## class MatterWaterValve
 
 ```void open();```

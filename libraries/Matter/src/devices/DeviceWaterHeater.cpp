@@ -71,14 +71,14 @@ int16_t DeviceWaterHeater::GetHeatingSetpointValue()
 
 void DeviceWaterHeater::SetHeatingSetpointValue(int16_t heating_setpoint)
 {
-  bool changed = this->heating_setpoint != heating_setpoint;
+  if (heating_setpoint < this->min_heating_setpoint) {
+    heating_setpoint = this->min_heating_setpoint;
+  }
+  if (heating_setpoint > this->max_heating_setpoint) {
+    heating_setpoint = this->max_heating_setpoint;
+  }
 
-  if (heating_setpoint < this->abs_min_heating_setpoint) {
-    heating_setpoint = this->abs_min_heating_setpoint;
-  }
-  if (heating_setpoint > this->abs_max_heating_setpoint) {
-    heating_setpoint = this->abs_max_heating_setpoint;
-  }
+  bool changed = this->heating_setpoint != heating_setpoint;
 
   ChipLogProgress(DeviceLayer, "WaterHeaterDevice[%s]: new heating setpoint='%d'", this->device_name, heating_setpoint);
   this->heating_setpoint = heating_setpoint;

@@ -25,20 +25,7 @@ const float COLD_WATER_TEMP = 20.0f; // Assumed incoming cold water temperature 
 
 // Estimates the tank's remaining hot water level from the current and target temperatures,
 // assuming incoming cold water enters the tank at COLD_WATER_TEMP.
-void update_tank_percentage()
-{
-  float current_temperature = matter_water_heater.get_local_temperature();
-  float target_temperature = matter_water_heater.get_heating_setpoint();
-
-  int tank_percentage = (int)(((current_temperature - COLD_WATER_TEMP) / (target_temperature - COLD_WATER_TEMP)) * 100.0f);
-  if (tank_percentage < 0) {
-    tank_percentage = 0;
-  }
-  if (tank_percentage > 100) {
-    tank_percentage = 100;
-  }
-  matter_water_heater.set_tank_percentage(tank_percentage);
-}
+void update_tank_percentage();
 
 void setup()
 {
@@ -119,4 +106,24 @@ void loop()
     Serial.printf("Water heater boost state: %s\n", boost == MatterWaterHeater::boost_state_t::ACTIVE ? "ACTIVE" : "INACTIVE");
     boost_prev = boost;
   }
+}
+
+// Estimates the tank's remaining hot water level from the current and target temperatures,
+// assuming incoming cold water enters the tank at COLD_WATER_TEMP.
+void update_tank_percentage()
+{
+  float current_temperature = matter_water_heater.get_local_temperature();
+  float target_temperature = matter_water_heater.get_heating_setpoint();
+
+  int tank_percentage = 0;
+  if (target_temperature != COLD_WATER_TEMP) {
+    tank_percentage = (int)(((current_temperature - COLD_WATER_TEMP) / (target_temperature - COLD_WATER_TEMP)) * 100.0f);
+  }
+  if (tank_percentage < 0) {
+    tank_percentage = 0;
+  }
+  if (tank_percentage > 100) {
+    tank_percentage = 100;
+  }
+  matter_water_heater.set_tank_percentage(tank_percentage);
 }

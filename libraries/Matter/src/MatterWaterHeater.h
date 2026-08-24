@@ -52,7 +52,7 @@ public:
     IMMERSION_ELEMENT_2 = 0x02,
     HEAT_PUMP           = 0x04,
     BOILER              = 0x08,
-    OTHER               = 0x80
+    OTHER               = 0x10
   };
 
   enum boost_state_t {
