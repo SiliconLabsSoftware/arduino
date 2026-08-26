@@ -96,7 +96,7 @@ private:
     // Go through the output array
     for (uint8_t c = 0; c < 3; c++) {
       // Go through the bits of each byte
-      for (int i = 8; i > 0; i--) {
+      for (int i = 7; i >= 0; i--) {
         // If the current bit is set send a 1, otherwise send a 0
         uint8_t curr = ((colors[c] >> i) & 1);
         if (curr) {
