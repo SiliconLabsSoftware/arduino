@@ -244,20 +244,20 @@ If you encounter an issue you can also submit it to the project issues.
 
 ## Resources for the supported boards
 
-### Arduino Nano Matter ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+### Arduino Nano Matter ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
 [Product page](https://store.arduino.cc/pages/nano-matter) |
 [Overview & guide](https://docs.arduino.cc/tutorials/nano-matter/user-manual/) | [Pinout diagram](https://docs.arduino.cc/tutorials/nano-matter/user-manual/#pinout)
 
 ![](doc/nano_matter_drawing.png)
 
-### SparkFun Thing Plus Matter MGM240P ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+### SparkFun Thing Plus Matter MGM240P ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
 [Product page](https://www.sparkfun.com/products/20270) |
 [Overview & guide](https://learn.sparkfun.com/tutorials/sparkfun-thing-plus-matter---mgm240p-hookup-guide)
 
 #### Pinout diagram
 ![](doc/sparkfunthingplusmatter_pinout.png)
 
-### xG24 Explorer Kit ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+### xG24 Explorer Kit ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
 
 [Product page](https://www.silabs.com/development-tools/wireless/efr32xg24-explorer-kit) |
 [User guide](https://www.silabs.com/documents/public/user-guides/ug533-xg24-ek2703a.pdf)
@@ -292,7 +292,7 @@ If you encounter an issue you can also submit it to the project issues.
 #### Pinout diagram
 ![](doc/lyra24p20_pinout.png)
 
-### Seeed Studio XIAO MG24 (Sense) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png)
+### Seeed Studio XIAO MG24 (Sense) ![BLE](doc/bluetooth_logo_icon.png) ![Matter](doc/matter_logo_icon.png) ![Zigbee](doc/zigbee_logo_icon.png)
 
 [Product page](https://www.seeedstudio.com/Seeed-Studio-XIAO-MG24-p-6247.html)
 
