@@ -292,6 +292,48 @@ The `zigbee_lightbulb_identify` example blinks the onboard LED while Identify is
 active, then restores the LED to the current light on/off state when Identify
 ends.
 
+## Find and Bind (Light Target)
+
+Find and Bind is a Zigbee 3.0 commissioning flow used by some controllers and
+remotes to create cluster bindings without the coordinator writing them
+manually. It is separate from network joining (`Zigbee.begin()` / network
+steering). Coordinator-created bindings (for example in Home Assistant ZHA) work without this API.
+
+Light appliances can act as a Find and Bind **target**. Calling
+`start_find_and_bind()` starts Identify on the light endpoint for 180 seconds so
+an initiator can discover it and create bindings. The library does **not** start
+Find and Bind automatically; call this when the user requests it (for example
+from a button press or once during power-on). Make sure to call `start_find_and_bind()` after `begin()`.
+
+```cpp
+#include <ZigbeeLightbulb.h>
+ZigbeeLightbulb bulb;
+
+void setup()
+{
+  pinMode(BTN_BUILTIN, INPUT);
+  Zigbee.begin();
+  bulb.begin();
+}
+
+void loop()
+{
+  if (digitalRead(BTN_BUILTIN) == BTN_BUILTIN_ACTIVE) {
+    bulb.start_find_and_bind();
+    delay(500);
+  }
+
+  if (bulb.get_identify_in_progress()) {
+    // Optionally blink an LED while Find and Bind / Identify is active
+  }
+}
+```
+
+`start_find_and_bind()` returns `true` if Identify was started successfully.
+It is available on `ZigbeeLightbulb` and classes that inherit from it
+(`ZigbeeDimmableLightbulb`, `ZigbeeColorLightbulb`, and
+`ZigbeeOnOffPluginUnit`).
+
 ## ZigbeeLightbulb
 
 Header:
@@ -312,10 +354,14 @@ void end();
 void set_onoff(bool value);
 bool get_onoff();
 void toggle();
+bool start_find_and_bind();
 
 operator bool();
 void operator=(bool state);
 ```
+
+`start_find_and_bind()` makes this light a Find and Bind target for 180 seconds.
+See [Find and Bind (Light Target)](#find-and-bind-light-target).
 
 Example:
 
@@ -358,7 +404,7 @@ Header:
 ```
 
 Creates an On/Off plug-in unit endpoint for outlets and smart plugs. It
-inherits the `ZigbeeLightbulb` On/Off API and behaves like an outlet from the
+inherits the `ZigbeeLightbulb` On/Off and Find and Bind API and behaves like an outlet from the
 coordinator side. Remote On, Off, and Toggle commands update the local state,
 and local calls update the Zigbee On/Off attribute.
 On/Off attribute is restored after reboot;
@@ -373,6 +419,7 @@ void end();
 void set_onoff(bool value);
 bool get_onoff();
 void toggle();
+bool start_find_and_bind();
 
 operator bool();
 void operator=(bool state);
@@ -406,8 +453,8 @@ Header:
 #include <ZigbeeDimmableLightbulb.h>
 ```
 
-Creates a Dimmable Light endpoint. It inherits the `ZigbeeLightbulb` On/Off API
-and adds Level Control server support. Remote level changes update the local
+Creates a Dimmable Light endpoint. It inherits the `ZigbeeLightbulb` On/Off and
+Find and Bind API and adds Level Control server support. Remote level changes update the local
 brightness, and local calls update the Zigbee Current Level attribute.
 On/Off and Current Level are restored after reboot;
 See [Light state persistence](#light-state-persistence).
@@ -421,6 +468,7 @@ void end();
 void set_onoff(bool value);
 bool get_onoff();
 void toggle();
+bool start_find_and_bind();
 
 void set_level(uint8_t level);
 uint8_t get_level();
@@ -430,6 +478,8 @@ uint8_t get_brightness_percent();
 
 `set_level()` and `get_level()` use raw Zigbee Level Control values from 0-254.
 `set_brightness_percent()` and `get_brightness_percent()` use percent values from 0-100.
+`start_find_and_bind()` is inherited from `ZigbeeLightbulb`; see
+[Find and Bind (Light Target)](#find-and-bind-light-target).
 
 Example:
 
@@ -464,7 +514,7 @@ Header:
 ```
 
 Creates a color dimmable light endpoint. It inherits the
-`ZigbeeDimmableLightbulb` On/Off and brightness API and adds Color Control
+`ZigbeeDimmableLightbulb` On/Off, brightness, and Find and Bind API and adds Color Control
 server support for hue and saturation. Remote color changes update the local
 color state, and local calls update the Zigbee Color Control attributes.
 On/Off and Current Level are restored after reboot; hue and saturation are not.
