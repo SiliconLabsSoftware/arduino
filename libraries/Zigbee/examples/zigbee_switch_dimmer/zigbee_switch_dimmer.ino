@@ -30,7 +30,63 @@ ZigbeeSwitch zigbee_switch;
 const uint8_t dim_rate_percent = 50;
 const uint32_t level_transition_time_ms = 1000;
 
-void printCommands()
+void print_commands();
+uint8_t digit_to_percent(char digit);
+void handle_serial_command(char command);
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("Zigbee dimmer switch");
+
+  pinMode(BTN_BUILTIN, INPUT_PULLUP);
+
+  // Hold the button during boot to factory reset (clear stored Zigbee network data)
+  if (digitalRead(BTN_BUILTIN) == LOW) {
+    Serial.println("Factory resetting...");
+    Serial.println("Release the button to reboot");
+    while (digitalRead(BTN_BUILTIN) == LOW) {
+      delay(100);
+    }
+    Zigbee.factoryReset();
+  }
+
+  Zigbee.setVendorName("Arduino");
+  Zigbee.setProductName("Zigbee Dimmer Switch");
+  Zigbee.setFirmwareVersion(0x00000070);
+  Zigbee.begin();
+  zigbee_switch.begin();
+
+  if (!Zigbee.isPaired()) {
+    Serial.println("Device is not commissioned");
+    Serial.println("Waiting to join a Zigbee network...");
+  }
+  while (!Zigbee.isPaired ()) {
+    delay(200);
+  }
+
+  Serial.println("Connecting to Zigbee network...");
+  while (!Zigbee.isConnectedToNetwork()) {
+    delay(200);
+  }
+  Serial.print("Connected to Zigbee network; ");
+  Serial.print("Channel: ");
+  Serial.print(Zigbee.getChannel());
+  Serial.print(" | PAN ID: 0x");
+  Serial.println(Zigbee.getPanId(), HEX);
+
+  print_commands();
+}
+
+void loop()
+{
+  while (Serial.available()) {
+    handle_serial_command(Serial.read());
+  }
+  delay(10);
+}
+
+void print_commands()
 {
   Serial.println();
   Serial.println("Serial commands:");
@@ -44,16 +100,16 @@ void printCommands()
   Serial.println();
 }
 
-uint8_t digitToPercent(char digit)
+uint8_t digit_to_percent(char digit)
 {
   uint8_t step = digit - '0';
   return (step * 100) / 9;
 }
 
-void handleSerialCommand(char command)
+void handle_serial_command(char command)
 {
   if (command >= '0' && command <= '9') {
-    uint8_t percent = digitToPercent(command);
+    uint8_t percent = digit_to_percent(command);
     Serial.print("Moving to ");
     Serial.print(percent);
     Serial.println("%...");
@@ -103,59 +159,7 @@ void handleSerialCommand(char command)
       break;
 
     default:
-      printCommands();
+      print_commands();
       break;
   }
-}
-
-void setup()
-{
-  Serial.begin(115200);
-  Serial.println("Zigbee dimmer switch");
-
-  pinMode(BTN_BUILTIN, INPUT_PULLUP);
-
-  // Hold the button during boot to factory reset (clear stored Zigbee network data)
-  if (digitalRead(BTN_BUILTIN) == LOW) {
-    Serial.println("Factory resetting...");
-    Serial.println("Release the button to reboot");
-    while (digitalRead(BTN_BUILTIN) == LOW) {
-      delay(100);
-    }
-    Zigbee.factoryReset();
-  }
-
-  Zigbee.setVendorName("Arduino");
-  Zigbee.setProductName("Zigbee Dimmer Switch");
-  Zigbee.setFirmwareVersion(0x00000070);
-  Zigbee.begin();
-  zigbee_switch.begin();
-
-  if (!Zigbee.isPaired()) {
-    Serial.println("Device is not commissioned");
-    Serial.println("Waiting to join a Zigbee network...");
-  }
-  while (!Zigbee.isPaired ()) {
-    delay(200);
-  }
-
-  Serial.println("Connecting to Zigbee network...");
-  while (!Zigbee.isConnectedToNetwork()) {
-    delay(200);
-  }
-  Serial.print("Connected to Zigbee network; ");
-  Serial.print("Channel: ");
-  Serial.print(Zigbee.getChannel());
-  Serial.print(" | PAN ID: 0x");
-  Serial.println(Zigbee.getPanId(), HEX);
-
-  printCommands();
-}
-
-void loop()
-{
-  while (Serial.available()) {
-    handleSerialCommand(Serial.read());
-  }
-  delay(10);
 }
