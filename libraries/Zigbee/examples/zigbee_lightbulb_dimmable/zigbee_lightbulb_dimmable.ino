@@ -27,15 +27,7 @@
 ZigbeeDimmableLightbulb zigbee_bulb;
 const uint8_t button_pin = BTN_BUILTIN;
 
-void updateOnboardLed(uint8_t brightness_percent)
-{
-  uint8_t pwm_brightness = (static_cast<uint16_t>(brightness_percent) * 255 + 50) / 100;
-  if (LED_BUILTIN_ACTIVE == LOW) {
-    analogWrite(LED_BUILTIN, 255 - pwm_brightness);
-  } else {
-    analogWrite(LED_BUILTIN, pwm_brightness);
-  }
-}
+void set_led_brightness(uint8_t brightness_percent);
 
 void setup()
 {
@@ -43,7 +35,7 @@ void setup()
   Serial.println("Zigbee dimmable lightbulb");
 
   pinMode(LED_BUILTIN, OUTPUT);
-  updateOnboardLed(0);
+  set_led_brightness(0);
   pinMode(button_pin, INPUT_PULLUP);
 
   // Hold the button during boot to factory reset (clear stored Zigbee network data)
@@ -90,11 +82,11 @@ void loop()
     Serial.print("Bulb ON, brightness: ");
     Serial.print(zigbee_bulb.get_brightness_percent());
     Serial.println("%");
-    updateOnboardLed(zigbee_bulb.get_brightness_percent());
+    set_led_brightness(zigbee_bulb.get_brightness_percent());
   }
   if (!bulb_current_state && bulb_prev_state) {
     bulb_prev_state = bulb_current_state;
-    updateOnboardLed(0);
+    set_led_brightness(0);
     Serial.println("Bulb OFF");
   }
 
@@ -104,7 +96,7 @@ void loop()
   if (brightness_current != brightness_prev) {
     brightness_prev = brightness_current;
     if (bulb_current_state) {
-      updateOnboardLed(brightness_current);
+      set_led_brightness(brightness_current);
     }
     Serial.print("Bulb brightness changed to ");
     Serial.print(brightness_current);
@@ -120,4 +112,14 @@ void loop()
   btn_last = btn_state;
 
   delay(50);
+}
+
+void set_led_brightness(uint8_t brightness_percent)
+{
+  uint8_t pwm_brightness = map(brightness_percent, 0, 100, 0, 255);
+  if (LED_BUILTIN_ACTIVE == LOW) {
+    analogWrite(LED_BUILTIN, 255 - pwm_brightness);
+  } else {
+    analogWrite(LED_BUILTIN, pwm_brightness);
+  }
 }
