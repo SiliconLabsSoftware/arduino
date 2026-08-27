@@ -36,6 +36,7 @@ public:
   ~ZigbeeLightbulb() override;
   bool begin() override;
   void end() override;
+  bool start_find_and_bind();
 
   void set_onoff(bool value);
   bool get_onoff();

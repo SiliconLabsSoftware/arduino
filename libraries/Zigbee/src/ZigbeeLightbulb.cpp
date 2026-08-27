@@ -25,6 +25,11 @@
  */
 
 #include "ZigbeeLightbulb.h"
+#include "ZigbeeAfLock.h"
+
+extern "C" {
+  #include "find-and-bind-target.h"
+}
 
 ZigbeeLightbulb::ZigbeeLightbulb() :
   light_device(nullptr),
@@ -96,6 +101,16 @@ void ZigbeeLightbulb::end()
   this->light_device = nullptr;
   this->base_zigbee_device = nullptr;
   this->initialized = false;
+}
+
+bool ZigbeeLightbulb::start_find_and_bind()
+{
+  if (!this->light_device) {
+    return false;
+  }
+  ZigbeeAfLock lock;
+  sl_zigbee_af_status_t status = sl_zigbee_af_find_and_bind_target_start(this->light_device->GetEndpointId());
+  return (status == SL_ZIGBEE_ZCL_STATUS_SUCCESS);
 }
 
 void ZigbeeLightbulb::set_onoff(bool value)
