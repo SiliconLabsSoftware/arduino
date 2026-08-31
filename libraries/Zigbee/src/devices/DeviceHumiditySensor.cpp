@@ -35,7 +35,6 @@ extern "C" {
 }
 
 namespace {
-
 void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
                                         uint16_t index_or_destination,
                                         sl_zigbee_aps_frame_t* aps_frame,
@@ -60,7 +59,6 @@ void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
   DeviceHumiditySensor* sensor = static_cast<DeviceHumiditySensor*>(device);
   sensor->HandleAttributeReportSent(status);
 }
-
 } // namespace
 
 DeviceHumiditySensor::DeviceHumiditySensor(const char* device_name, uint8_t endpoint_id) :
@@ -112,9 +110,9 @@ void DeviceHumiditySensor::SetMaxMeasuredValue(uint16_t value)
 }
 
 void DeviceHumiditySensor::HandleAttributeChange(uint16_t cluster_id,
-                                                  uint16_t attribute_id,
-                                                  uint8_t size,
-                                                  uint8_t* value)
+                                                 uint16_t attribute_id,
+                                                 uint8_t size,
+                                                 uint8_t* value)
 {
   (void)size;
   if (cluster_id == ZCL_RELATIVE_HUMIDITY_MEASUREMENT_CLUSTER_ID

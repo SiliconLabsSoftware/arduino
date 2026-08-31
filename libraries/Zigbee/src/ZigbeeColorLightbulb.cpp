@@ -261,7 +261,6 @@ void ZigbeeColorLightbulb::rgb_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t* 
   *hue = static_cast<uint8_t>((static_cast<uint32_t>(hue_sector) * 254u + 765u) / 1530u);
 }
 
-
 uint8_t ZigbeeColorLightbulb::max3(uint8_t a, uint8_t b, uint8_t c)
 {
   uint8_t max_value = a;

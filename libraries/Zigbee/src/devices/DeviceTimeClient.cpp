@@ -157,27 +157,27 @@ void DeviceTimeClient::HandleTimeReadAttributesResponse(const uint8_t* payload, 
     }
 
     const uint8_t* value = &payload[offset];
-    if (attribute_id == ZCL_TIME_ATTRIBUTE_ID &&
-        attribute_type == ZCL_UTC_TIME_ATTRIBUTE_TYPE &&
-        attribute_size == 4) {
+    if (attribute_id == ZCL_TIME_ATTRIBUTE_ID
+        && attribute_type == ZCL_UTC_TIME_ATTRIBUTE_TYPE
+        && attribute_size == 4) {
       uint32_t new_time = ReadInt32u(value);
       this->zigbee_time = new_time;
       this->time_valid = (new_time != kInvalidZigbeeTime);
       updated = this->time_valid || updated;
-    } else if (attribute_id == ZCL_TIME_STATUS_ATTRIBUTE_ID &&
-               attribute_type == ZCL_BITMAP8_ATTRIBUTE_TYPE &&
-               attribute_size == 1) {
+    } else if (attribute_id == ZCL_TIME_STATUS_ATTRIBUTE_ID
+               && attribute_type == ZCL_BITMAP8_ATTRIBUTE_TYPE
+               && attribute_size == 1) {
       this->time_status = value[0];
       updated = true;
-    } else if (attribute_id == ZCL_TIME_ZONE_ATTRIBUTE_ID &&
-               attribute_type == ZCL_INT32S_ATTRIBUTE_TYPE &&
-               attribute_size == 4) {
+    } else if (attribute_id == ZCL_TIME_ZONE_ATTRIBUTE_ID
+               && attribute_type == ZCL_INT32S_ATTRIBUTE_TYPE
+               && attribute_size == 4) {
       this->time_zone = ReadInt32s(value);
       this->time_zone_valid = true;
       updated = true;
-    } else if (attribute_id == ZCL_LOCAL_TIME_ATTRIBUTE_ID &&
-               attribute_type == ZCL_UTC_TIME_ATTRIBUTE_TYPE &&
-               attribute_size == 4) {
+    } else if (attribute_id == ZCL_LOCAL_TIME_ATTRIBUTE_ID
+               && attribute_type == ZCL_UTC_TIME_ATTRIBUTE_TYPE
+               && attribute_size == 4) {
       uint32_t new_local_time = ReadInt32u(value);
       this->local_time = new_local_time;
       this->local_time_valid = (new_local_time != kInvalidZigbeeTime);
@@ -225,16 +225,16 @@ void DeviceTimeClient::HandleAttributeChange(uint16_t cluster_id,
 
 uint16_t DeviceTimeClient::ReadInt16u(const uint8_t* value)
 {
-  return static_cast<uint16_t>(value[0]) |
-         (static_cast<uint16_t>(value[1]) << 8);
+  return static_cast<uint16_t>(value[0])
+         | (static_cast<uint16_t>(value[1]) << 8);
 }
 
 uint32_t DeviceTimeClient::ReadInt32u(const uint8_t* value)
 {
-  return static_cast<uint32_t>(value[0]) |
-         (static_cast<uint32_t>(value[1]) << 8) |
-         (static_cast<uint32_t>(value[2]) << 16) |
-         (static_cast<uint32_t>(value[3]) << 24);
+  return static_cast<uint32_t>(value[0])
+         | (static_cast<uint32_t>(value[1]) << 8)
+         | (static_cast<uint32_t>(value[2]) << 16)
+         | (static_cast<uint32_t>(value[3]) << 24);
 }
 
 int32_t DeviceTimeClient::ReadInt32s(const uint8_t* value)
@@ -270,14 +270,14 @@ void DeviceTimeClient::AppendAttributeId(uint8_t* buffer, uint16_t attribute_id,
 
 extern "C" bool sl_zigbee_af_pre_command_received_cb(sl_zigbee_af_cluster_command_t* cmd)
 {
-  if (cmd == nullptr ||
-      cmd->apsFrame == nullptr ||
-      cmd->buffer == nullptr ||
-      cmd->apsFrame->clusterId != ZCL_TIME_CLUSTER_ID ||
-      cmd->clusterSpecific ||
-      cmd->direction != ZCL_DIRECTION_SERVER_TO_CLIENT ||
-      cmd->commandId != ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID ||
-      cmd->payloadStartIndex > cmd->bufLen) {
+  if (cmd == nullptr
+      || cmd->apsFrame == nullptr
+      || cmd->buffer == nullptr
+      || cmd->apsFrame->clusterId != ZCL_TIME_CLUSTER_ID
+      || cmd->clusterSpecific
+      || cmd->direction != ZCL_DIRECTION_SERVER_TO_CLIENT
+      || cmd->commandId != ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID
+      || cmd->payloadStartIndex > cmd->bufLen) {
     return false;
   }
 

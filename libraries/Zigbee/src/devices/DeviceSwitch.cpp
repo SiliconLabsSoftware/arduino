@@ -193,9 +193,9 @@ uint16_t DeviceSwitch::MillisecondsToZclTransitionTime(uint32_t transition_time_
 }
 
 void DeviceSwitch::HandleAttributeChange(uint16_t cluster_id,
-                                              uint16_t attribute_id,
-                                              uint8_t size,
-                                              uint8_t* value)
+                                         uint16_t attribute_id,
+                                         uint8_t size,
+                                         uint8_t* value)
 {
   (void)cluster_id;
   (void)attribute_id;

@@ -94,9 +94,9 @@ void DeviceDimmableLight::HandleAttributeChange(uint16_t cluster_id,
 {
   DeviceOnOffLight::HandleAttributeChange(cluster_id, attribute_id, size, value);
 
-  if (cluster_id == ZCL_LEVEL_CONTROL_CLUSTER_ID &&
-      attribute_id == ZCL_CURRENT_LEVEL_ATTRIBUTE_ID &&
-      size >= 1) {
+  if (cluster_id == ZCL_LEVEL_CONTROL_CLUSTER_ID
+      && attribute_id == ZCL_CURRENT_LEVEL_ATTRIBUTE_ID
+      && size >= 1) {
     uint8_t new_level = NormalizeLevel(*value);
     if (this->level != new_level) {
       this->level = new_level;
