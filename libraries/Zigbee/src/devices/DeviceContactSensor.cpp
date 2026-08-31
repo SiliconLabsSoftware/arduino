@@ -66,10 +66,10 @@ void DeviceContactSensor::RestoreEnrollmentState()
   }
 
   res = sl_zigbee_af_read_server_attribute(this->endpoint_id,
-                                         ZCL_IAS_ZONE_CLUSTER_ID,
-                                         ZCL_ZONE_ID_ATTRIBUTE_ID,
-                                         &zone_id,
-                                         sizeof(zone_id));
+                                           ZCL_IAS_ZONE_CLUSTER_ID,
+                                           ZCL_ZONE_ID_ATTRIBUTE_ID,
+                                           &zone_id,
+                                           sizeof(zone_id));
   if (res != SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
     return;
   }

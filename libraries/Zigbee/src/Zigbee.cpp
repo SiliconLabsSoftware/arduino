@@ -317,7 +317,9 @@ void ZigbeeClass::setVendorName(const char* name)
 {
   uint8_t zcl_string[33];
   uint8_t len = strlen(name);
-  if (len > 32) len = 32;
+  if (len > 32) {
+    len = 32;
+  }
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
   ZigbeeAfLock lock;
@@ -331,7 +333,9 @@ void ZigbeeClass::setProductName(const char* name)
 {
   uint8_t zcl_string[33];
   uint8_t len = strlen(name);
-  if (len > 32) len = 32;
+  if (len > 32) {
+    len = 32;
+  }
   zcl_string[0] = len;
   memcpy(&zcl_string[1], name, len);
   ZigbeeAfLock lock;
@@ -349,7 +353,9 @@ void ZigbeeClass::setFirmwareVersion(const char* version)
 
   uint8_t zcl_string[17];
   uint8_t len = strlen(version);
-  if (len > 16) len = 16;
+  if (len > 16) {
+    len = 16;
+  }
   zcl_string[0] = len;
   memcpy(&zcl_string[1], version, len);
   ZigbeeAfLock lock;

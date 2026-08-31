@@ -35,7 +35,6 @@ extern "C" {
 }
 
 namespace {
-
 void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
                                         uint16_t index_or_destination,
                                         sl_zigbee_aps_frame_t* aps_frame,
@@ -60,7 +59,6 @@ void AttributeReportMessageSentCallback(sl_zigbee_outgoing_message_type_t type,
   DeviceLightSensor* sensor = static_cast<DeviceLightSensor*>(device);
   sensor->HandleAttributeReportSent(status);
 }
-
 } // namespace
 
 DeviceLightSensor::DeviceLightSensor(const char* device_name, uint8_t endpoint_id) :
