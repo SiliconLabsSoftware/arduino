@@ -25,6 +25,7 @@
  */
 
 #include "MatterSwitch.h"
+#include <app/AttributeAccessInterfaceRegistry.h>
 
 using namespace ::chip;
 using namespace ::chip::Platform;
@@ -52,9 +53,25 @@ DECLARE_DYNAMIC_ATTRIBUTE(Switch::Attributes::MultiPressMax::Id, INT8U, 1, 0),  
 DECLARE_DYNAMIC_ATTRIBUTE(Switch::Attributes::FeatureMap::Id, BITMAP32, 4, 0),       /* FeatureMap */
 DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();                                                /* ClusterRevision auto added by LIST_END */
 
+// Binding cluster attributes - the `Binding` list attribute itself is served
+// by MatterBindingAttributeAccess, not by this ember buffer.
+DECLARE_DYNAMIC_ATTRIBUTE_LIST_BEGIN(switchBindingAttrs)
+DECLARE_DYNAMIC_ATTRIBUTE(Binding::Attributes::Binding::Id, ARRAY, 0, ATTRIBUTE_MASK_WRITABLE), /* Binding - served by MatterBindingAttributeAccess */
+DECLARE_DYNAMIC_ATTRIBUTE(Binding::Attributes::FeatureMap::Id, BITMAP32, 4, 0),      /* FeatureMap */
+DECLARE_DYNAMIC_ATTRIBUTE_LIST_END();
+
 // Switch cluster list
 DECLARE_DYNAMIC_CLUSTER_LIST_BEGIN(switchEndpointClusters)
 DECLARE_DYNAMIC_CLUSTER(Switch::Id, switchAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, switchOutgoingCommands),
+DECLARE_DYNAMIC_CLUSTER(Descriptor::Id, descriptorAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr),
+DECLARE_DYNAMIC_CLUSTER(BridgedDeviceBasicInformation::Id, bridgedDeviceBasicAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr)
+DECLARE_DYNAMIC_CLUSTER_LIST_END;
+
+// Switch cluster list with the Binding cluster added - only used by beginWithBinding()
+// so the plain begin() path (and every existing sketch using it) is byte-for-byte unaffected.
+DECLARE_DYNAMIC_CLUSTER_LIST_BEGIN(switchEndpointClustersWithBinding)
+DECLARE_DYNAMIC_CLUSTER(Switch::Id, switchAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, switchOutgoingCommands),
+DECLARE_DYNAMIC_CLUSTER(Binding::Id, switchBindingAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr),
 DECLARE_DYNAMIC_CLUSTER(Descriptor::Id, descriptorAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr),
 DECLARE_DYNAMIC_CLUSTER(BridgedDeviceBasicInformation::Id, bridgedDeviceBasicAttrs, ZAP_CLUSTER_MASK(SERVER), nullptr, nullptr)
 DECLARE_DYNAMIC_CLUSTER_LIST_END;
@@ -66,6 +83,8 @@ MatterSwitch::MatterSwitch() :
   switch_device(nullptr),
   device_endpoint(nullptr),
   endpoint_dataversion_storage(nullptr),
+  binding_attribute_access(nullptr),
+  binding_enabled(false),
   initialized(false)
 {
   ;
@@ -85,6 +104,30 @@ MatterSwitch::~MatterSwitch()
  * @return true if the initialization succeeded, false otherwise
  ******************************************************************************/
 bool MatterSwitch::begin()
+{
+  return this->begin_internal(false);
+}
+
+/***************************************************************************//**
+ * Same as begin(), but also adds the standard Matter Binding cluster to the
+ * switch's endpoint so it can be bound (by a Matter controller, e.g. Home
+ * Assistant or chip-tool) directly to a light and toggle it without going
+ * through a hub for every press. See the matter_switch_binding example.
+ *
+ * @return true if the initialization succeeded, false otherwise
+ ******************************************************************************/
+bool MatterSwitch::beginWithBinding()
+{
+  return this->begin_internal(true);
+}
+
+/***************************************************************************//**
+ * Shared implementation behind begin() and beginWithBinding()
+ *
+ * @param[in] enable_binding whether to add the Binding cluster to the endpoint
+ * @return true if the initialization succeeded, false otherwise
+ ******************************************************************************/
+bool MatterSwitch::begin_internal(bool enable_binding)
 {
   if (this->initialized) {
     return false;
@@ -107,12 +150,17 @@ bool MatterSwitch::begin()
     delete(new_switch_device);
     return false;
   }
-  new_endpoint->cluster = switchEndpointClusters;
-  new_endpoint->clusterCount = ArraySize(switchEndpointClusters);
+
+  const EmberAfCluster* cluster_list = enable_binding ? switchEndpointClustersWithBinding : switchEndpointClusters;
+  uint8_t cluster_count = enable_binding ? static_cast<uint8_t>(ArraySize(switchEndpointClustersWithBinding))
+                          : static_cast<uint8_t>(ArraySize(switchEndpointClusters));
+
+  new_endpoint->cluster = cluster_list;
+  new_endpoint->clusterCount = cluster_count;
   new_endpoint->endpointSize = 0;
 
   // Create data version storage for the endpoint
-  size_t dataversion_size = ArraySize(switchEndpointClusters) * sizeof(DataVersion);
+  size_t dataversion_size = cluster_count * sizeof(DataVersion);
   DataVersion* new_switch_data_version = (DataVersion*)malloc(dataversion_size);
   if (new_switch_data_version == nullptr) {
     delete(new_switch_device);
@@ -124,7 +172,7 @@ bool MatterSwitch::begin()
   int result = AddDeviceEndpoint(new_switch_device,
                                  new_endpoint,
                                  Span<const EmberAfDeviceType>(gSwitchDeviceTypes),
-                                 Span<DataVersion>(new_switch_data_version, ArraySize(switchEndpointClusters)),
+                                 Span<DataVersion>(new_switch_data_version, cluster_count),
                                  1);
   if (result < 0) {
     delete(new_switch_device);
@@ -137,9 +185,29 @@ bool MatterSwitch::begin()
   new_switch_device->SetCurrentPosition(0);
   new_switch_device->SetMultiPressMax(1);
 
+  MatterBindingAttributeAccess* new_binding_attribute_access = nullptr;
+  if (enable_binding) {
+    EndpointId assigned_endpoint_id = new_switch_device->GetEndpointId();
+    MatterBindingManager::instance().begin();
+    new_binding_attribute_access = new (std::nothrow)MatterBindingAttributeAccess(assigned_endpoint_id);
+    if (new_binding_attribute_access == nullptr) {
+      // Fail begin() entirely rather than leaving a half-initialized switch
+      // with binding requested but no attribute access registered for it.
+      (void)RemoveDeviceEndpoint(new_switch_device);
+      delete(new_switch_device);
+      free(new_endpoint);
+      free(new_switch_data_version);
+      return false;
+    }
+    app::AttributeAccessInterfaceRegistry::Instance().Register(new_binding_attribute_access);
+  }
+
   this->switch_device = new_switch_device;
   this->device_endpoint = new_endpoint;
   this->endpoint_dataversion_storage = new_switch_data_version;
+  this->binding_enabled = enable_binding;
+  this->binding_attribute_access = new_binding_attribute_access;
+
   this->initialized = true;
   return true;
 }
@@ -151,6 +219,11 @@ void MatterSwitch::end()
 {
   if (!this->initialized) {
     return;
+  }
+  if (this->binding_attribute_access != nullptr) {
+    app::AttributeAccessInterfaceRegistry::Instance().Unregister(this->binding_attribute_access);
+    delete(this->binding_attribute_access);
+    this->binding_attribute_access = nullptr;
   }
   (void)RemoveDeviceEndpoint(this->switch_device);
   free(this->device_endpoint);
@@ -169,7 +242,18 @@ void MatterSwitch::set_state(bool state)
   if (!this->initialized) {
     return;
   }
+  bool changed = this->switch_device->GetCurrentPosition() != state;
   this->switch_device->SetCurrentPosition(state);
+
+  // On a bound switch, a press (front edge) toggles every bound target -
+  // mirrors how a real Matter light switch reacts to a binding.
+  // Only fire on an actual position transition, not on a repeated/duplicate
+  // call, to avoid sending a spurious extra Toggle to the bound target(s).
+  if (this->binding_enabled && state && changed) {
+    PlatformMgr().LockChipStack();
+    MatterBindingManager::instance().notify_bound_cluster_changed(this->switch_device->GetEndpointId(), OnOff::Id, OnOff::Commands::Toggle::Id);
+    PlatformMgr().UnlockChipStack();
+  }
 }
 
 /***************************************************************************//**

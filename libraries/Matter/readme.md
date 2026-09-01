@@ -428,6 +428,10 @@ Class for creating and controlling a Matter Power Source appliance with battery 
 
 ## class MatterSwitch
 
+```bool beginWithBinding();```
+
+Same as ```begin()```, but also adds the standard Matter Binding cluster to the switch's endpoint, so a Matter controller (e.g. Home Assistant or chip-tool) can bind it directly to another device (e.g. a light) and have button presses toggle it without a hub relaying every command. See the ```matter_switch_binding``` example.
+
 ```void set_state(bool state);```
 
 ```bool get_state();```
