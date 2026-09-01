@@ -28,6 +28,7 @@
 #define MATTER_SWITCH_H
 
 #include "Matter.h"
+#include "MatterBindingManager.h"
 #include "devices/DeviceSwitch.h"
 #include <platform/CHIPDeviceLayer.h>
 #include <app-common/zap-generated/attributes/Accessors.h>
@@ -41,15 +42,20 @@ public:
   MatterSwitch();
   ~MatterSwitch();
   bool begin();
+  bool beginWithBinding();
   void end();
   void set_state(bool state);
   bool get_state();
   void operator=(bool state);
 
 private:
+  bool begin_internal(bool enable_binding);
+
   DeviceSwitch* switch_device;
   EmberAfEndpointType* device_endpoint;
   DataVersion* endpoint_dataversion_storage;
+  MatterBindingAttributeAccess* binding_attribute_access;
+  bool binding_enabled;
   bool initialized;
 };
 
