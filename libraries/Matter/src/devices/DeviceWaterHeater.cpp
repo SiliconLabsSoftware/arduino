@@ -100,12 +100,6 @@ void DeviceWaterHeater::SetSystemMode(uint8_t system_mode)
   ChipLogProgress(DeviceLayer, "WaterHeaterDevice[%s]: new system mode='%u'", this->device_name, system_mode);
   this->system_mode = system_mode;
 
-  // Derive the currently active heat sources from the system mode - when the
-  // water heater is heating, assume all of its available heater types are engaged.
-  uint8_t new_heat_demand = (system_mode != 0) ? this->heater_types : 0;
-  bool heat_demand_changed = this->heat_demand != new_heat_demand;
-  this->heat_demand = new_heat_demand;
-
   // Keep the Water Heater Mode cluster's current mode consistent with the system mode:
   // turning the heater off always reports "Off", turning it on falls back to "Manual"
   // unless a more specific mode (e.g. Eco) was already selected.
@@ -122,14 +116,12 @@ void DeviceWaterHeater::SetSystemMode(uint8_t system_mode)
     this->HandleWaterHeaterDeviceStatusChanged(kChanged_SystemModeValue);
     CallDeviceChangeCallback();
   }
-  if (heat_demand_changed) {
-    this->HandleWaterHeaterDeviceStatusChanged(kChanged_HeatDemandValue);
-    CallDeviceChangeCallback();
-  }
   if (current_mode_changed) {
     this->HandleWaterHeaterDeviceStatusChanged(kChanged_CurrentModeValue);
     CallDeviceChangeCallback();
   }
+
+  this->UpdateHeatDemand();
 }
 
 uint8_t DeviceWaterHeater::GetCurrentMode()
@@ -227,6 +219,7 @@ uint8_t DeviceWaterHeater::GetHeaterTypes()
 void DeviceWaterHeater::SetHeaterTypes(uint8_t heater_types)
 {
   this->heater_types = heater_types;
+  this->UpdateHeatDemand();
 }
 
 uint8_t DeviceWaterHeater::GetHeatDemand()
@@ -285,6 +278,8 @@ void DeviceWaterHeater::SetBoostState(uint8_t boost_state)
     this->HandleWaterHeaterDeviceStatusChanged(kChanged_BoostStateValue);
     CallDeviceChangeCallback();
   }
+
+  this->UpdateHeatDemand();
 }
 
 uint32_t DeviceWaterHeater::GetWaterHeaterManagementClusterFeatureMap()
@@ -435,6 +430,21 @@ CHIP_ERROR DeviceWaterHeater::HandleWriteEmberAfAttribute(ClusterId clusterId,
   }
 
   return CHIP_NO_ERROR;
+}
+
+void DeviceWaterHeater::UpdateHeatDemand()
+{
+  // Derive the currently active heat sources from the system mode and boost state -
+  // when the water heater is heating (system mode on, or a boost is active), assume
+  // all of its available heater types are engaged.
+  uint8_t new_heat_demand = ((this->system_mode != 0) || (this->boost_state != 0)) ? this->heater_types : 0;
+  bool heat_demand_changed = this->heat_demand != new_heat_demand;
+  this->heat_demand = new_heat_demand;
+
+  if (heat_demand_changed) {
+    this->HandleWaterHeaterDeviceStatusChanged(kChanged_HeatDemandValue);
+    CallDeviceChangeCallback();
+  }
 }
 
 void DeviceWaterHeater::HandleWaterHeaterDeviceStatusChanged(Changed_t itemChangedMask)

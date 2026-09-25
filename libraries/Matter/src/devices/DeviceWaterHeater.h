@@ -98,6 +98,7 @@ public:
 
 private:
   void HandleWaterHeaterDeviceStatusChanged(Changed_t itemChangedMask);
+  void UpdateHeatDemand();
 
   int16_t local_temperature;
   int16_t heating_setpoint;
