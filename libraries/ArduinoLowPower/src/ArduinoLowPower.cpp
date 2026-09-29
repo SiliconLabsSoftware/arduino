@@ -38,7 +38,10 @@ static uint32_t GetEm4WakeUpPinMask(GPIO_Port_TypeDef port, uint32_t pin);
 ArduinoLowPowerClass::ArduinoLowPowerClass() :
   wakeup_callback(nullptr),
   wakeup_pin(PIN_NAME_NC),
-  wakeup_mode(FALLING)
+  wakeup_mode(FALLING),
+  deep_sleep_hold_gpio(false),
+  pin_retention_enabled(false),
+  retained_pin_count(0u)
 {
   ;
 }
@@ -100,11 +103,16 @@ void ArduinoLowPowerClass::sleep(uint32_t millis)
 void ArduinoLowPowerClass::deepSleep()
 {
   EMU_EM4Init_TypeDef em4_init = EMU_EM4INIT_DEFAULT;
-  em4_init.pinRetentionMode = emuPinRetentionEm4Exit;
+  if (this->pin_retention_enabled) {
+    em4_init.pinRetentionMode = emuPinRetentionLatch;
+  } else if (this->deep_sleep_hold_gpio) {
+    em4_init.pinRetentionMode = emuPinRetentionEm4Exit;
+  }
   EMU_EM4Init(&em4_init);
 
+  this->readAndApplyDeepSleepRetainedPins();
   this->setupDeepSleepWakeUpPin();
-
+  this->armDeepSleepPinRetention();
   EMU_EnterEM4();
 }
 
@@ -127,10 +135,17 @@ void ArduinoLowPowerClass::deepSleep(uint32_t millis)
   NVIC_EnableIRQ(BURTC_IRQn);
   BURTC_Enable(true);
 
-  this->setupDeepSleepWakeUpPin();
-
   EMU_EM4Init_TypeDef em4_init = EMU_EM4INIT_DEFAULT;
+  if (this->pin_retention_enabled) {
+    em4_init.pinRetentionMode = emuPinRetentionLatch;
+  } else if (this->deep_sleep_hold_gpio) {
+    em4_init.pinRetentionMode = emuPinRetentionEm4Exit;
+  }
   EMU_EM4Init(&em4_init);
+
+  this->readAndApplyDeepSleepRetainedPins();
+  this->setupDeepSleepWakeUpPin();
+  this->armDeepSleepPinRetention();
   EMU_EnterEM4();
 }
 
@@ -150,21 +165,19 @@ void ArduinoLowPowerClass::timedSleep(uint32_t millis_to_sleep)
 // Writes 4 bytes to the specified Backup RAM address which is retained during deep sleep
 void ArduinoLowPowerClass::deepSleepMemoryWrite(uint32_t address, uint32_t data)
 {
-  if (address >= this->deep_sleep_memory_size) {
+  if (this->pin_retention_enabled && this->isDeepSleepPinRetentionAddress(address)) {
     return;
   }
-  CMU_ClockEnable(cmuClock_BURAM, true);
-  BURAM->RET[address].REG = data;
+  this->deepSleepMemoryWriteRaw(address, data);
 }
 
 // Reads 4 bytes from the specified Backup RAM address
 uint32_t ArduinoLowPowerClass::deepSleepMemoryRead(uint32_t address)
 {
-  if (address >= this->deep_sleep_memory_size) {
+  if (this->pin_retention_enabled && this->isDeepSleepPinRetentionAddress(address)) {
     return 0u;
   }
-  CMU_ClockEnable(cmuClock_BURAM, true);
-  return BURAM->RET[address].REG;
+  return this->deepSleepMemoryReadRaw(address);
 }
 
 // Returns whether the device was reset by deep sleeping or by an other cause
@@ -190,6 +203,173 @@ void ArduinoLowPowerClass::setupDeepSleepWakeUpPin()
     polarity_mask = __UINT32_MAX__ & _GPIO_EM4WUPOL_MASK;
   }
   GPIO_EM4EnablePinWakeup(wakeup_pin_mask, polarity_mask);
+}
+
+// Holds GPIO states during deep sleep, but resets them upon wakeup
+// Use deepSleepRetainPin to configure GPIO pins to retain after deep sleep
+void ArduinoLowPowerClass::deepSleepHoldPins(bool hold)
+{
+  this->deep_sleep_hold_gpio = hold;
+}
+
+// Retains the specified pin and state during deep sleep and after waking up
+bool ArduinoLowPowerClass::deepSleepRetainPin(pin_size_t pinNumber, PinMode mode, PinStatus status)
+{
+  PinName pin_name = pinToPinName(pinNumber);
+  if (pin_name == PIN_NAME_NC) {
+    return false;
+  }
+  return this->deepSleepRetainPin(pin_name, mode, status);
+}
+
+// Retains the specified pin and state during deep sleep and after waking up
+bool ArduinoLowPowerClass::deepSleepRetainPin(PinName pin, PinMode mode, PinStatus status)
+{
+  if (!this->isValidDeepSleepRetainedPin(pin, mode, status)) {
+    return false;
+  }
+
+  if (this->retained_pin_count >= this->retained_pin_count_max) {
+    return false;
+  }
+  this->retained_pin_count++;
+  this->pin_retention_enabled = true;
+
+  // Keep the retention header disarmed until right before entering EM4
+  deepSleepMemoryWriteRaw(this->deep_sleep_pin_retention_storage_offset, 0);
+  uint32_t retained_pin_entry_offset = this->deep_sleep_pin_retention_storage_offset + 1u + (this->retained_pin_count - 1u) * this->retained_pin_entry_size;
+  deepSleepMemoryWriteRaw(retained_pin_entry_offset + 0, pin);
+  deepSleepMemoryWriteRaw(retained_pin_entry_offset + 1, mode);
+  deepSleepMemoryWriteRaw(retained_pin_entry_offset + 2, status);
+
+  return true;
+}
+
+void ArduinoLowPowerClass::deepSleepClearRetainedPins()
+{
+  this->pin_retention_enabled = false;
+  this->retained_pin_count = 0u;
+  deepSleepMemoryWriteRaw(this->deep_sleep_pin_retention_storage_offset, 0);
+}
+
+bool ArduinoLowPowerClass::readDeepSleepPinRetentionCount(uint32_t* count)
+{
+  // Read the number of retained pins from the pin retention header
+  uint32_t retained_pin_header = deepSleepMemoryReadRaw(this->deep_sleep_pin_retention_storage_offset);
+  this->retained_pin_count = retained_pin_header & deep_sleep_pin_retention_count_mask;
+  // The pin count read from deep sleep memory should be in the valid retained pin count range.
+  // If it isn't, unlatch GPIO then return without restoring anything.
+  if (this->retained_pin_count == 0u || this->retained_pin_count > this->retained_pin_count_max) {
+    return false;
+  }
+  *count = this->retained_pin_count;
+  return true;
+}
+
+bool ArduinoLowPowerClass::readAndApplyDeepSleepRetainedPins()
+{
+  if (!this->pin_retention_enabled || this->retained_pin_count == 0u) {
+    return false;
+  }
+  PinName retained_pins[retained_pin_count_max];
+  PinMode retained_modes[retained_pin_count_max];
+  PinStatus retained_statuses[retained_pin_count_max];
+
+  // Read and validate each retained pin entry from deep sleep memory
+  for (uint32_t i = 0; i < this->retained_pin_count; i++) {
+    uint32_t retained_pin_entry_offset = this->deep_sleep_pin_retention_storage_offset + 1u + i * this->retained_pin_entry_size;
+    PinName pin = (PinName)deepSleepMemoryReadRaw(retained_pin_entry_offset + 0);
+    PinMode mode = (PinMode)deepSleepMemoryReadRaw(retained_pin_entry_offset + 1);
+    PinStatus status = (PinStatus)deepSleepMemoryReadRaw(retained_pin_entry_offset + 2);
+    if (!this->isValidDeepSleepRetainedPin(pin, mode, status)) {
+      return false;
+    }
+    retained_pins[i] = pin;
+    retained_modes[i] = mode;
+    retained_statuses[i] = status;
+  }
+
+  // Apply the retained pin configurations to the actual GPIO pins
+  for (uint32_t i = 0; i < this->retained_pin_count; i++) {
+    pinMode(retained_pins[i], retained_modes[i]);
+    digitalWrite(retained_pins[i], retained_statuses[i]);
+  }
+  return true;
+}
+
+void ArduinoLowPowerClass::_restoreDeepSleepRetainedPins()
+{
+  // Check EM4 IO retention is active
+  if ((EMU->STATUS & EMU_STATUS_EM4IORET) == 0u) {
+    return;
+  }
+
+  // Read and validate the pin retention marker
+  uint32_t retained_pin_header = deepSleepMemoryReadRaw(this->deep_sleep_pin_retention_storage_offset);
+  this->pin_retention_enabled = ((retained_pin_header & deep_sleep_pin_retention_marker_mask) == deep_sleep_pin_retention_marker);
+  if (!this->pin_retention_enabled) {
+    EMU_UnlatchPinRetention();
+    return;
+  }
+
+  // Read the number of retained pins from the pin retention header and validate it
+  bool res = this->readDeepSleepPinRetentionCount(&this->retained_pin_count);
+  if (!res) {
+    this->deepSleepClearRetainedPins();
+    EMU_UnlatchPinRetention();
+    return;
+  }
+
+  // Read and apply the retained pin configurations from deep sleep memory
+  res = this->readAndApplyDeepSleepRetainedPins();
+  if (!res) {
+    this->deepSleepClearRetainedPins();
+    EMU_UnlatchPinRetention();
+    return;
+  }
+
+  // Clear the retained pin entries from deep sleep memory and unlatch pin retention
+  this->deepSleepClearRetainedPins();
+  EMU_UnlatchPinRetention();
+}
+
+void ArduinoLowPowerClass::armDeepSleepPinRetention()
+{
+  if (!this->pin_retention_enabled || this->retained_pin_count == 0u || this->retained_pin_count > this->retained_pin_count_max) {
+    return;
+  }
+
+  // The retention marker has 0xA595 on the top 16 bits and the retained pin count on the lower 16 bits
+  uint32_t retained_pin_header = deep_sleep_pin_retention_marker | (this->retained_pin_count & deep_sleep_pin_retention_count_mask);
+  deepSleepMemoryWriteRaw(this->deep_sleep_pin_retention_storage_offset, retained_pin_header);
+}
+
+void ArduinoLowPowerClass::deepSleepMemoryWriteRaw(uint32_t address, uint32_t data)
+{
+  if (address >= this->deep_sleep_memory_size) {
+    return;
+  }
+  CMU_ClockEnable(cmuClock_BURAM, true);
+  BURAM->RET[address].REG = data;
+}
+
+uint32_t ArduinoLowPowerClass::deepSleepMemoryReadRaw(uint32_t address)
+{
+  if (address >= this->deep_sleep_memory_size) {
+    return 0u;
+  }
+  CMU_ClockEnable(cmuClock_BURAM, true);
+  return BURAM->RET[address].REG;
+}
+
+bool ArduinoLowPowerClass::isDeepSleepPinRetentionAddress(uint32_t address)
+{
+  return (address >= this->deep_sleep_pin_retention_storage_offset) && (address < this->deep_sleep_memory_size);
+}
+
+bool ArduinoLowPowerClass::isValidDeepSleepRetainedPin(PinName pin, PinMode mode, PinStatus status)
+{
+  return (pin >= PIN_NAME_MIN) && (pin < PIN_NAME_MAX) && (mode == OUTPUT) && (status == LOW || status == HIGH);
 }
 
 ArduinoLowPowerClass LowPower;
@@ -239,6 +419,10 @@ void BURTC_IRQHandler(void)
 // communicate with it.
 void escape_hatch()
 {
+  if (LowPower.wokeUpFromDeepSleep()) {
+    LowPower._restoreDeepSleepRetainedPins();
+  }
+
   pinMode(DEEP_SLEEP_ESCAPE_PIN, INPUT_PULLUP);
   if (digitalRead(DEEP_SLEEP_ESCAPE_PIN) != LOW) {
     return;

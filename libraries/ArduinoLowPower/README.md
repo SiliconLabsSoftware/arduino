@@ -78,6 +78,76 @@ LowPower.deepSleep(milliseconds);
 
 milliseconds: the number of milliseconds to put the board in deep sleep mode. If void the deep sleep mode is used till a wake-up event.
 
+## `LowPower.deepSleepHoldPins()`
+
+#### Description
+
+Configures whether GPIO states should be held while the MCU is in deep sleep.
+When enabled, pins keep their state during deep sleep but return to their reset state after wake-up.
+Use `LowPower.deepSleepRetainPin()` to keep selected pins in a configured state after wake-up.
+If pin retention is configured with `LowPower.deepSleepRetainPin()`, it takes precedence over `LowPower.deepSleepHoldPins()` and this setting is ignored.
+
+
+#### Syntax
+
+```
+LowPower.deepSleepHoldPins(hold);
+```
+
+#### Parameters
+
+hold: `true` to hold GPIO states during deep sleep, `false` to disable GPIO hold.
+
+## `LowPower.deepSleepRetainPin()`
+
+#### Description
+
+Configures an output pin to keep the specified state during deep sleep and after wake-up.
+Only `OUTPUT` pins with a `LOW` or `HIGH` state can be retained.
+Up to 3 pins can be configured for retention.
+The function returns `true` if the pin retention configuration was stored successfully and `false` otherwise.
+Pin retention takes precedence over `LowPower.deepSleepHoldPins()`, so the GPIO hold setting is ignored once a retained pin is configured.
+
+If the same pin is configured as a deep sleep wake-up pin with `LowPower.attachInterruptWakeup()`, the wake-up pin configuration takes precedence while entering deep sleep and the retained output state won't take effect while the MCU is sleeping.
+
+The deep sleep escape pin always takes precedence over pin retention and is configured as `INPUT_PULLUP` after wake-up before the sketch starts.
+
+Using this feature reserves the last 10 writeable addresses of the Back-up RAM (40 bytes).
+While pin retention is enabled, writes to those addresses with `LowPower.deepSleepMemoryWrite()` are ignored and reads with `LowPower.deepSleepMemoryRead()` return `0`.
+
+
+#### Syntax
+
+```
+LowPower.deepSleepRetainPin(pin, mode, status);
+```
+
+#### Parameters
+
+pin: the pin to retain during and after deep sleep.
+
+mode: the retained pin mode. Only `OUTPUT` is supported.
+
+status: the retained pin state. Can be `LOW` or `HIGH`.
+
+## `LowPower.deepSleepClearRetainedPins()`
+
+#### Description
+
+Clears the stored deep sleep pin retention configuration.
+After calling this function, subsequent deep sleep calls won't retain pins after wake-up unless `LowPower.deepSleepRetainPin()` is called again.
+
+
+#### Syntax
+
+```
+LowPower.deepSleepClearRetainedPins();
+```
+
+#### Parameters
+
+None
+
 ## `LowPower.attachInterruptWakeup()`
 
 #### Description
@@ -129,12 +199,14 @@ None
 
 Writes 4 bytes (uint32_t) to the deep sleep memory (Back-up RAM) to the specified address.
 Contents of the deep sleep memory are retained during deep sleep.
+Using `LowPower.deepSleepRetainPin()` reserves the last 10 writeable addresses of the Back-up RAM (40 bytes).
+While pin retention is enabled, writes to those addresses are ignored.
 
 
 #### Syntax
 
 ```
-LowPower.deepSleepMemoryRead(address, data);
+LowPower.deepSleepMemoryWrite(address, data);
 ```
 
 #### Parameters
@@ -149,6 +221,8 @@ data: data to write
 #### Description
 
 Reads 4 bytes (uint32_t) from the deep sleep memory (Back-up RAM) from the specified address.
+Using `LowPower.deepSleepRetainPin()` reserves the last 10 writeable addresses of the Back-up RAM (40 bytes).
+While pin retention is enabled, reads from those addresses return `0`.
 
 
 #### Syntax
@@ -167,7 +241,7 @@ None
 #### Description
 
 Reads the size of the deep sleep memory (in writeable addresses).
-To get the size in bytes multiple the return value by 4.
+To get the size in bytes multiply the return value by 4.
 
 
 #### Syntax

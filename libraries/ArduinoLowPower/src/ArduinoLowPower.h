@@ -47,6 +47,12 @@ public:
     return deep_sleep_memory_size;
   }
   bool wokeUpFromDeepSleep();
+
+  void deepSleepHoldPins(bool hold);
+  bool deepSleepRetainPin(pin_size_t pinNumber, PinMode mode, PinStatus status);
+  bool deepSleepRetainPin(PinName pin, PinMode mode, PinStatus status);
+  void deepSleepClearRetainedPins();
+  void _restoreDeepSleepRetainedPins();
 #endif
 
 private:
@@ -56,9 +62,30 @@ private:
   voidFuncPtr wakeup_callback;
   uint32_t wakeup_pin;
   irq_mode wakeup_mode;
+
+  bool deep_sleep_hold_gpio;
+  static const uint32_t retained_pin_count_max = 3u;
+  static const uint32_t retained_pin_entry_size = 3u;
+  static const uint32_t deep_sleep_pin_retention_storage_size = 1u + retained_pin_count_max * retained_pin_entry_size;
+  static const uint32_t deep_sleep_pin_retention_storage_offset = deep_sleep_memory_size - deep_sleep_pin_retention_storage_size;
+  static const uint32_t deep_sleep_pin_retention_marker = 0xA5950000u;
+  static const uint32_t deep_sleep_pin_retention_marker_mask = 0xFFFF0000u;
+  static const uint32_t deep_sleep_pin_retention_count_mask = 0x0000FFFFu;
+  bool pin_retention_enabled;
+  uint32_t retained_pin_count;
+
   void handleWakeup();
   void timedSleep(uint32_t millis_to_sleep);
+
+  void deepSleepMemoryWriteRaw(uint32_t address, uint32_t data);
+  uint32_t deepSleepMemoryReadRaw(uint32_t address);
+
   void setupDeepSleepWakeUpPin();
+  void armDeepSleepPinRetention();
+  bool readDeepSleepPinRetentionCount(uint32_t* count);
+  bool readAndApplyDeepSleepRetainedPins();
+  bool isDeepSleepPinRetentionAddress(uint32_t address);
+  bool isValidDeepSleepRetainedPin(PinName pin, PinMode mode, PinStatus status);
 #endif
 };
 
