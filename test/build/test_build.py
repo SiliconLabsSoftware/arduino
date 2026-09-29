@@ -217,6 +217,7 @@ testlist_common = {
     "../../libraries/ArduinoLowPower/examples/DeepSleepExternalOrTimedWakeup/DeepSleepExternalOrTimedWakeup.ino":      all_variants,
     "../../libraries/ArduinoLowPower/examples/DeepSleepExternalWakeup/DeepSleepExternalWakeup.ino":                    all_variants,
     "../../libraries/ArduinoLowPower/examples/DeepSleepMemory/DeepSleepMemory.ino":                                    all_variants,
+    "../../libraries/ArduinoLowPower/examples/DeepSleepRetainedPin/DeepSleepRetainedPin.ino":                          all_variants,
     "../../libraries/ArduinoLowPower/examples/DeepSleepTimedWakeup/DeepSleepTimedWakeup.ino":                          all_variants,
     "../../libraries/ArduinoLowPower/examples/SleepTimedWakeup/SleepTimedWakeup.ino":                                  all_variants,
     # WatchdogTimer
