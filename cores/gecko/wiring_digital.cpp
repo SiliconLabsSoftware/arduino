@@ -46,7 +46,9 @@ void pinMode(PinName pinNumber, PinMode pinMode)
   uint32_t hw_pin = getSilabsPinFromArduinoPin(pinNumber);
   switch (pinMode) {
     case PinMode::OUTPUT:
-      GPIO_PinModeSet(hw_port, hw_pin, gpioModePushPull, 0);
+      if (GPIO_PinModeGet(hw_port, hw_pin) != gpioModePushPull) {
+        GPIO_PinModeSet(hw_port, hw_pin, gpioModePushPull, 0);
+      }
       break;
 
     case PinMode::INPUT:
